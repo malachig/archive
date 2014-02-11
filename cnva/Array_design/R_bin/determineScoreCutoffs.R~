@@ -1,0 +1,29 @@
+
+#Open a file containing the simfold and pairfold scores for all region and negative control probes
+datadir = "/home/malachig/MR_Chip_Design/stats"
+dir(datadir)
+setwd(datadir)
+
+scores = read.table("all_scores.txt", header=T, quote="", sep="\t", comment.char="", na.strings = "na")
+
+quantile(scores[which(scores[,"Probe_length"]==44), "SimFold_score"], probs = seq(0, 1, 0.05), na.rm = TRUE)
+quantile(scores[which(scores[,"Probe_length"]==45), "SimFold_score"], probs = seq(0, 1, 0.05), na.rm = TRUE)
+quantile(scores[which(scores[,"Probe_length"]==46), "SimFold_score"], probs = seq(0, 1, 0.05), na.rm = TRUE)
+quantile(scores[which(scores[,"Probe_length"]==47), "SimFold_score"], probs = seq(0, 1, 0.05), na.rm = TRUE)
+quantile(scores[which(scores[,"Probe_length"]==48), "SimFold_score"], probs = seq(0, 1, 0.05), na.rm = TRUE)
+quantile(scores[which(scores[,"Probe_length"]==49), "SimFold_score"], probs = seq(0, 1, 0.05), na.rm = TRUE)
+quantile(scores[which(scores[,"Probe_length"]==50), "SimFold_score"], probs = seq(0, 1, 0.05), na.rm = TRUE)
+quantile(scores[which(scores[,"Probe_length"]==51), "SimFold_score"], probs = seq(0, 1, 0.05), na.rm = TRUE)
+quantile(scores[which(scores[,"Probe_length"]==52), "SimFold_score"], probs = seq(0, 1, 0.05), na.rm = TRUE)
+quantile(scores[which(scores[,"Probe_length"]==53), "SimFold_score"], probs = seq(0, 1, 0.05), na.rm = TRUE)
+quantile(scores[which(scores[,"Probe_length"]==54), "SimFold_score"], probs = seq(0, 1, 0.05), na.rm = TRUE)
+quantile(scores[which(scores[,"Probe_length"]==55), "SimFold_score"], probs = seq(0, 1, 0.05), na.rm = TRUE)
+quantile(scores[which(scores[,"Probe_length"]==56), "SimFold_score"], probs = seq(0, 1, 0.05), na.rm = TRUE)
+quantile(scores[which(scores[,"Probe_length"]==57), "SimFold_score"], probs = seq(0, 1, 0.05), na.rm = TRUE)
+quantile(scores[which(scores[,"Probe_length"]==58), "SimFold_score"], probs = seq(0, 1, 0.05), na.rm = TRUE)
+quantile(scores[which(scores[,"Probe_length"]==59), "SimFold_score"], probs = seq(0, 1, 0.05), na.rm = TRUE)
+quantile(scores[which(scores[,"Probe_length"]==60), "SimFold_score"], probs = seq(0, 1, 0.05), na.rm = TRUE)
+quantile(scores[which(scores[,"Probe_length"]==61), "SimFold_score"], probs = seq(0, 1, 0.05), na.rm = TRUE)
+quantile(scores[which(scores[,"Probe_length"]==62), "SimFold_score"], probs = seq(0, 1, 0.05), na.rm = TRUE)
+quantile(scores[which(scores[,"Probe_length"]==63), "SimFold_score"], probs = seq(0, 1, 0.05), na.rm = TRUE)
+quantile(scores[which(scores[,"Probe_length"]==64), "SimFold_score"], probs = seq(0, 1, 0.05), na.rm = TRUE)
