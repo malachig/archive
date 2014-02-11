@@ -1,0 +1,6 @@
+ENSG00000135903	PAX3	2	-1	222772851	222871944	Paired box protein Pax-3 (HUP2) [Source:UniProtKB/Swiss-Prot;Acc:P23760]
+ENSG00000163081	CCDC140	2	1	222871110	222878180	Coiled-coil domain-containing protein 140  [Source:UniProtKB/Swiss-Prot;Acc:Q96MF4]
+ENSG00000114491	UMPS	3	1	125931903	125946318	Uridine 5'-monophosphate synthase (UMP synthase) [Includes Orotate phosphoribosyltransferase(OPRTase)(EC 2.4.2.10);Orotidine 5'-phosphate decarboxylase(EC 4.1.1.23)(OMPdecase)] [Source:UniProtKB/Swiss-Prot;Acc:P11172]
+ENSG00000053747	LAMA3	18	1	19523560	19789025	Laminin subunit alpha-3 Precursor (Epiligrin 170 kDa subunit)(E170)(Nicein subunit alpha) [Source:UniProtKB/Swiss-Prot;Acc:Q16787]
+ENSG00000221389	Unknown	18	-1	19728077	19728168	NA
+ENSG00000102362	SYTL4	X	-1	99816144	99873764	Synaptotagmin-like protein 4 (Exophilin-2)(Granuphilin) [Source:UniProtKB/Swiss-Prot;Acc:Q96C24]

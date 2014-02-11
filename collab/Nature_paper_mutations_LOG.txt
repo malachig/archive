@@ -1,0 +1,337 @@
+
+Target Genomic Coord: 2:169497197 (Fixed Name: ABCB11  Original Name: ABCB11).  Mutation: R>H
+	Gene-level coordinate for target genomic coordinate: 9504
+	Gene found: ENSG00000073734 (ABCB11)	2 (-1):169487694 - 169596079)
+	Gene Coords:1 - 108386
+		Transcript: ENST00000263817	CodingRegion: 685 - 95188
+			Protein length = 1321
+			Amino acid position: 1050 (R) (ARF) (KISAARFFQLL)
+
+Target Genomic Coord: 4:2203607 (Fixed Name: C4orf15  Original Name: HAUS3).  Mutation: V>M
+	Gene-level coordinate for target genomic coordinate: 3714
+	Gene found: ENSG00000214367 (C4orf15)	4 (-1):2199894 - 2213658)
+	Gene Coords:1 - 13765
+		Transcript: ENST00000243706	CodingRegion: 3559 - 12578
+			Protein length = 603
+			Amino acid position: 553 (V) (DVK) (DILADVKTKRK)
+
+Target Genomic Coord: 17:35701114 (Fixed Name: CDC6  Original Name: CDC6).  Mutation: E>K
+	Gene-level coordinate for target genomic coordinate: 3443
+	Gene found: ENSG00000094804 (CDC6)	17 (1):35697672 - 35712939)
+	Gene Coords:1 - 15268
+		Transcript: ENST00000209728	CodingRegion: 1528 - 14108
+			Protein length = 560
+			Amino acid position: 153 (E) (QEG) (RLFKQEGTCYQ)
+
+Target Genomic Coord: 17:7751231 (Fixed Name: CHD3  Original Name: CHD3).  Mutation: E>K
+	Gene-level coordinate for target genomic coordinate: 22383
+	Gene found: ENSG00000170004 (CHD3)	17 (1):7728849 - 7756803)
+	Gene Coords:1 - 27955
+		Transcript: ENST00000358181	CodingRegion: 4196 - 26780
+			Protein length = 1966
+			Amino acid position: 1577 (E) (AEN) (EKEEAENQEEK)
+		Transcript: ENST00000330494	CodingRegion: 4196 - 26780
+			Protein length = 2000
+			Amino acid position: 1577 (E) (AEN) (EKEEAENQEEK)
+		Transcript: ENST00000403047	CodingRegion: 44 - 26780
+			Protein length = 2045
+			Amino acid position: 1622 (E) (AEN) (EKEEAENQEEK)
+		Transcript: ENST00000380358	CodingRegion: 2 - 26780
+			Protein length = 2059
+			Amino acid position: 1636 (E) (AEN) (EKEEAENQEEK)
+
+Target Genomic Coord: 17:7052251 (Fixed Name: DLG4  Original Name: DLG4).  Mutation: P>L
+	Gene-level coordinate for target genomic coordinate: 18319
+	Gene found: ENSG00000132535 (DLG4)	17 (-1):7033933 - 7063781)
+	Gene Coords:1 - 29849
+		Transcript: ENST00000302955	CodingRegion: 819 - 27258
+			Protein length = 721
+			Amino acid position: 21 (P) (PPL) (DEDTPPLEHSP)
+		Transcript: ENST00000399506	CodingRegion: 819 - 27258
+			Protein length = 724
+			Amino acid position: 21 (P) (PPL) (DEDTPPLEHSP)
+		Transcript: ENST00000380912	CodingRegion: 819 - 27258
+			Protein length = 724
+			Amino acid position: 21 (P) (PPL) (DEDTPPLEHSP)
+		Transcript: ENST00000399510	CodingRegion: 819 - 28960
+			Protein length = 767
+			Amino acid position: 64 (P) (PPL) (DEDTPPLEHSP)
+		Transcript: ENST00000293813	CodingRegion: 819 - 28960
+			Protein length = 767
+			Amino acid position: 64 (P) (PPL) (DEDTPPLEHSP)
+
+Target Genomic Coord: 17:35133783 (Fixed Name: ERBB2  Original Name: ERBB2).  Mutation: I>M
+	Gene-level coordinate for target genomic coordinate: 29018
+	Gene found: ENSG00000141736 (ERBB2)	17 (1):35104766 - 35138441)
+	Gene Coords:1 - 33676
+		Transcript: ENST00000406381	CodingRegion: 12021 - 33058
+			Protein length = 1225
+			Amino acid position: 737 (I) (EIL) (KANKEILDEAY)
+		Transcript: ENST00000269571	CodingRegion: 5253 - 33058
+			Protein length = 1255
+			Amino acid position: 767 (I) (EIL) (KANKEILDEAY)
+
+Target Genomic Coord: 4:155726802 (Fixed Name: FGA  Original Name: FGA).  Mutation: W>stop
+	Gene-level coordinate for target genomic coordinate: 3073
+	Gene found: ENSG00000171560 (FGA)	4 (-1):155723730 - 155731368)
+	Gene Coords:1 - 7639
+		Transcript: ENST00000403106	CodingRegion: 2367 - 7560
+			Protein length = 644
+			Amino acid position: 410 (W) (DWG) (PNNPDWGTFEE)
+		Transcript: ENST00000302053	CodingRegion: 997 - 7560
+			Protein length = 866
+			Amino acid position: 410 (W) (DWG) (PNNPDWGTFEE)
+
+Target Genomic Coord: 3:37267947 (Fixed Name: GOLGA4  Original Name: GOLGA4*).  Mutation: E>Q
+	Gene-level coordinate for target genomic coordinate: 8206
+	Gene found: ENSG00000144674 (GOLGA4)	3 (1):37259742 - 37383240)
+	Gene Coords:1 - 123499
+		Transcript: ENST00000356847	CodingRegion: 305 - 118026
+			Protein length = 2223
+			Amino acid position: 44 (E) (TEQ) (TSSFTEQLDEG)
+		Transcript: ENST00000361924	CodingRegion: 305 - 118026
+			Protein length = 2230
+			Amino acid position: 44 (E) (TEQ) (TSSFTEQLDEG)
+		Transcript: ENST00000273176	CodingRegion: 305 - 122857
+			Protein length = 2228
+			Amino acid position: 44 (E) (TEQ) (TSSFTEQLDEG)
+
+Target Genomic Coord: 4:106982671 (Fixed Name: GSTCD  Original Name: GSTCD).  Mutation: E>Q
+	Gene-level coordinate for target genomic coordinate: 133282
+	Gene found: ENSG00000138780 (GSTCD)	4 (1):106849390 - 106988331)
+	Gene Coords:1 - 138942
+		Transcript: ENST00000394730	CodingRegion: 8831 - 136794
+			Protein length = 546
+			Amino acid position: 479 (E) (KEH) (TLSYKEHMILC)
+		Transcript: ENST00000360505	CodingRegion: 8831 - 136794
+			Protein length = 633
+			Amino acid position: 566 (E) (KEH) (TLSYKEHMILC)
+
+Target Genomic Coord: 18:58076768 (Fixed Name: KIAA1468  Original Name: KIAA1468*).  Mutation: R>T
+	Gene-level coordinate for target genomic coordinate: 71265
+	Gene found: ENSG00000134444 (KIAA1468)	18 (1):58005504 - 58125334)
+	Gene Coords:1 - 119831
+		Transcript: ENST00000299783	CodingRegion: 40314 - 118244
+			Protein length = 860
+			Amino acid position: 338 (R) (ERV) (GDPSERVVSAT)
+		Transcript: ENST00000256858	CodingRegion: 654 - 118244
+			Protein length = 1104
+			Amino acid position: 548 (R) (ERV) (GDPSERVVSAT)
+		Transcript: ENST00000398130	CodingRegion: 216 - 118244
+			Protein length = 1216
+			Amino acid position: 694 (R) (ERV) (GDPSERVVSAT)
+
+Target Genomic Coord: 17:4848025 (Fixed Name: KIF1C  Original Name: KIF1C).  Mutation: K>N
+	Gene-level coordinate for target genomic coordinate: 6055
+	Gene found: ENSG00000129250 (KIF1C)	17 (1):4841971 - 4868721)
+	Gene Coords:1 - 26751
+		Transcript: ENST00000320785	CodingRegion: 2296 - 26200
+			Protein length = 1103
+			Amino acid position: 291 (K) (SKK) (ADMQSKKRKSD)
+
+Target Genomic Coord: X:86659878 (Fixed Name: KLHL4  Original Name: KLHL4).  Mutation: S>L
+	Gene-level coordinate for target genomic coordinate: 454
+	Gene found: ENSG00000102271 (KLHL4)	X (1):86659425 - 86811706)
+	Gene Coords:1 - 152282
+		Transcript: ENST00000373119	CodingRegion: 129 - 148766
+			Protein length = 718
+			Amino acid position: 109 (S) (KSV) (EDTPKSVPEKN)
+		Transcript: ENST00000373114	CodingRegion: 129 - 151626
+			Protein length = 720
+			Amino acid position: 109 (S) (KSV) (EDTPKSVPEKN)
+
+Target Genomic Coord: 17:10248420 (Fixed Name: MYH8  Original Name: MYH8).  Mutation: M>I
+	Gene-level coordinate for target genomic coordinate: 14057
+	Gene found: ENSG00000133020 (MYH8)	17 (-1):10234364 - 10265992)
+	Gene Coords:1 - 31629
+		Transcript: ENST00000252173	CodingRegion: 133 - 29906
+			Protein length = 1937
+			Amino acid position: 880 (M) (KMV) (ELEEKMVTLLK)
+		Transcript: ENST00000403437	CodingRegion: 133 - 29906
+			Protein length = 1937
+			Amino acid position: 880 (M) (KMV) (ELEEKMVTLLK)
+
+Target Genomic Coord: 16:23559936 (Fixed Name: PALB2  Original Name: PALB2).  Mutation: E>A
+	Gene-level coordinate for target genomic coordinate: 37953
+	Gene found: ENSG00000083093 (PALB2)	16 (-1):23521984 - 23560179)
+	Gene Coords:1 - 38196
+		Transcript: ENST00000261584	CodingRegion: 298 - 37996
+			Protein length = 1186
+			Amino acid position: 15 (E) (KEK) (SCEEKEKLKEK)
+
+Target Genomic Coord: 22:45035285 (Fixed Name: PKDREJ  Original Name: PKDREJ).  Mutation: E>Q
+	Gene-level coordinate for target genomic coordinate: 5062
+	Gene found: ENSG00000130943 (PKDREJ)	22 (-1):45030224 - 45037916)
+	Gene Coords:1 - 7693
+		Transcript: ENST00000253255	CodingRegion: 899 - 7660
+			Protein length = 2253
+			Amino acid position: 867 (E) (VEK) (YVKKVEKWGIN)
+
+Target Genomic Coord: 9:84867250 (Fixed Name: RASEF  Original Name: RASEF).  Mutation: S>L
+	Gene-level coordinate for target genomic coordinate: 80107
+	Gene found: ENSG00000165105 (RASEF)	9 (-1):84787144 - 84867863)
+	Gene Coords:1 - 80720
+		Transcript: ENST00000340717	CodingRegion: 73137 - 80459
+			Protein length = 189
+			Amino acid position: 118 (S) (TSC) (AALATSCGPAS)
+		Transcript: ENST00000376447	CodingRegion: 269 - 80459
+			Protein length = 740
+			Amino acid position: 118 (S) (TSC) (AALATSCGPAS)
+
+Target Genomic Coord: 19:12785252 (Fixed Name: RNASEH2A  Original Name: RNASEH2A).  Mutation: R>H
+	Gene-level coordinate for target genomic coordinate: 6825
+	Gene found: ENSG00000104889 (RNASEH2A)	19 (1):12778428 - 12785462)
+	Gene Coords:1 - 7035
+		Transcript: ENST00000221486	CodingRegion: 61 - 6853
+			Protein length = 299
+			Amino acid position: 291 (R) (ERG) (RYFLERGLESA)
+
+Target Genomic Coord: 1:44650831 (Fixed Name: RNF220  Original Name: RNF220).  Mutation: D>N
+	Gene-level coordinate for target genomic coordinate: 7379
+	Gene found: ENSG00000187147 (RNF220)	1 (1):44643453 - 44889983)
+	Gene Coords:1 - 246531
+		Transcript: ENST00000372248	CodingRegion: 6905 - 245582
+			Protein length = 567
+			Amino acid position: 159 (D) (ADG) (RFSDADGKEYD)
+		Transcript: ENST00000372247	CodingRegion: 6905 - 245582
+			Protein length = 566
+			Amino acid position: 159 (D) (ADG) (RFSDADGKEYD)
+		Transcript: ENST00000355387	CodingRegion: 6905 - 245582
+			Protein length = 566
+			Amino acid position: 159 (D) (ADG) (RFSDADGKEYD)
+		Transcript: ENST00000361799	CodingRegion: 6905 - 245582
+			Protein length = 566
+			Amino acid position: 159 (D) (ADG) (RFSDADGKEYD)
+
+Target Genomic Coord: 12:52063157 (Fixed Name: SP1  Original Name: SP1).  Mutation: E>Q
+	Gene-level coordinate for target genomic coordinate: 2912
+	Gene found: ENSG00000185591 (SP1)	12 (1):52060246 - 52096488)
+	Gene Coords:1 - 36243
+		Transcript: ENST00000327443	CodingRegion: 98 - 31046
+			Protein length = 785
+			Amino acid position: 387 (E) (KEG) (AGQQKEGEQNQ)
+
+Target Genomic Coord: 11:113185109 (Fixed Name: USP28  Original Name: USP28).  Mutation: D>N
+	Gene-level coordinate for target genomic coordinate: 11302
+	Gene found: ENSG00000048028 (USP28)	11 (-1):113173808 - 113251466)
+	Gene Coords:1 - 77659
+		Transcript: ENST00000003302	CodingRegion: 1365 - 77626
+			Protein length = 1077
+			Amino acid position: 684 (D) (EDN) (HYIQEDNWRFE)
+		Transcript: ENST00000260188	CodingRegion: 1365 - 77626
+			Protein length = 1045
+			Amino acid position: 684 (D) (EDN) (HYIQEDNWRFE)
+
+Target Genomic Coord: 11:61313958 (Fixed Name: C11orf10  Original Name: C11orf10).  Mutation: T>I
+	Gene-level coordinate for target genomic coordinate: 780
+	Gene found: ENSG00000134825 (C11orf10)	11 (-1):61313179 - 61316658)
+	Gene Coords:1 - 3480
+		Transcript: ENST00000257262	CodingRegion: 665 - 3428
+			Protein length = 79
+			Amino acid position: 42 (T) (VTS) (FVYEVTSTKYT)
+
+Target Genomic Coord: 11:77452594 (Fixed Name: THRSP  Original Name: THRSP).  Mutation: R>C
+	Gene-level coordinate for target genomic coordinate: 40
+	Gene found: ENSG00000151365 (THRSP)	11 (1):77452555 - 77457044)
+	Gene Coords:1 - 4490
+		Transcript: ENST00000281030	CodingRegion: 22 - 462
+			Protein length = 146
+			Amino acid position: 7 (R) (KRY) (QVLTKRYPKNC)
+
+Target Genomic Coord: 13:77076497 (Fixed Name: SCEL  Original Name: SCEL).  Mutation: K>R
+	Gene-level coordinate for target genomic coordinate: 68638
+	Gene found: ENSG00000136155 (SCEL)	13 (1):77007860 - 77116642)
+	Gene Coords:1 - 108783
+		Transcript: ENST00000348770	CodingRegion: 20153 - 108551
+			Protein length = 645
+			Amino acid position: 325 (K) (KKD) (NTTGKKDLDGL)
+		Transcript: ENST00000377246	CodingRegion: 20153 - 108551
+			Protein length = 668
+			Amino acid position: 348 (K) (KKD) (NTTGKKDLDGL)
+		Transcript: ENST00000349847	CodingRegion: 20153 - 108551
+			Protein length = 688
+			Amino acid position: 368 (K) (KKD) (NTTGKKDLDGL)
+
+Target Genomic Coord: 14:92018836 (Fixed Name: SLC24A4  Original Name: SLC24A4).  Mutation: V>I
+	Gene-level coordinate for target genomic coordinate: 160163
+	Gene found: ENSG00000140090 (SLC24A4)	14 (1):91858674 - 92032348)
+	Gene Coords:1 - 173675
+		Transcript: ENST00000318079	CodingRegion: 116768 - 161232
+			Protein length = 352
+			Amino acid position: 291 (V) (CVT) (IFLLCVTIPNC)
+		Transcript: ENST00000298877	CodingRegion: 1306 - 171052
+			Protein length = 605
+			Amino acid position: 422 (V) (CVT) (IFLLCVTIPNC)
+		Transcript: ENST00000393265	CodingRegion: 2 - 171052
+			Protein length = 598
+			Amino acid position: 415 (V) (CVT) (IFLLCVTIPNC)
+
+Target Genomic Coord: 17:45625043 (Fixed Name: COL1A1  Original Name: COL1A1).  Mutation: G>D
+	Gene-level coordinate for target genomic coordinate: 8588
+	Gene found: ENSG00000108821 (COL1A1)	17 (-1):45616456 - 45633999)
+	Gene Coords:1 - 17544
+		Transcript: ENST00000225964	CodingRegion: 1407 - 17418
+			Protein length = 1464
+			Amino acid position: 629 (G) (AGE) (PAGPAGERGEQ)
+
+Target Genomic Coord: 18:17278222 (Fixed Name: KIAA1772  Original Name: KIAA1772).  Mutation: D>G
+	Gene-level coordinate for target genomic coordinate: 201906
+	Gene found: ENSG00000141449 (KIAA1772)	18 (1):17076317 - 17342618)
+	Gene Coords:1 - 266302
+		Transcript: ENST00000400483	CodingRegion: 141162 - 219239
+			Protein length = 730
+			Amino acid position: 416 (D) (GDI) (YGNVGDIVVSP)
+		Transcript: ENST00000404449	CodingRegion: 141159 - 212280
+			Protein length = 752
+			Amino acid position: 417 (D) (GDI) (YGNVGDIVVSP)
+
+Target Genomic Coord: 22:27506951 (Fixed Name: CCDC117  Original Name: CCDC117).  Mutation: K>N
+	Gene-level coordinate for target genomic coordinate: 8250
+	Gene found: ENSG00000159873 (CCDC117)	22 (1):27498702 - 27515282)
+	Gene Coords:1 - 16581
+		Transcript: ENST00000249064	CodingRegion: 137 - 13613
+			Protein length = 279
+			Amino acid position: 85 (K) (RKK) (DCPVRKKRITE)
+
+Target Genomic Coord: 22:43140252 (Fixed Name: RP1-32I10.10  Original Name: RP1-32I10.10).  Mutation: E>Q
+	Gene-level coordinate for target genomic coordinate: 158
+	Gene found: ENSG00000220702 (RP1-32I10.10)	22 (1):43140095 - 43140828)
+	Gene Coords:1 - 734
+		Transcript: ENST00000406912	CodingRegion: 65 - 420
+			Protein length = 75
+			Amino acid position: 32 (E) (QEA) (WSWEQEAWKCN)
+
+Target Genomic Coord: 3:110271286 (Fixed Name: MORC1  Original Name: MORC1).  Mutation: A>V
+	Gene-level coordinate for target genomic coordinate: 111508
+	Gene found: ENSG00000114487 (MORC1)	3 (-1):110159779 - 110319658)
+	Gene Coords:1 - 159880
+		Transcript: ENST00000232603	CodingRegion: 724 - 159818
+			Protein length = 984
+			Amino acid position: 233 (A) (PAR) (LEDFPARWSFR)
+
+Target Genomic Coord: 3:126721688 (Fixed Name: SNX4  Original Name: SNX4).  Mutation: D>N
+	Gene-level coordinate for target genomic coordinate: 73504
+	Gene found: ENSG00000114520 (SNX4)	3 (-1):126648185 - 126721748)
+	Gene Coords:1 - 73564
+		Transcript: ENST00000251775	CodingRegion: 1129 - 73522
+			Protein length = 450
+			Amino acid position: 7 (D) (PDP) (EQAPPDPERQL)
+
+Target Genomic Coord: 3:191172415 (Fixed Name: LEPREL1  Original Name: LEPREL1).  Mutation: E>G
+	Gene-level coordinate for target genomic coordinate: 15203
+	Gene found: ENSG00000090530 (LEPREL1)	3 (-1):191157213 - 191321407)
+	Gene Coords:1 - 164195
+		Transcript: ENST00000319332	CodingRegion: 1183 - 164002
+			Protein length = 708
+			Amino acid position: 592 (E) (NEC) (DPEANECWKEP)
+
+Target Genomic Coord: 16:73500342 (Fixed Name: WDR59  Original Name: WDR59*).  Mutation: M>I
+	Gene-level coordinate for target genomic coordinate: 35368
+	Gene found: ENSG00000103091 (WDR59)	16 (-1):73464975 - 73576518)
+	Gene Coords:1 - 111544
+		Transcript: ENST00000262144	CodingRegion: 634 - 111442
+			Protein length = 974
+			Amino acid position: 559 (M) (TMH) (TRPMTMHRAVS)
+		Transcript: ENST00000205064	CodingRegion: 634 - 111535
+			Protein length = 1005
+			Amino acid position: 590 (M) (TMH) (TRPMTMHRAVS)
