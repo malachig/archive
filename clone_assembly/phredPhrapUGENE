@@ -1,0 +1,574 @@
+#!/usr/local/bin/perl5 -w
+#
+# phredPhrap
+#
+# PURPOSE:  do an assembly and prepare for editing using consed
+#
+# HOW IT WORKS:  
+#     1) It runs phred on all *new* reads (reads for which
+#     there is no phd file.  
+#     2) Then it runs crossmatch to screen them
+#     for vector.  
+#     3) Then it runs phd2fasta to create 2 fasta files:
+#     one containing read bases and one containing read quality.  These
+#     are of the highest versions of each read (in case any editing has
+#     been done).
+#     4) It runs phrap
+#     5) It runs transferConsensusTags to transfer any consensus tags
+#     from the newest old ace file to the one phrap created in step 4
+#
+# WHAT YOU SHOULD EDIT IN THIS FILE:
+#     The top line to reflect where perl is on your system
+#     The following to reflect where they are on your system:
+#     $cross_matchExe $phredExe $phrapExe $fastaExe $transferConsensusTags
+#     $szDefaultVectorFile $szPhrapDocumentation $tagRepeats
+#     If you don't yet have the new phrap (August 1998 or better),
+#     then you should change the -new_ace (below) to -ace
+#     At this time (Oct 1998), the new phrap has not yet been released
+#     to academic users.
+#
+# sccsId: "@(#)phredPhrap	1.18 10/29/96 13:34:47"
+#
+#
+#
+#
+# REVISION HISTORY
+# ----------------
+#
+# October 5, 1995 (David Gordon)
+#    orig code for phred_and_phrap.perl
+#
+# 27-Nov-95 chrisa
+#    modified to use new directory structure - expects chromat_dir and
+#    phd_dir to be in ../
+#
+# 16-jan-96 chrisa
+#    no longer renames .ace file
+#  06-jan-98 colin
+#    added phrap force option
+# 01-apr-98 DG to transfer consensus tags
+# 14-oct-98 DG to cache directory contents, better error checking and
+# error messages, automatic detection of most recent ace file for
+# transferring consensus tags
+#
+# Change these to reflect where you put your executables.
+# For phred, contact bge@u.washington.edu
+# For phrap and cross_match, contact phg@u.washington.edu
+# phd2seqfasta and phd2qualfasta are superceded by phd2fasta
+# phd2fasta comes with the consed package
+# transferConsensusTags.perl comes with the consed package
+#
+# 29-Sep-04 Ryan Morin
+# uses getopt to obtain the name of the vector file on the command line, will not run unless a vector file name is specified on execution
+# eg:   phredPhrapUGENE -v /home/sequence/VECTOR/vectorName.seq
+use DB_File;
+use Getopt::Std;
+use vars qw($opt_v);
+getopts("v:");
+$dieStatement = "script must be run like this:\n $0 -v full_path/to_vector/file.seq";
+die "$dieStatement" unless ($opt_v);
+$szConsedVersion = "10.0";
+$cross_matchExe = "/home/pubseq/BioSw/phrap/current/cross_match.manyreads";
+#$phredExe = "/usr/local/bin/phred";
+$phredExe = "/home/pubseq/BioSw/phred/020425/phred";
+$phrapExe = "/home/pubseq/BioSw/phrap/current/phrap.manyreads";
+$phd2fasta = "/home/pubseq/BioSw/consed/consed-8.0/misc/phd2fasta/phd2fasta";
+$transferConsensusTags = "/home/pubseq/BioSw/consed/current/scripts/transferConsensusTags.perl";
+
+$tagRepeats = "/home/malachig/svn/clone_assembly/tagRepeats.perl";
+# the following line is important only if you are using polyphred
+# for polymorphism detection
+$polyPhredExe = "/mnt/disk1/home/pubseq/BioSw/polyphred/current/polyphred";
+
+# change the 0 to 1 if you are using polyphred for polymorphism detection
+$bUsingPolyPhred = 0;
+
+$determineReadTypes = "/home/malachig/svn/clone_assembly/determineReadTypes3.perl";
+
+#$vectorfile = "/home/sequence/VECTOR/pCR4-TOPO_adapt.seq";
+#$vectorfile = "/home/sequence/VECTOR/pCR4-TOPO_adapt_MGC.seq";
+$vectorfile = $opt_v;
+
+# change this to reflect wherever you put you fasta file of vector sequence
+#$szDefaultVectorFile = "/home/pubseq/Projects/C_neoformans/vector/vector";
+$szDefaultVectorFile = $vectorfile;
+
+# change this to reflect wherever you put the phredpar.dat file
+#$szPhredParameterFile = "/usr/local/etc/PhredPar/phredpar.dat";
+#$szPhredParameterFile = "/usr/local/common/lib/PhredPar/phredpar.dat";
+$szPhredParameterFile = "/home/sequence/alDente//share/phredpar.dat";
+#$szPhredParameterFile = "/home/pubseq/BioSw/phred/current/phredpar3730.dat";
+
+if ( $#ARGV >= 0 ) {
+  if ( $ARGV[0] eq "-V" || $ARGV[0] eq "-v" ) {
+    print "$szConsedVersion\n";
+    exit( 1 );
+  }
+}
+
+if ( $bUsingPolyPhred ) {
+  $szPolyPhredOptions = "-dd ../poly_dir";
+}
+else {
+  $szPolyPhredOptions = "";
+}
+
+if (!-x $cross_matchExe )  {
+  die "could not execute or find $cross_matchExe";
+}
+
+if (!-x $phredExe ) {
+  die "could not execute or find $phredExe";
+}
+
+if (!-x $phrapExe ) {
+  die "could not execute or find $phrapExe";
+}
+
+if (!-x $phd2fasta ) {
+  die "could not execute or find $phd2fasta";
+}
+
+if (!-x $transferConsensusTags || !-r $transferConsensusTags ) {
+  die "could not execute, read or find $transferConsensusTags";
+}
+
+#if (!-x $tagRepeats || !-r $tagRepeats ) {
+#  die "could not execute, read or find $tagRepeats";
+#}
+
+if (!-x $determineReadTypes || !-r $determineReadTypes ) {
+  die "could not execute, read, or find $determineReadTypes";
+}
+
+if (!-r $szPhredParameterFile ) {
+  die "could not read $szPhredParameterFile";
+}
+
+# Let's try to centralize the location of the vector sequence
+
+$szVector = $ENV{"CROSS_MATCH_VECTOR"} || $szDefaultVectorFile;
+
+if (! -e $szVector ) {
+    die "cannot find $szVector specifying the pathname of the vector sequences file--specify this in environment variable CROSS_MATCH_VECTOR\n";
+}
+
+$ENV{'PHRED_PARAMETER_FILE'} = $szPhredParameterFile;
+
+# for taint/setuid  (Need gzip/gunzip in path)
+$ENV{'PATH'} = '/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin';
+
+$chromatDirPath = "../chromat_dir";
+$phdDirPath = "../phd_dir";
+
+$niceExe = "/bin/nice";
+$mvExe = "/bin/mv";
+$lsExe = "/bin/ls";
+$pwdExe = "/bin/pwd";
+
+$szUsage = 
+"Normal Usage: \n\
+phredPhrap [phrap options]\n\
+\n\
+Special Usage:\n\
+phredPhrap <base name> [phrap options]\n\
+is used when you want the base name of the created files to be\n\
+different than the name of the parent directory of the phd_dir directory\n\
+\n\
+phredPhrap -notags [phrap options]\n\
+or\n\
+phredPhrap <base name> -notags [phrap options]\n\
+These are \*only\* to be used in the special case in which you want\n\
+to lose any tags from previous assemblies.\n\
+\n\
+Unless you know what you are doing, always use the form:\n\
+phredPhrap [phrap options]";
+
+
+# don't buffer STDOUT output
+select(( select( STDOUT ), $| = 1 )[0]);
+
+
+if ($#ARGV < -1) {
+    die "Invalid arguments @ARGV\n$szUsage\n";
+}
+
+
+# Figure out the basename for all created files.
+# If the current directory is /blah1/blah2/blah3/edit_dir
+# then the basename will be blah3
+
+if ( $#ARGV == -1 ) {
+  $bProjectNameOnCommandLine = 0;
+}
+else {
+  if ( $ARGV[0] =~ /^-/ ) {
+    $bProjectNameOnCommandLine = 0;
+  }
+  else {
+    $bProjectNameOnCommandLine = 1;
+  }
+}
+
+if ( !$bProjectNameOnCommandLine ) {
+  $szCurrentDirectory = `$pwdExe`;
+  @aPathname = split( /\//, $szCurrentDirectory );
+  if ( $#aPathname < 2 ) {
+    die "Sorry--I can't figure out which project this is.  Please specify the project on the command line $szUsage\n";
+  }
+
+
+  $szBaseName = $aPathname[ $#aPathname - 1 ];
+}
+else {
+  $szBaseName = $ARGV[0];
+
+  # untaint the name - it follows same rule as projects
+  unless ($szBaseName =~ /^([a-zA-Z0-9\-\.]+)$/) {
+    die "$szBaseName is not a valid project name\n";
+  }
+
+  $szBaseName = $1;
+
+  # I'm expecting $ARGV[0] to be the project name--not an option
+  if ( $szBaseName =~ /^-/ ) {
+    die "$szUsage";
+  }
+  shift( @ARGV );
+}
+
+
+print "Basename for all files:  $szBaseName\n";
+
+
+# Now see if the user wants to avoid transferring tags 
+$bTransferTags = 1;
+if ( $#ARGV >= 0 ) {
+  if ( $ARGV[0] eq "-notags" ) {
+    print "You have specified -notags on the command line.\nThis is not recommened since it will mean that you will lose your consensus tags.  We suggest you type this command again but without the -notags.\nAre you sure you want to include the -notags? (y/n) ";
+    $szYorN = <STDIN>;
+    chomp( $szYorN );
+    if ( ($szYorN eq "y" ) || ( $szYorN eq "Y" ) || ($szYorN eq "yes" ) ||
+         ($szYorN eq "YES" ) ) {
+      $bTransferTags = 0;
+      shift( @ARGV );
+    }
+    else {
+      exit(0);
+    }
+  }
+}
+
+
+# setting @aPhrapOptions for passing to phrap
+
+
+@aPhrapOptions = ();
+
+if ( $#ARGV >= 0 )  {
+    @aPhrapOptions = @ARGV;
+}
+#Added by MG
+else{
+  $aPhrapOptions[0] = "-vector_bound 0";
+}
+
+if ( $bTransferTags ) {
+  
+  # let's see if there is any old ace file from which we must transfer 
+  # consensus tags
+  
+  $szCommand = "$lsExe -t $szBaseName" . ".fasta.screen.ace" . '*' . 
+    " 2>/dev/null | grep -v '.wrk\$' | grep =v '.hash\$'";
+
+
+  $szListOfOldAceFiles = `$szCommand`;
+  
+  @aListOfOldAceFiles = split( /\s/, $szListOfOldAceFiles );
+  
+  if ( $#aListOfOldAceFiles == -1 ) {
+    $bTransferTags = 0;
+  }
+  else {
+    $bTransferTags = 1;
+    $szOldAceFile = $aListOfOldAceFiles[0];
+  }
+  
+}
+
+
+
+if ( $bTransferTags ) {
+#  print "Will transfer consensus tags from old ace file $szOldAceFile\n";
+
+  if ( ! -r $szOldAceFile ) {
+    print $szUsage;
+    die "Can't read $szOldAceFile in order to transfer consensus tags.  Please make it readable or mv it out of the way so it isn't found\n";
+  }
+
+}
+
+
+
+# E. coli screen is just for reporting purposes.  Commented out for
+# users that don't have an E. coli database.
+# do same for CROSS_MATCH_ECOLI
+# chrisa 18-jan-96
+#if ($ENV{"CROSS_MATCH_ECOLI"}) {
+#    $szEcoli = $ENV{"CROSS_MATCH_ECOLI"};
+#}
+#else {
+#    $szEcoli = "/bz1/screenLibs/ecoli.lib";
+#}
+
+
+#if (! -e $szEcoli ) {
+#    die "cannot find $szEcoli specifying the pathname of the E.Coli sequences file--specify this in environment variable CROSS_MATCH_ECOLI\n";
+#}
+
+if (! (-e $chromatDirPath) ) {
+       die "there must be a subdirectory called chromat_dir containing the ABI chromatigram files";
+}
+
+if (! -e $phdDirPath ) {
+    !system("mkdir $phdDirPath") || die "could not create subdirectory phd_dir";
+}
+
+# determine what the name of the newly created assembly is.
+
+@aAceFiles = `$lsExe -t *.ace.* 2>/dev/null`;
+
+
+$nHighestVersion = 0;
+foreach $szFile (@aAceFiles ) {
+    chomp( $szFile );
+    if ( $szFile !~ /[.]wrk$/ ) {
+        $nPos = index( $szFile, ".ace." );
+        $nPos += 5;
+        if ($nPos >= length( $szFile ) ) {
+            # case in which the filename ends with .ace.
+            next;
+        }
+        else {
+            $szExtension = substr( $szFile, $nPos );
+            if ( $szExtension =~ /^[0-9]+$/ ) {
+                if ( $szExtension > $nHighestVersion ) {
+                    $nHighestVersion = $szExtension;
+                }
+            }
+        }
+    }
+}
+
+
+$nNextHigherVersion = $nHighestVersion + 1;
+$szAceFileToBeProduced =
+    "${szBaseName}.fasta.screen.ace.$nNextHigherVersion";
+
+print "ace file to be created is $szAceFileToBeProduced\n";
+
+
+# this is the name of the ace filename that will be produced by phrap
+# It will then be renamed to $szAceFileOfNextHigherVersion
+
+$szTempAceFilename = $szBaseName . ".fasta.screen.ace";
+
+if (-e $szTempAceFilename ) {
+    die "$szTempAceFilename already exists.  Phrap will create a temporary file of the same name.  Thus you should delete or rename it and then run this script again.";
+}
+
+
+# make a list of all the chromatigrams that haven't already been phred'd
+# Do this in the following very efficient manner:
+#    Make a hash of the root name of the phd files (e.g.,
+#    the root of myRead.phd.1 would be 'myRead'
+#
+#    For each chromat, check if it has a corresponding phd file.
+#    If not, then add it to the list of chromats to be phred'd
+
+%aPhdFiles = ();
+
+opendir( dirPhdDir, $phdDirPath ) || die "couldn't open directory $phdDirPath";
+while( defined( $szPhdFile = readdir( dirPhdDir ) ) ) {
+  if ( index( $szPhdFile, ".phd." ) >= 0 ) {
+    ( $szRoot = $szPhdFile ) =~ s/\.phd\..*$//;
+    $szRoot =~ s/^.*\///;
+    if ( ! exists $aPhdFiles{ $szRoot } ) {
+      $aPhdFiles{ $szRoot } = "";
+    }
+  }
+}
+
+
+closedir( dirPhdDir );
+
+
+$szPHDFOF = $szBaseName . "NewChromats.fof";
+
+if (-e $szPHDFOF ) {
+    unlink( $szPHDFOF ) || die "couldn't delete $szPHDFOF";
+}
+
+open( filPHDFOF, ">$szPHDFOF" ) || die "Couldn't open $szPHDFOF for output";
+
+opendir( dirChromat, $chromatDirPath ) || die "Couldn't open $chromatDirPath";
+$nFilesToPhred=0;
+while( defined( $szChromatFile = readdir( dirChromat ) ) ) {
+    next if ($szChromatFile eq "." );
+    next if ($szChromatFile eq ".." );
+    $szChromatFile =~ s/\.gz$//;   # no gzip suffix
+    $szChromatFile =~ s/\.Z$//;    # or compress suffix
+
+    if ( ! exists $aPhdFiles{$szChromatFile} ) {
+        print( filPHDFOF "$chromatDirPath/$szChromatFile\n" );
+	++$nFilesToPhred;
+    }
+}
+
+close( filPHDFOF );
+
+
+# use the list of all chromatigrams that haven't been phred'd to tell
+# phred to phred them!
+
+
+if ( $nFilesToPhred > 0 ) {
+
+  print "\n\n--------------------------------------------------------\n";
+  print "Now running phred on $nFilesToPhred files...\n";
+  print "--------------------------------------------------------\n\n\n";
+  print "$niceExe $phredExe -nonorm -if $szPHDFOF -pd $phdDirPath $szPolyPhredOptions\n";
+
+  !system("$niceExe $phredExe -nonorm -if $szPHDFOF -pd $phdDirPath $szPolyPhredOptions") || die "some problem running phred";
+}
+else {
+  print "No need to run phred.\n";
+}
+
+
+print "\n\n--------------------------------------------------------\n";
+print "Now running determineReadTypes.perl...\n";
+print "--------------------------------------------------------\n\n\n";
+!system( "$determineReadTypes" ) || die "some problem running determineReadTypes.perl\n";
+
+
+print "\n\n--------------------------------------------------------\n";
+print "Now running phd2fasta...\n";
+print "--------------------------------------------------------\n\n\n";
+
+
+$szFastaFile = $szBaseName . ".fasta";
+$szFastaQualFile = $szBaseName . ".fasta.qual";
+
+!system("$phd2fasta -id $phdDirPath -os $szFastaFile -oq $szFastaQualFile") ||
+  die "some problem running phd2fasta";
+
+$szScreenOut = $szBaseName . ".screen.out";
+
+if (-e $szScreenOut ) {
+    unlink( $szScreenOut ) || die "couldn't delete $szScreenOut";
+}
+
+$szScreen = $szBaseName. ".fasta.screen";
+
+if (-e $szScreen ) {
+    unlink( $szScreen ) || die "couldn't delete $szScreen";
+}
+
+
+print "\n\n--------------------------------------------------------\n";
+print "Now running cross_match...\n";
+print "--------------------------------------------------------\n\n\n";
+
+!system( "$niceExe $cross_matchExe $szFastaFile $szVector -minmatch 12 -penalty -2 -minscore 20 -screen > $szScreenOut" ) || die "some problem running crossmatch";
+
+#
+# do a screen for e coli, creating report only
+# chrisa 18-jan-96
+#
+# use sequence already screened for vector
+# chrisa 31-july-96
+#$szEcoliScreenOut = $szBaseName . ".screen-ecoli.out";
+#system( "$niceExe $cross_matchExe $szScreen $szEcoli > $szEcoliScreenOut");
+
+$szFastaQualScreenFile = $szBaseName . ".fasta.screen.qual";
+
+!system( "$mvExe $szFastaQualFile $szFastaQualScreenFile" ) || die "some problem executing $mvExe $szFastaQualFile $szFastaQualScreenFile";
+
+$szPhrapOut = $szBaseName . ".phrap.out";
+
+if (-e $szPhrapOut ) {
+    unlink( $szPhrapOut ) || die "couldn't delete $szPhrapOut";
+}
+
+print "\n\n--------------------------------------------------------\n";
+print "Now running phrap...\n";
+print "--------------------------------------------------------\n\n\n";
+
+!system( "$phrapExe $szScreen -new_ace -view @aPhrapOptions >$szPhrapOut" ) 
+  || die "some problem running phrap";
+
+rename( $szTempAceFilename, $szAceFileToBeProduced );
+
+$szConsedWRKFile = $szAceFileToBeProduced . ".wrk";
+print "deleting $szConsedWRKFile\n";
+ 
+# This file must not be left around, or else consed will crash 
+# if the person attempts to apply the edits.  Worse yet, consed
+# may not crash, but will apply edits that the user didn't intend.
+
+if (-e $szConsedWRKFile ) {
+    unlink( $szConsedWRKFile );
+}
+
+
+print "\n\n--------------------------------------------------------\n";
+print "Now running tagRepeats.perl...\n";
+print "--------------------------------------------------------\n\n\n";
+
+!system( "$tagRepeats $szAceFileToBeProduced" ) 
+  || die "some problem running $tagRepeats";
+
+
+if ( $bTransferTags == 1 ) 
+{
+
+  print "\n\n--------------------------------------------------------\n";
+  print "Now transferring consensus tags from $szOldAceFile to $szAceFileToBeProduced...\n";
+  print "--------------------------------------------------------\n\n\n";
+
+    !system( "$transferConsensusTags $szOldAceFile $szAceFileToBeProduced" ) || die "some problem transferring consensus tags: $transferConsensusTags.perl $szOldAceFile $szAceFileToBeProduced\n";
+}
+else {
+  print "Not attempting to transfer consensus tags\n";
+}
+
+
+
+if ( $bUsingPolyPhred ) {
+
+  print "\n\n--------------------------------------------------------\n";
+  print "Now running polyphred for polymorphism detection...\n";
+  print "--------------------------------------------------------\n\n\n";
+
+  $szPolyPhredFile = $szBaseName . ".fasta.screen.polyphred.out";
+
+  !system( "$polyPhredExe -ace $szAceFileToBeProduced -quality 30 -ratio 0.65 -background 0.25 -tag genotype > $szPolyPhredFile" ) ||
+    die "some problem running $polyPhredExe";
+
+}
+
+
+
+
+
+print "you may now run consed on $szAceFileToBeProduced\n";
+
+exit(0);
+
+
+
+
+
+
+

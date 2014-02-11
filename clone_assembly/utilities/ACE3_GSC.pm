@@ -1,0 +1,1067 @@
+# $Id: ACE3_GSC.pm,v 1.2 2004/09/10 17:19:35 jliu Exp $
+#
+# BioPerl module for Bio::Tools::ACE3
+#
+# Copyright Andrew Walsh
+# Inspired by an object from Chad Matasalla
+#
+# Malachi Griffith added 'contig_average_phred','contig_error_rate' methods (Both adapted from the Phrap::AceParser
+# written by Yaron Butterfield). Also added 'contig_lowest_score'.
+#
+# Elizabeth Chun modified '_parse' method to parse the primer information from an ace file.
+# She also added the following methods: num_primers, primer_names_in_contig, primers_in_contig, primer_start_pos, primer_end_pos, primer_timestamp, primer_seq, primer_melting_temp, primer_orientation
+#
+# You may distribute this module under the same terms as perl itself
+# POD documentation - main docs before the code
+
+=head1 NAME
+
+Bio::Tools::ACE3 - Object for analyzing .ace files produced by Phrap, Cap3, TIGR Assembler
+
+
+=head1 SYNOPSIS
+
+  #Usage
+  use utilities::ACE3_GSC;
+
+  # Create the ACE object from an existing .ace file
+  @params = ('acefile' => 'seq.cap.ace', 'ace_verbose' => 1);
+  $aceObj = Bio::Tools::ACE3->new(@params);
+
+  # Get names of all contigs
+  $con_names_ref = $aceObj->get_contigs();
+
+  # Do something with Contigs with > 10 members 
+  foreach $contig (@$con_names_ref) {
+      next unless $aceObj->number_reads($contig) > 10;
+      ...do something...	
+  }
+
+  # Get read sequences for one contig as an array reference
+  # of Bio::PrimarySeq objects
+  $seqObjs_ref = $aceObj->reads_Seq_Objs($contig);
+
+
+=head1 DESCRIPTION
+
+Bio::Tools::ACE3 provides methods for analyzing .ace files, which contain information on the
+contigs built by assembly software like Cap3 and Phrap.
+
+Cap3 can be obtained (free of charge to academic users) from www.cs.mtu.edu/faculty/Huang.html.
+
+
+=head2 Creating an ACE object
+
+ @params = ('acefile' => 'seq.cap.ace', 'ace_verbose' => 1, 'rev_comp' => 1);
+ $aceObj = Bio::Tools::ACE3->new(@params);
+
+=head2 Using an ACE object
+
+  Get an array reference with the contig names in order to use
+  accessor methods.
+  Note:  Assembly programs will produce contigs with sequential
+  numbers as contig name.
+
+  $con_names_ref = $aceObj->get_contigs();
+
+  Print Fasta file of contigs with > 10 members
+
+  foreach $contig (@$con_names_ref) {
+      next unless $aceObj->number_reads($contig) > 10;
+      print FILE ">", $contig, "\n", $aceObj->consensus($contig), "\n";
+  }
+
+
+  Get a contig sequence as a Bio::Seq object
+
+  $seqObj = $aceObj->consensus_Seq_Obj($contig);
+
+
+
+  Find out which contig read 'XYZ' belongs to
+
+  $contig = $aceObj->read_contig('XYZ');
+
+
+  Get number of reads in this contig
+
+  $num_members = $aceObj->number_reads($contig);
+
+
+
+  Get all the reads from this contig as Bio::Seq objects
+
+  $seqObjs_ref = $aceObj->reads_Seq_Objs($contig);
+
+
+  Get the names of the reads in this contig
+
+  $members_ref = $aceObj->read_names($contig);
+
+
+  Find out which reads are complemented
+
+
+  foreach $member (@$members_ref) {
+    $dir = $aceObj->read_direction($member);
+    if ($dir =~ /C/) {
+      push @comp, $member;
+    }
+    else {
+      push $uncomp, $member;
+    }
+  }
+
+
+  There are a lot of other accessor methods that depend on an
+  understanding of the .ace format.
+  Please read the Consed README file to learn more about this format.
+
+
+
+=head1 FEEDBACK
+
+=head2 Mailing Lists
+
+User feedback is an integral part of the evolution of this and other
+Bioperl modules.  Send your comments and suggestions preferably to one
+of the Bioperl mailing lists.  Your participation is much appreciated.
+
+    bioperl-l@bioperl.org             - General discussion
+    http://bio.perl.org/MailList.html - About the mailing lists
+
+=head2 Reporting Bugs
+
+Report bugs to the Bioperl bug tracking system to help us keep track
+the bugs and their resolution. Bug reports can be submitted via email
+or the web:
+
+    bioperl-bugs@bio.perl.org
+    http://bio.perl.org/bioperl-bugs/
+
+=head1 AUTHOR
+
+Andrew G. Walsh         paeruginosa@hotmail.com
+
+=head1 CONTRIBUTORS
+
+Chad Matsalla, Malachi Griffith, Yaron Butterfield
+
+=head1 APPENDIX
+
+Methods available to Lucy objects are described below.  Please note that any method beginning with
+an underscore is considered internal and should not be called directly.
+
+=cut
+
+
+
+package Bio::Tools::ACE3;
+
+use vars qw($VERSION $AUTOLOAD @ISA @ATTR %OK_FIELD);
+use strict;
+use Bio::Seq;
+use Bio::Root::Root;
+
+@ISA = qw(Bio::Root::Root);
+@ATTR = qw(acefile rev_comp ace_verbose);
+foreach my $attr (@ATTR) {
+    $OK_FIELD{$attr}++
+}
+$VERSION = "0.01";
+
+sub AUTOLOAD {
+    my $self = shift;
+    my $attr = $AUTOLOAD;
+    $attr =~ s/.*:://;
+    $attr = lc $attr;
+    $self->throw("Unallowed parameter: $attr !") unless $OK_FIELD{$attr};
+    $self->{$attr} = shift if @_;
+    return $self->{$attr};
+}
+
+=head2 new
+
+ Title   :  new
+ Usage   :  $aceObj = Bio::Tools::ACE3->new(acefile => 'seq.cap.ace', rev_comp => 1, ace_verbose => 1)
+ Function:  creates an ACE object from a .ace file
+ Returns :  reference to Bio::Tools::ACE3 object
+ Args    :  acefile     .ace file generated by assembly program
+            ace_verbose verbosity level (0-1).
+            rev_comp    set to true if you want read sequences in their
+                        original form when they have been reverse
+                        complemented by the assembly software.
+
+
+=cut
+
+
+
+sub new {
+    my ($class,@args) = @_;
+    my $self = $class->SUPER::new(@args);
+    my ($attr, $value);
+    while (@args) {
+        $attr = shift @args;
+        $attr = lc $attr;
+        $value = shift @args;
+        $self->{$attr} = $value;
+    }
+    &_parse($self);
+    return $self;
+}
+
+
+=head2 total_number_contigs
+
+ Title   :  total_number_contigs
+ Usage   :  $aceObj->total_number_contigs()
+ Function:  returns the number of contigs in the .ace file.
+ Returns :  integer
+ Args    :  none
+
+=cut
+
+
+sub total_number_contigs {
+    my $self = shift;
+    my @keys = sort keys %{ $self->{contigs} };
+    my $num = @keys;
+    return $num;
+}
+
+
+=head2 get_contigs
+
+ Title   :  get_contigs
+ Usage   :  $aceObj->get_contigs()
+ Function:  returns reference to an array of contig numbers.  These
+            numbers can be used with other accessor methods to get
+            information on the contigs.
+ Returns :  array reference
+ Args    :  none
+
+=cut
+
+
+sub get_contigs {
+    my $self = shift;
+    my @keys = sort keys %{ $self->{contigs} };
+    return \@keys;
+}
+
+
+=head2 consensus
+
+ Title   :  consensus
+ Usage   :  $aceObj->consensus($contig_number)
+ Function:  returns consensus DNA sequence for a contig.  
+            Pads (*) are included.
+ Returns :  string
+ Args    :  contig number
+
+=cut
+
+
+sub consensus {
+    my ($self,$contig) = @_;
+    return $self->{contigs}{$contig}{sequence};
+}
+
+
+=head2 consensus_Seq_Obj
+
+ Title   :  consensus_Seq_Obj
+ Usage   :  $aceObj->consensus_Seq_Obj($contig_number)
+ Function:  returns a Bio::Seq object for the consensus DNA sequence 
+            of a contig.  Pads (*) are removed.
+ Returns :  Bio::Seq object
+ Args    :  contig number
+
+=cut
+
+
+sub consensus_Seq_Obj {
+    my ($self,$contig) = @_;
+    my $seq = $self->{contigs}{$contig}{sequence};
+    $seq =~ s/\*//g;
+    my $seqObj = Bio::Seq->new( -seq => "$seq", -id => "$contig");
+    return $seqObj;
+}
+
+
+=head2 quality
+
+ Title   :  quality
+ Usage   :  $aceObj->quality($contig_number)
+ Function:  returns quality values for a contig. 
+ Returns :  string
+ Args    :  contig number
+
+=cut
+
+
+sub quality {
+    my ($self,$contig) = @_;
+    return $self->{contigs}{$contig}{quality};
+}
+
+
+=head2 contig_length
+
+ Title   :  contig_length
+ Usage   :  $aceObj->contig_length($contig_number)
+ Function:  returns length of the contig consensus sequence.
+ Returns :  integer
+ Args    :  contig number
+
+=cut
+
+sub contig_length {
+    my ($self, $contig) = @_;
+    return $self->{contigs}{$contig}{length};
+}
+
+
+=head2 contig_direction
+
+ Title   :  contig_direction
+ Usage   :  $aceObj->contig_direction($contig_number)
+ Function:  returns the direction contig consensus sequence 
+            (i.e. complemented or uncomplemented).
+ Returns :  string (U for uncomplemented C for complemented)
+ Args    :  contig number
+
+=cut
+
+sub contig_direction {
+    my ($self, $contig) = @_;
+    return $self->{contigs}{$contig}{dir};
+}
+
+
+=head2 contig_average_phred
+
+ Title   :  contig_average_phred
+ Usage   :  $aceObj->contig_average_phred($contig_number)
+ Function:  returns the average phred value for the contig.
+            Calculated from the phred scores for this contig.
+ Returns :  returns float with many digits.
+ Args    :  contig number
+
+=cut
+
+sub contig_average_phred {
+    my ($self, $contig) = @_;
+
+    my $base_qualities = $self->{contigs}{$contig}{quality};
+    my $total_base_quality;
+    my $count=0;
+
+    #Split the string of base qualities into an array
+    my @qualities = split (" ", $base_qualities);
+
+    foreach my $base_quality (@qualities){
+	#High quality edits are converted to quality 99, other edits are quality 98.  Both of these can be counted as 90.
+        if($base_quality == 99 || $base_quality == 98){
+	    $base_quality = 90;
+	}
+	$total_base_quality += $base_quality;
+	$count++;
+    }
+    my $average_phred = ($total_base_quality)/($count);
+
+    my $length = @qualities;
+    if ($length == 0){
+	return 0;
+    }
+    return ($average_phred);
+}
+
+
+=head2 contig_error_rate
+
+ Title   :  contig_error_rate
+ Usage   :  $aceObj->contig_error_rate($contig_number)
+ Function:  returns the error rate per 10 kb for the contig.
+            Calculated from the phred scores for this contig.
+ Returns :  returns float with many digits.
+ Args    :  contig number
+
+=cut
+
+sub contig_error_rate {
+    my ($self, $contig) = @_;
+
+    #Get the base qualities as a space seperated string.
+    my $base_qualities = $self->{contigs}{$contig}{quality};
+
+    my $error;
+    my $error_per_10kb;
+    my $count = 0;
+    my $pesum; #Sum of the error probabilities
+
+    #Split the string of base qualities into an array
+    my @qualities = split (" ", $base_qualities);
+
+    foreach my $base_quality (@qualities){
+	#High quality edits are converted to quality 99, other edits are quality 98. Both can be counted as 90.
+        if($base_quality == 99 || $base_quality == 98){
+	    $base_quality = 90;
+	}
+	$count++;
+	my $pe = 10**($base_quality/-10);
+        $pesum += $pe;
+    }
+
+    #Find the length of the contig.
+    my $length = @qualities;
+    if ($length == 0){
+	return (0);
+    }
+    #Number of errors expected per 1 base pair
+    $error = ($pesum)/($length);
+
+    #Number of errors expected per 10 kb
+    $error_per_10kb = ($error)*(10000);
+
+    return ($error_per_10kb);
+}
+
+
+=head2 contig_lowest_score
+
+ Title   :  contig_lowest_score
+ Usage   :  $aceObj->contig_lowest_score($contig_number)
+ Function:  returns the lowest phred score in the contig.
+            Determined from the phred scores for this contig.
+ Returns :  returns int.
+ Args    :  contig number
+
+=cut
+
+sub contig_lowest_score {
+    my ($self, $contig) = @_;
+
+    #Get the base qualities as a space seperated string.
+    my $base_qualities = $self->{contigs}{$contig}{quality};
+
+    my $min_score = 90;
+
+    #Split the string of base qualities into an array
+    my @qualities = split (" ", $base_qualities);
+
+    foreach my $base_quality (@qualities){
+      if($base_quality < $min_score){
+	$min_score = $base_quality;
+      }
+    }
+    return ($min_score);
+}
+
+
+=head2 num_primers
+
+  Title    :  num_primers
+  Usage    :  $aceObj->num_primers($contig_number)
+  Function :  Returns the number of primers designed for the contig.
+  Returns  :  Returns int.
+  Args     :  contig number
+
+=cut
+
+sub num_primers {
+  my ($self, $contig) = @_;
+  my $count;
+  foreach (keys %{$self->{contigs}{$contig}{primers}}) {
+    $count++;
+  }
+  return $count;
+}
+
+
+
+=head2 primer_names_in_contig
+
+  Title    :  primer_names_in_contig
+  Usage    :  $aceObj->primer_names_in_contig($contig_number)
+  Function :  Returns names of all primers designed for the contig (ex)WS0121_N16.1 WS0121_N16.3 WS0121_N16.4
+  Returns  :  Returns an array.
+  Args     :  contig number
+
+=cut
+
+sub primer_names_in_contig {
+  my ($self, $contig) = @_;
+  my @primers;
+  foreach my $primer (sort keys %{$self->{contigs}{$contig}{primers}}) {
+     push @primers, $primer;
+  }  
+  return @primers;
+}
+
+
+
+=head2 primers_in_contig
+
+  Title    :  primers_in_contig
+  Usage    :  $aceObj->primers_in_contig($contig_number)
+  Function :  Returns the array of hash reference which points to a primer hash.  The primer hash has the following fields:
+              (name, start_pos, end_pos, timestamp, sequence, melting_temp, orientation)
+  Returns  :  Returns an array of hash references
+  Args     :  contig number
+
+=cut
+
+sub primers_in_contig {
+  my ($self, $contig) = @_;
+  my @primers;
+  foreach my $primer (sort keys %{$self->{contigs}{$contig}{primers}}) {
+    my $primer_hash_ref = $self->{contigs}{$contig}{primers}{$primer};
+    push @primers, $primer_hash_ref;
+  }
+  return @primers;
+}
+
+
+
+=head2 primer_start_pos
+
+  Title    :  primer_start_pos
+  Usage    :  $aceObj->primer_start_pos($contig_number, $primer_name)
+  Function :  Returns the start position of the primer designed in the contig
+  Returns  :  Returns int.
+  Args     :  contig number, primer name
+
+=cut
+
+sub primer_start_pos {
+  my ($self, $contig, $primer) = @_;
+  return $self->{contigs}{$contig}{primers}{$primer}{start_pos};
+}
+
+
+
+=head2 primer_end_pos
+
+  Title    :  primer_end_pos
+  Usage    :  $aceObj->primer_end_pos($contig_number, $primer_name)
+  Function :  Returns the end position of the primer designed in the contig
+  Returns  :  Returns int.
+  Args     :  contig number, primer name
+
+=cut
+
+sub primer_end_pos {
+  my ($self, $contig, $primer) = @_;
+  return $self->{contigs}{$contig}{primers}{$primer}{end_pos};
+}
+
+
+
+=head2 primer_timestamp
+
+  Title    :  primer_timestamp
+  Usage    :  $aceObj->primer_timestamp($contig_number, $primer_name)
+  Function :  Returns the timestamp of the primer designed in the following format:  yymmdd:hhmmss (ex) 041014:102115
+  Returns  :  Returns a string.
+  Args     :  contig number, primer name
+
+=cut
+
+sub primer_timestamp {
+  my ($self, $contig, $primer) = @_;
+  return $self->{contigs}{$contig}{primers}{$primer}{timestamp};
+}
+
+
+
+=head2 primer_seq
+
+  Title    :  primer_seq
+  Usage    :  $aceObj->primer_seq($contig_number, $primer_name)
+  Function :  Returns the sequence of the primer
+  Returns  :  Returns a string.
+  Args     :  contig number, primer name
+
+=cut
+
+sub primer_seq {
+  my ($self, $contig, $primer) = @_;
+  return $self->{contigs}{$contig}{primers}{$primer}{sequence};
+}
+
+
+
+=head2 primer_melting_temp
+
+  Title    :  primer_melting_temp
+  Usage    :  $aceObj->primer_melting_temp($contig_number, $primer_name)
+  Function :  Returns the melting temperature of the primer calculated by Consed
+  Returns  :  Returns int.
+  Args     :  contig number, primer name
+
+=cut
+
+sub primer_melting_temp {
+  my ($self, $contig, $primer) = @_;
+  return $self->{contigs}{$contig}{primers}{$primer}{melting_temp};
+}
+
+
+
+=head2 primer_orientation
+
+  Title    :  primer_orientation
+  Usage    :  $aceObj->primer_orientation($contig_number, $primer_name)
+  Function :  Returns the orientation i.e. forward or reverse - of the primer designed.  'U' means forward, 'C' means reverse
+  Returns  :  Returns a character.
+  Args     :  contig number, primer name
+
+=cut
+
+sub primer_orientation {
+  my ($self, $contig, $primer) = @_;
+  return $self->{contigs}{$contig}{primers}{$primer}{orientation};
+}
+
+
+=head2 number_reads
+
+ Title   :  number_reads
+ Usage   :  $aceObj->number_read($contig_number)
+ Function:  returns the number of reads in that are part of a contig.
+ Returns :  integer
+ Args    :  contig number
+
+=cut
+
+sub number_reads {
+    my ($self, $contig) = @_;
+    return $self->{contigs}{$contig}{num_members};
+}
+
+
+
+=head2 read_names
+
+ Title   :  read_names
+ Usage   :  $aceObj->read_names($contig_number)
+ Function:  returns list of read sequences for a contig.
+ Returns :  array reference
+ Args    :  contig number
+
+=cut
+
+sub read_names {
+    my ($self,$contig) = @_;
+    return $self->{contigs}{$contig}{reads};
+}
+
+
+
+=head2 subdir
+
+ Title   :  subdir
+ Usage   :  $aceObj->subdir($read_name);
+ Function:  returns the subdirectory code of the current read 
+ Returns :  string
+ Args    :  read_name
+
+=cut
+
+sub subdir {
+    my ($self, $read) = @_;
+    return $self->{reads}{$read}{subdir};
+}
+
+
+
+=head2 read_sequence
+
+ Title   :  read_sequence
+ Usage   :  $aceObj->read_sequence($read)
+ Function:  returns DNA sequence for a read.
+ Returns :  string
+ Args    :  read name
+
+=cut
+
+sub read_sequence {
+    my ($self,$read) = @_;
+    return $self->{reads}{$read}{sequence};
+}
+
+
+=head2 read_Seq_Obj
+
+ Title   :  read_Seq_Obj
+ Usage   :  $aceObj->read_Seq_Obj($read)
+ Function:  returns a Bio::Seq object for the DNA sequence of a read.
+            Pads (*) are removed.
+ Returns :  Bio::Seq object
+ Args    :  read name
+
+=cut
+
+
+sub read_Seq_Obj {
+    my ($self,$read) = @_;
+    my $seq = $self->{reads}{$read}{sequence};
+    $seq =~ s/\*//g;
+    my $seqObj = Bio::Seq->new( -seq => "$seq", -id => "$read");
+    return $seqObj;
+}
+
+
+=head2 reads_Seq_Objs
+
+ Title   :  reads_Seq_Objs
+ Usage   :  $aceObj->reads_Seq_Objs($contig)
+ Function:  returns an array reference of Bio::Seq objects the DNA 
+            sequence of all the reads in a contig. Pads (*) are removed.
+ Returns :  array reference of Bio::Seq objects
+ Args    :  contig number
+
+=cut
+
+
+sub reads_Seq_Objs {
+    my ($self,$contig) = @_;
+    my @seqObjs;
+    my $members_ref = $self->read_names($contig);
+    foreach my $member (@$members_ref) {
+	my $seq = $self->{reads}{$member}{sequence};
+	$seq =~ s/\*//g;
+	my $seqObj = Bio::Seq->new( -seq => "$seq", -id => "$member");
+	push @seqObjs, $seqObj;
+    }
+    return \@seqObjs;
+}
+
+
+=head2 read_sequence_length
+
+ Title   :  read_sequence_length
+ Usage   :  $aceObj->read_sequence_length($read)
+ Function:  returns length of the read sequence.
+ Returns :  integer
+ Args    :  read name
+
+=cut
+
+sub read_sequence_length {
+    my ($self,$read) = @_;
+    my $seq = $self->{reads}{$read}{sequence};
+    my $length = length $seq;
+    return $length;
+}
+
+
+=head2 read_direction
+
+ Title   :  read_direction
+ Usage   :  $aceObj->read_direction($read)
+ Function:  returns direction of the read sequence in the contig.
+ Returns :  string ('U' for uncomplemented, 'C' for reverse complemented)
+ Args    :  read name
+
+=cut
+
+sub read_direction {
+    my ($self,$read) = @_;
+    return $self->{reads}{$read}{dir};
+}
+
+
+=head2 read_contig
+
+ Title   :  read_contig
+ Usage   :  $aceObj->read_contig($read)
+ Function:  returns number of the contig that a read sequence is part of.
+ Returns :  integer
+ Args    :  read name
+
+=cut
+
+sub read_contig {
+    my ($self,$read) = @_;
+    return $self->{reads}{$read}{contig};
+}
+
+
+=head2 read_start_consensus
+
+ Title   :  read__start_consensus
+ Usage   :  $aceObj->read_start_consensus($read)
+ Function:  returns the padded start consensus position.
+ Returns :  integer
+ Args    :  read name
+
+=cut
+
+sub read_start_consensus {
+    my ($self,$read) = @_;
+    return $self->{reads}{$read}{cons_start};
+}
+
+
+=head2 read_quality_start
+
+ Title   :  read_quality_start
+ Usage   :  $aceObj->read_quality_start($read)
+ Function:  returns the quality clipping start position for a read.
+ Returns :  integer
+ Args    :  read name
+
+=cut
+
+
+sub read_quality_start {
+    my ($self,$read) = @_;
+    return $self->{reads}{$read}{qual_clip_start};
+}
+
+
+=head2 read_quality_end
+
+ Title   :  read_quality_end
+ Usage   :  $aceObj->read_quality_end($read)
+ Function:  returns the quality clipping end position for a read.
+ Returns :  integer
+ Args    :  read name
+
+=cut
+
+sub read_quality_end {
+    my ($self,$read) = @_;
+    return $self->{reads}{$read}{qual_clip_end};
+}
+
+
+
+=head2 read_align_start
+
+ Title   :  read_align_start
+ Usage   :  $aceObj->read_align_start($read)
+ Function:  returns the align clipping start position for a read.
+ Returns :  integer
+ Args    :  read name
+
+=cut
+
+sub read_align_start {
+    my ($self,$read) = @_;
+    return $self->{reads}{$read}{align_clip_start};
+}
+
+
+
+=head2 read_align_end
+
+ Title   :  read_align_end
+ Usage   :  $aceObj->read_align_end($read)
+ Function:  returns the align clipping end position for a read.
+ Returns :  integer
+ Args    :  read name
+
+=cut
+
+sub read_align_end {
+    my ($self,$read) = @_;
+    return $self->{reads}{$read}{align_clip_end};
+}
+
+
+=head2 all_read_names
+
+ Title   :  all_read_names
+ Usage   :  $aceObj->get_all_reads()
+ Function:  returns list of name of every read in the .ace file.
+ Returns :  array reference
+ Args    :  none
+
+=cut
+
+sub all_read_names {
+    my $self = shift;
+    my @keys = (sort keys %{$self->{reads}});
+    return \@keys;
+}
+
+=head2 total_number_reads
+
+ Title   :  total_number_reads
+ Usage   :  $aceObj->total_number_reads()
+ Function:  returns the number of reads in the .ace file.
+ Returns :  integer
+ Args    :  none
+
+=cut
+
+sub total_number_reads {
+    my $self = shift;
+    my @keys = sort keys %{ $self->{reads} };
+    my $num = @keys;
+    return $num;
+}
+
+
+
+=head2 ace_to_MSA
+
+ Title   :  ace_to_MSA
+ Usage   :  $aceObj->ace_to_MSA($contig_number, 'outfile')
+ Function:  converts the assembly for a contig into a format viewable 
+            in a MSA viewer (e.g. Jalview)
+ Returns :  1 for success
+ Args    :  contig name
+
+=cut
+
+
+sub ace_to_MSA {
+    my ($self, $contig_number, $outfile) = @_;
+    print "Converting info for Contig # $contig_number to MSA format\n" if $self->{verbose};
+    my $contig_seq = $self->{contigs}{$contig_number}{sequence};
+    my $contig_len = length $contig_seq;
+    my $reads = $self->{contigs}{$contig_number}{reads};
+    open (OUT, ">$outfile") || $self->throw("Could not open: $!");
+    print OUT ">Contig$contig_number\t$contig_len\n", "$contig_seq\n";
+    foreach my $read (@$reads) {
+        my $seq = $self->{reads}{$read}{sequence};
+        $seq = uc $seq;
+        my $cons_start = $self->{reads}{$read}{cons_start};
+        my $qual_start = $self->{reads}{$read}{qual_clip_start};
+        my $qual_end = $self->{reads}{$read}{qual_clip_end};
+        my $align_start = $self->{reads}{$read}{align_clip_start};
+        my $align_end = $self->{reads}{$read}{align_clip_end}; 
+        my ($end, $start);
+        if ($qual_start > $align_start) { $start = $qual_start } # find out where sequence should be clipped at start 
+          else { $start = $align_start }
+        if ($qual_end < $align_end) { $end = $qual_end } # find out where sequence should be clipped at end
+          else { $end = $align_end }
+        my $beg_dashes = ($cons_start + $start) - 2; # add this many dashes to beginning of read sequence
+        my $end_dashes = ($contig_len - $beg_dashes) - ($end - $start); # add this many dashes to end
+        my $prefix = "-" x $beg_dashes;
+        my $suffix = "-" x $end_dashes;
+        my $beg_offset = $start - 1; # index starts at 0 for substr
+        my $l_substr = $end - $start;
+        $seq = substr $seq, $beg_offset, $l_substr;
+        $seq = "$prefix$seq$suffix";
+        my $read_len = length $seq;
+        print OUT ">$read\t$read_len\n",
+        "$seq\n";
+    }
+    close OUT;
+    return 1;
+}
+
+=head2 _parse
+
+ Title   :  _parse
+ Usage   :  n/a (internal function)
+ Function:  called by new() to parse Lucy output files
+ Returns :  nothing
+ Args    :  none
+
+=cut
+
+sub _parse {
+  my $self = shift;
+  my ($in_contig, $in_quality, $in_read, $in_primer, $contig_number, $read, $chem_code, $subdir, $contig_number_in_ct, $primer_start_pos, $primer_end_pos, $primer_timestamp); 
+  open (IN, "$self->{acefile}") || $self->throw("Could not open: $!");
+  while (my $line = <IN>) {
+    chomp $line;
+    # if nothing on line, stop gathering sequence/quality/primer info
+    if (!$line) {
+      $in_contig = 0;
+      $in_quality = 0;
+      $in_read = 0;
+      $in_primer = 0;
+    }
+    elsif ($in_contig) {
+      #  $line =~ s/\*//g;
+      $self->{contigs}{$contig_number}{sequence} .= $line;
+    }
+    elsif ($in_quality) {
+      $self->{contigs}{$contig_number}{quality} .= $line;
+    }
+    elsif ($in_read) {
+      #  $line =~ s/\*//g;
+      if ($self->{rev_comp} && $self->{reads}{$read}{dir} =~ /C/) {
+	$line =~ tr/atgcATGC/tacgTACG/;
+	$line = reverse $line;
+	
+	if ($self->{reads}{$read}{sequence}) {  ## in the case of reading the first line below RD, $self->{reads}{$read}{sequence} is not initialized and causes pesky warning messages when executed.
+	  $self->{reads}{$read}{sequence} = $line .  $self->{reads}{$read}{sequence};
+	}
+	else {
+	  $self->{reads}{$read}{sequence} = $line;
+	}
+		
+      }
+      else {
+	$self->{reads}{$read}{sequence} .= $line;
+      }
+    }
+    elsif ($in_primer) {
+      if ($line =~ /^Contig(\d+)\s+oligo\s+consed\s+(\d+)\s+(\d+)\s+(\d+\:\d+)/) {
+	$contig_number_in_ct = $1;
+	$primer_start_pos = $2;
+	$primer_end_pos = $3;
+	$primer_timestamp = $4;
+      }
+      #elsif ($line =~ /^(.+\.\d+)\s+(\S+)\s+(\d+)\s+(\S)/) {
+      elsif ($line =~ /^(\S{2}\d+\_\S\d{2}\.\d+)\s+(\S+)\s+(\d+)\s+(\S)/) {
+	my $primer_name = $1;
+	my $primer_sequence = $2;
+	my $primer_melting_temp = $3;
+	my $primer_orientation = $4;
+	$self->{contigs}{$contig_number_in_ct}{primers}{$primer_name}{name} = $primer_name;
+	$self->{contigs}{$contig_number_in_ct}{primers}{$primer_name}{start_pos} = $primer_start_pos;
+	$self->{contigs}{$contig_number_in_ct}{primers}{$primer_name}{end_pos} = $primer_end_pos;
+	$self->{contigs}{$contig_number_in_ct}{primers}{$primer_name}{timestamp} = $primer_timestamp;
+	$self->{contigs}{$contig_number_in_ct}{primers}{$primer_name}{sequence} = $primer_sequence;
+	$self->{contigs}{$contig_number_in_ct}{primers}{$primer_name}{melting_temp} = $primer_melting_temp;
+	$self->{contigs}{$contig_number_in_ct}{primers}{$primer_name}{orientation} = $primer_orientation;
+      }
+    } 
+    elsif ($line =~ /^BQ/) {
+      $in_quality = 1;
+    }
+    elsif ($line =~ /^CT/) {
+      $in_primer = 1;
+    }
+    elsif ($line =~ /^CO\s+Contig(\d+)\s+(\d+)\s+(\d+)\s+\d+\s+(\w)/) {
+      $contig_number = $1;
+      $self->{contigs}{$contig_number}{length} = $2;
+      $self->{contigs}{$contig_number}{num_members} = $3;
+      $self->{contigs}{$contig_number}{dir} = $4;
+      $in_contig = 1;
+    }
+    elsif ($line =~ /^AF\s+(\S+)\s+(\w)\s+(\S+)/) {
+      push @{ $self->{contigs}{$contig_number}{reads} }, $1;
+      $self->{reads}{$1}{contig} = $contig_number;
+      $self->{reads}{$1}{dir} = $2;
+      $self->{reads}{$1}{cons_start} = $3;
+    }
+    elsif ($line =~ /^RD\s+(\S+)/) {
+      $read = $1;
+      $in_read = 1;
+    }
+    elsif ($line =~ /^QA\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)/) {
+      $self->{reads}{$read}{qual_clip_start} = $1;
+      $self->{reads}{$read}{qual_clip_end} = $2;
+      $self->{reads}{$read}{align_clip_start} = $3;
+      $self->{reads}{$read}{align_clip_end} = $4;
+    }
+    elsif ($line =~ /^DS\s+-\s{1,2}(\w{7,8})\.(\w+)/) {
+      $subdir = "$1\.$2";
+      $self->{reads}{$read}{subdir} = $subdir;
+      $chem_code = $2;
+      $self->{reads}{$read}{chem_code} = $2;
+    }
+  }
+}
+1;
