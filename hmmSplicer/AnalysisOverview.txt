@@ -1,0 +1,117 @@
+combineKnownJunctionBeds.pl
+- This script will takes BED stream and outputs a list of junctions
+- Each unique junction is defined by chr:start-end(strand)
+- The number of transcripts each is observed in is noted
+- The list of transcript IDs associated with each junction is stored
+- The gene IDs these transcripts correspond to is similarly stored
+- Example commands:
+- e.g. cat CCDS.Genes.bed | combineKnownJunctionBeds.pl > CCDS.Genes.junc
+- e.g. cat CCDS.Genes.bed Ensembl.Genes.bed MGC.Genes.bed Refseq.Genes.bed UCSC.Genes.bed Vega.Genes.bed | combineKnownJunctionBeds.pl > ALL_COMBINED.junc
+
+
+createCommands.pl
+- Create commands needed to run the libraries of a project through the splice calling pipeline
+
+hmmSplicerRun.pl
+- Execute an hmmSplicer job on a single lane of data (one job for R1 and one for R2)
+- Run parameters are defined here:
+- /home/malachig/tools/hmmSplicer/hmmSplicer-0.9.0/runHMM.py
+- /home/malachig/tools/hmmSplicer/hmmSplicer-0.9.0/configVals.py
+
+hmmSplicerCheck.pl
+- Check for successful completion of hmmSplicer jobs run on the cluster
+
+mergeJunctionBed.pl
+- Identify all the non-redundant junctions present in each library (i.e.combine all the lane-by-lane results)
+- Produce a BED file and junction list for each library and for all libraries of the project combined together
+- For each junction determine the following
+- The average hmmSplicer score for the junction
+- The merged left and right size of the junction (i.e. the total bases of sequence with read support on each side of the junction)
+- The grand read count for the junction in the library or project
+- Infer the strand of the junction by examining the splice sites
+- The actual sequence of the junction (extracted from the chromosome using the coords identified by hmmSplicer)
+
+createSplignJobs.pl
+- Wrapper that sets up splign jobs for the cluster
+- Check all current splign results and only select those junctions that have not already been analyzed
+- Use as a starting point, a master merge of all junctions across all projects... or a for a single project
+
+splignRun.pl
+- Create a script that processes a fasta file of junctions identified by hmmSplicer using NCBI 'Splign'
+- Create a temp dir
+- Symlink the junction fasta and the genome fasta to this dir
+- Symlink the blast_db genome files to this dir
+- Use formatdb to create a blast_db for the junction fasta
+- Run 'compart' to produce basic alignments of the junctions to the genome
+- e.g. /home/malachig/tools/splign/compart -qdb junctions.fa -sdb all_human.fa > cdna.compartments
+- Run 'splign' on the compart results
+- e.g. /home/malachig/tools/splign/splign -ldsdir /projects/malachig/sequence_databases/hg18_genome/splign -comps /projects/malachig/sequence_databases/hg18_genome/splign/cdna.compartments
+- Parse the output and look for two things:
+- 1.) A matching junction predicted by splign with exactly the same coordinates as the hmmSlicer junction -> Splign validated
+- 2.) The top junction that is NOT that predicted by hmmSplicer (store the coordinates of this alternate and the percent ID)
+- Print out a summary file: junction_id, splign_validated, alternate_splign_junction
+
+mergeSplign.pl
+- Create a single merged, non-redundant file of splign results for each hmmSplicer junction
+- This file will be considered when creating new splign jobs
+- It will also be used by the following annotation script as the source for splign results
+
+annotateObservedJunctions.pl
+- Create a script that determines the following for all observed junctions in a project (or all projects)
+1.) Junctions that can be anchored to a known junction (matching donor OR acceptor) - consider strand here 
+    - If the Donor matches to a gene on the positive strand, the non matching Acceptor should have a higher chromosome coordinate
+    - If the Donor matches to a gene on the negative strand, the non matching Acceptor should have a lower chromosome coordinate
+    - If the Acceptor matches to a gene on the positive strand, the non-matching Donor should have a lower chromosome coordinate
+    - If the Acceptor matches to a gene on the negative strand, the non-matching Donor should have a higher chromosome coordinate
+2.) Junctions that could not be anchored at all.  
+3.) Determine the strand of the junction.  Examine the donor and acceptor.  
+    - If the chromosome sequence of the first two and last two bases corresponds to one of the three donor/acceptor pairs, it is positive strand
+    - If they correspond to the reverse complement, then it is negative strand
+4.) Number of known splice sites skipped
+5.) Transcript IDs of matching transcripts (where both Acceptor and Donor match, or if no match, then the corresponding anchored transcripts)...
+    - CCDS, Ensembl, MGC, Refseq, UCSC, Vega
+6.) Join the splign results generated above onto the junction annotations
+
+summarizeLibraryStats.pl
+- A script that summarizes basic info at the level of library merged BED/junction files
+- Summarize the following:
+1.) Total unique junctions found
+2.) Total junction mapping reads
+3.) Total lanes contributing to the analysis
+4.) Read lengths of each lane
+5.) Observed junctions corresponding to a known junction (matching donor AND acceptor) (same thing for junctions observed more than once)
+6.) Junctions that can be anchored to a known junction (matching donor OR acceptor) - (same thing for junctions observed more than once)
+7.) Junctions that could not be anchored at all.
+8.) Percent of all known junctions detected by one or more reads
+9.) Percent of observed junctions with 2 or more supporting reads that correspond to a known junction
+
+buildJunctionMatrix.pl
+- A script that generates a junction matrix.
+- Each row corresponds to one junction (each correponding to a record in the annotated junctions file, or combination of annotated junctions files)
+- The first column is the junction ID (chromosome coordinates)
+- The rest of the matrix is one column per library
+- The values will be raw read counts
+
+summarizeMatrix.R
+-  Take as input three files: (1) junction expression matrix, (2) library stats summary, (3) library classes (lib_id, lib_name, lib_group, cancer/normal, subtype, source of tissue/cell line)
+
+correlateSNV_vs_Splice.pl
+- If you have access to somatic mutations for all or a subset of libraries, this script will try to identify the subset of these that are splice site mutations
+- Furthermore, it will attempt to correlate these splice site positions with RNA splicing events in corresponding RNA-seq library
+- The results will be classified as gains of alternative junctions and/or loss of canonical junctions
+- The mutation calls should be somatic calls from tumour/normal pairs that were sequenced at the genomic DNA level by whole genome or whole exome sequencing
+- The mutation files should be one per library, named with the library ID or name (e.g. HS0001.somatics.tsv)
+- The mutation positions should be one per line in these files and of the form: X:1010101
+
+correlateSNV_vs_Splice.R
+- This script takes the output files of the previous script and generates SVG images to summarize each mutation / aberrant splicing event identified
+- SVG files (one per splice site mutation) and a ranked list of events will all be dumped to a single directory
+
+summarizeSpliceSiteMutations.pl
+- Once the previous scripts are run this script creates a simple html summary of the results in the form of several ranked tables with links to the SVG images
+
+
+
+
+
+
