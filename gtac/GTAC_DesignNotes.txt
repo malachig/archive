@@ -1,0 +1,207 @@
+GTAC - Genome Target Array Capture
+
+Introduction
+- This folder contains code for the creation of custom microarray for Genome Target Array Capture 
+- This approach is based on the description in two Nature Methods papers (Okou et al 2007; Albert et al 2007) and a Nature Genetics paper (Hodges et al. 2007)
+
+About the region targeted
+- We are going to target chrX:149423603-154913754.  This was the complete region originally identified by linkage analysis
+- This region is slightly larger than that targeted by Tessa, but only slightly.  (She targeted chrX:149360362-154892640)
+
+
+
+STEPS
+
+################################################################################################################
+1.) Extract probe sequences
+- Parse an input file containing the target regions (in this example a single region of the human X chromosome)
+  - Check the format of this file.  Look for overlapping regions
+
+- NOTE: The X chromosome region being targeted by this design is 60.52% masked (RepeatMasker, TRF & DUST)
+
+- First perform a dummy extraction using probes of fixed length to determine the target median Tm
+/home/malachig/svn/gtac/extractProbesFromEnsEMBL.pl  --ensembl_api_version=48  --species=Human  --ensembl_database=homo_sapiens_core_48_36j  --ensembl_server=ensembl01.bcgsc.ca  --ensembl_user=ensembl  --ensembl_password=ensembl  --region_file=/projects/malachig/GTAC_Chip_Design/TargetRegions.txt  --masked_bases_limit=10.0  --overlap=1  --target_tm=67.0  --tm_range=50  --target_length=70  --max_length_variance=0  --max_cycles=180  --probe_dir=/projects/malachig/GTAC_Chip_Design/unfiltered_probes  --outfile=/projects/malachig/GTAC_Chip_Design/unfiltered_probes/regionProbes.txt  --logfile=/projects/malachig/GTAC_Chip_Design/logs/extractProbesFromEnsEMBL_Isothermal_70bp_LOG.txt
+
+- This fixed length extraction attempt yielded a total of 1,469,748 probes
+
+- Now calculate the median Tm of all resulting probes
+/home/malachig/svn/gtac/determineProbeTmStats.pl  --probe_dir=/projects/malachig/GTAC_Chip_Design/unfiltered_probes/  --logfile=/projects/malachig/GTAC_Chip_Design/logs/determineProbeTmStats_70bp_LOG.txt
+The following values apply to the 1469748 probe_tms of: ALL_PROBES
+        Min Tm = 62.384 Max Tm = 90.021 Range = 27.637
+        Mean Tm = 76.8036337351754      Median Tm = 76.983
+
+- For each region, get the sequence to be targeted from EnsEMBL
+- Also get a Repeat/TRF masked version of the sequence
+- Extract probe sequences at the specified intervals (in this example use 1bp intervals)
+  - For each extraction chose the length (within the specified limits) that achieves the target Tm
+  - To determine the target Tm first try running this script and extract probes of fixed length (say 70-mer).  Then calculate the median Tm
+  - Use this median Tm to select probes of 70bp +/- 15bp at each position such that the one closest to the target Tm (that can be synthesized in 179 cycles) is chosen
+
+
+################################################################################################################
+2.) Now perform the actual extraction using the target Tm determined above
+# NOTE: after some experimentation i foudn that a Tm of 77 resulted in bias towards probes at the short end.  Try a Tm of 79 to correct this!!
+/home/malachig/svn/gtac/extractProbesFromEnsEMBL.pl  --ensembl_api_version=48  --species=Human  --ensembl_database=homo_sapiens_core_48_36j  --ensembl_server=ensembl01.bcgsc.ca  --ensembl_user=ensembl  --ensembl_password=ensembl  --region_file=/projects/malachig/GTAC_Chip_Design/TargetRegions.txt  --masked_bases_limit=10.0  --overlap=1  --target_tm=79.0  --tm_range=10  --target_length=70  --max_length_variance=15  --max_cycles=179  --probe_dir=/projects/malachig/GTAC_Chip_Design/probes/unfiltered  --outfile=/projects/malachig/GTAC_Chip_Design/probes/unfiltered/regionProbes.txt  --logfile=/projects/malachig/GTAC_Chip_Design/logs/extractProbesFromEnsEMBL_Isothermal_70bp_v15_LOG.txt
+
+- This isothermal extraction attempt yielded a total of 1,938,076 probes
+
+
+################################################################################################################
+3.) Generate negative control probes
+/home/malachig/svn/gtac/generate_NegativeControlProbes.pl  --target_length=70  --max_length_variance=10  --target_tm=79.0  --tm_range=3.5  --max_cycles=179  --bin_size=1000  --probe_dir=/projects/malachig/GTAC_Chip_Design/probes/unfiltered/  --outfile=/projects/malachig/GTAC_Chip_Design/probes/unfiltered/negativeControlProbes.txt  --logfile=/projects/malachig/GTAC_Chip_Design/logs/generate_NegativeControlProbes_LOG.txt
+
+- Now calculate the median Tm of all resulting probes
+/home/malachig/svn/gtac/determineProbeTmStats.pl  --probe_dir=/projects/malachig/GTAC_Chip_Design/probes/unfiltered/  --logfile=/projects/malachig/GTAC_Chip_Design/logs/determineProbeTmStats_isothermal_70bp_LOG.txt
+
+The following values apply to the 1938076 probe_tms of: regionProbes.txt
+        Min Tm = 69.000 Max Tm = 88.514 Range = 19.514
+        Mean Tm = 76.2972547160157      Median Tm = 77.014
+
+The following values apply to the 1491000 probe_tms of: negativeControlProbes.txt
+        Min Tm = 75.500 Max Tm = 82.500 Range = 7
+        Mean Tm = 78.9998642407813      Median Tm = 79
+
+
+
+################################################################################################################
+4.) Test for low complexity regions
+- Since the masked sequence used during probe extraction was masked with mdust as well at TRF and repeat masker, this step is not neccessary
+
+
+################################################################################################################
+5.) Test for probe hairpin and dimerization folding potential
+/home/malachig/svn/gtac/createPairFoldBatch.pl  --master_probe_file=/projects/malachig/GTAC_Chip_Design/probes/unfiltered/regionProbes.txt  --expected_probe_count=1938076  --pairfold_dir=/home/malachig/AlternativeSplicing/tools/MultiFold/MultiFold_64/MultiRNAFold-1.8_FILE/  --folding_bin=/home/malachig/svn/gtac/get_SimFold-PairFoldScores.pl   --temp_dir=/projects/malachig/GTAC_Chip_Design/fold/region  --batch_file=/projects/malachig/GTAC_Chip_Design/batch_scripts/pairfold_Region.sh  --repair=no  --logfile=/projects/malachig/GTAC_Chip_Design/logs/createPairFoldBatch_Region_LOG.txt
+- Submit job to cluster
+
+/home/malachig/svn/gtac/joinProbeFiles.pl  --source_dir=/projects/malachig/GTAC_Chip_Design/fold/region/results/  --probes_expected=1938076  --master_probe_file=/projects/malachig/GTAC_Chip_Design/probes/unfiltered/regionProbes.txt  --output_file=/projects/malachig/GTAC_Chip_Design/probes/unfiltered/regionProbes_fold.txt
+
+
+/home/malachig/svn/gtac/createPairFoldBatch.pl  --master_probe_file=/projects/malachig/GTAC_Chip_Design/probes/unfiltered/negativeControlProbes.txt  --expected_probe_count=1491000  --pairfold_dir=/home/malachig/AlternativeSplicing/tools/MultiFold/MultiFold_64/MultiRNAFold-1.8_FILE/  --folding_bin=/home/malachig/svn/gtac/get_SimFold-PairFoldScores.pl   --temp_dir=/projects/malachig/GTAC_Chip_Design/fold/nc  --batch_file=/projects/malachig/GTAC_Chip_Design/batch_scripts/pairfold_NC.sh  --repair=no  --logfile=/projects/malachig/GTAC_Chip_Design/logs/createPairFoldBatch_NC_LOG.txt
+- Submit job to cluster
+
+/home/malachig/svn/gtac/joinProbeFiles.pl  --source_dir=/projects/malachig/GTAC_Chip_Design/fold/nc/results/  --probes_expected=1491000  --master_probe_file=/projects/malachig/GTAC_Chip_Design/probes/unfiltered/negativeControlProbes.txt  --output_file=/projects/malachig/GTAC_Chip_Design/probes/unfiltered/negativeControlProbes_fold.txt
+
+
+
+################################################################################################################
+6.) Test probe specificity against the whole genome
+/home/malachig/svn/gtac/blastProbesVersus_Database.pl  --database=na  --server=na  --user=na  --password=na  --db_type=genomic  --master_probe_file=/projects/malachig/GTAC_Chip_Design/probes/unfiltered/regionProbes.txt  --blast_bin=/home/pubseq/BioSw/BLAST2/blast2.2.15_x64/bin/blastall   --blast_database=/projects/malachig/blast_databases/hg18_genome_blastdb/hg18_genome  --word_size=20  --temp_dir=/projects/malachig/GTAC_Chip_Design/specificity/  --job_name=genomic_vs_RegionProbes  --batch_dir=/projects/malachig/GTAC_Chip_Design/batch_scripts/specificity/  --probe_parse_bin=/home/malachig/svn/gtac/testProbeSpecificity_Genomic.pl  --logfile=/projects/malachig/GTAC_Chip_Design/logs/blastProbesVersus_genome_RegionProbes_LOG.txt
+- Submit blast and specificity testing jobs to cluster
+
+/home/malachig/svn/gtac/joinProbeFiles.pl  --source_dir=/projects/malachig/GTAC_Chip_Design/specificity/genomic_vs_RegionProbes/parsed_results/  --probes_expected=1938076  --master_probe_file=/projects/malachig/GTAC_Chip_Design/probes/unfiltered/regionProbes.txt  --output_file=/projects/malachig/GTAC_Chip_Design/probes/unfiltered/regionProbes_spec.txt
+
+
+/home/malachig/svn/gtac/blastProbesVersus_Database.pl  --database=na  --server=na  --user=na  --password=na  --db_type=genomic  --master_probe_file=/projects/malachig/GTAC_Chip_Design/probes/unfiltered/negativeControlProbes.txt  --blast_bin=/home/pubseq/BioSw/BLAST2/blast2.2.15_x64/bin/blastall   --blast_database=/projects/malachig/blast_databases/hg18_genome_blastdb/hg18_genome  --word_size=20  --temp_dir=/projects/malachig/GTAC_Chip_Design/specificity/  --job_name=genomic_vs_NCProbes  --batch_dir=/projects/malachig/GTAC_Chip_Design/batch_scripts/specificity/  --probe_parse_bin=/home/malachig/svn/gtac/testProbeSpecificity_Genomic.pl  --logfile=/projects/malachig/GTAC_Chip_Design/logs/blastProbesVersus_genome_NCProbes_LOG.txt
+- Submit blast and specificity testing jobs to cluster
+
+/home/malachig/svn/gtac/joinProbeFiles.pl  --source_dir=/projects/malachig/GTAC_Chip_Design/specificity/genomic_vs_NCProbes/parsed_results/  --probes_expected=1491000  --master_probe_file=/projects/malachig/GTAC_Chip_Design/probes/unfiltered/negativeControlProbes.txt  --output_file=/projects/malachig/GTAC_Chip_Design/probes/unfiltered/negativeControlProbes_spec.txt
+
+
+################################################################################################################
+7.) Screen for similarity in all probes to the Solexa linker sequences.  Use BLAST to identify similarity to these sequences
+- Solexa linker sequences provided by Trevor (from YJ).
+
+/home/malachig/svn/gtac/blastProbesVersus_Database.pl  --database=na  --server=na  --user=na  --password=na  --db_type=linker  --master_probe_file=/projects/malachig/GTAC_Chip_Design/probes/unfiltered/regionProbes.txt  --blast_bin=/home/pubseq/BioSw/BLAST2/blast2.2.15_x64/bin/blastall  --blast_database=/projects/malachig/blast_databases/solexa_linkers/SolexaLinkers  --word_size=11  --temp_dir=/projects/malachig/GTAC_Chip_Design/specificity/  --job_name=linker_vs_Region  --batch_dir=/projects/malachig/GTAC_Chip_Design/batch_scripts/specificity/  --probe_parse_bin=/home/malachig/svn/gtac/testProbeSpecificity_Negative.pl  --logfile=/projects/malachig/GTAC_Chip_Design/logs/blastProbesVersus_linker_Region_LOG.txt
+- Submit blast and specificity testing jobs to cluster
+
+/home/malachig/svn/gtac/joinProbeFiles.pl  --source_dir=/projects/malachig/GTAC_Chip_Design/specificity/linker_vs_Region/parsed_results/  --probes_expected=1938076  --master_probe_file=/projects/malachig/GTAC_Chip_Design/probes/unfiltered/regionProbes.txt  --output_file=/projects/malachig/GTAC_Chip_Design/probes/unfiltered/regionProbes_linker.txt
+
+
+/home/malachig/svn/gtac/blastProbesVersus_Database.pl  --database=na  --server=na  --user=na  --password=na  --db_type=linker  --master_probe_file=/projects/malachig/GTAC_Chip_Design/probes/unfiltered/negativeControlProbes.txt  --blast_bin=/home/pubseq/BioSw/BLAST2/blast2.2.15_x64/bin/blastall  --blast_database=/projects/malachig/blast_databases/solexa_linkers/SolexaLinkers  --word_size=11  --temp_dir=/projects/malachig/GTAC_Chip_Design/specificity/  --job_name=linker_vs_NC  --batch_dir=/projects/malachig/GTAC_Chip_Design/batch_scripts/specificity/  --probe_parse_bin=/home/malachig/svn/gtac/testProbeSpecificity_Negative.pl  --logfile=/projects/malachig/GTAC_Chip_Design/logs/blastProbesVersus_linker_NC_LOG.txt
+- Submit blast and specificity testing jobs to cluster
+
+/home/malachig/svn/gtac/joinProbeFiles.pl  --source_dir=/projects/malachig/GTAC_Chip_Design/specificity/linker_vs_NC/parsed_results/  --probes_expected=1491000  --master_probe_file=/projects/malachig/GTAC_Chip_Design/probes/unfiltered/negativeControlProbes.txt  --output_file=/projects/malachig/GTAC_Chip_Design/probes/unfiltered/negativeControlProbes_linker.txt  
+
+
+################################################################################################################
+8.) Summarize probe scores stats BEFORE filtering
+
+/home/malachig/svn/gtac/getProbeStats.pl  --r_bin=/home/malachig/R64/R-2.5.1/bin/R  --probe_dir=/projects/malachig/GTAC_Chip_Design/probes/unfiltered/  --temp_dir=/projects/malachig/GTAC_Chip_Design/stats/  --results_dir=/projects/malachig/GTAC_Chip_Design/stats/unfiltered_probes/  --logfile=/projects/malachig/GTAC_Chip_Design/logs/getProbeStats_unfiltered_LOG.txt
+
+- NOTE1: It seems like there is a bias towards probes of 55 bp length (min allowed).  
+  - This likely occurs in GC rich regions where the length is being shortened in an attempt to achieve the optimal Tm
+- NOTE2: It also seems like there is a bias towards probes which require 180 cycles
+  - This occurs in AT rich regions where the length is being increased in an attempt to achieve the optimal Tm
+
+
+
+################################################################################################################
+9.) Identify exons and/or conserved regions within the Target Genomic regions
+  - In this case there is only one large genomic region being targeted 
+  - Focus on the exons to start with and see how it goes
+  - Compile a list of non-redundant exons from within this region
+  - Go through all exons identified and ensure the minimum size specified by the user is observed.  If not, increase the size
+  - Collapse overlapping exons (get 'exon content')
+  - Write the resulting list out to file
+
+/home/malachig/svn/gtac/getExonRegionsFromTargetRegions.pl  --region_file=/projects/malachig/GTAC_Chip_Design/TargetRegions.txt  --database=ALEXA_hs_48_36j  --server=jango.bcgsc.ca  --user=malachig  --password=gEEnom$  --min_exon_region_size=250  --output_file=/projects/malachig/GTAC_Chip_Design/TargetExonRegions.txt  --log_file=/projects/malachig/GTAC_Chip_Design/logs/getExonRegionsFromTargetRegions_LOG.txt
+
+NOTE: It is possible that overlap between exons will exist in the resulting exon if:
+      - These exons come from genes on opposite strands in the same region
+      - If the exons were close together and small, when their coordinates are expanded to the min size specified
+      - If two genes both have exons defined in the same region on the same strand (not common)
+- Probes will be arbitrarily assigned to one of these regions and not selected twice.  In some cases this will result in increased coverage of the surrounding region
+
+
+
+################################################################################################################
+10.) Map all probes to the target exon regions identified in the previous step.  Store this information in an updated probe file
+
+/home/malachig/svn/gtac/mapProbesToTargetExonRegions.pl  --target_regions=/projects/malachig/GTAC_Chip_Design/TargetExonRegions.txt  --region_probes=/projects/malachig/GTAC_Chip_Design/probes/unfiltered/regionProbes.txt  --out_file=/projects/malachig/GTAC_Chip_Design/probes/unfiltered/regionProbes_mapped.txt  --log_file=/projects/malachig/GTAC_Chip_Design/logs/mapProbesToTargetExonRegions_LOG.txt
+
+
+################################################################################################################
+11.) Filter probes
+
+- Make sure to summarize the number of probes that successfully hit the region they were extracted from.  
+- If this is not close 100% there may have been a problem during the blasts
+
+- Pass or fail probes based on the following criteria:
+  - Tm outside of accepted range (dont worry about this too much)
+  - More than one target hit (does not hits its target genomic region cleanly) - multiple hits overlaping the target region rather than a single one
+  - Poor specificity relative to the rest of the genome 
+    - experiment with the scores gathered (largest non-target hit length, # hits larger than 50% or 75% of probe length, etc.)
+  - Any similarity at all to the Solexa linker sequences (determined by BLAST with a wordsize of 11)
+  - Too many repeat masked bases (already pre-filtered to remove those with 10% of length or greater - keep the same)
+  - Extreme simfold (hairpin folding) or pairfold scores (self-self annealing)
+  - Too many cycles required to synthesize by NimbleGen (already prefiltered to a max of 179 - keep the same)
+
+/home/malachig/svn/gtac/filterProbes.pl  --infile=/projects/malachig/GTAC_Chip_Design/probes/unfiltered/regionProbes.txt --target_length=70  --target_tm=79.0  --tm_range=10  --masked_percent_limit=10.0  --simfold_score_limit=-13.0  --pairfold_score_limit=-31.0  --complexity_region_percent_limit=10.0  --genomic_50percent_hits_limit=5  --genomic_75percent_hits_limit=5  --genomic_hit_percent_limit=125.0  --linker_hit_percent_limit=0.0  --nimblegen_cycles_limit=180  --probeset_size=384000  --outfile=/projects/malachig/GTAC_Chip_Design/probes/filtered/regionProbes_filtered.txt  --logfile=/projects/malachig/GTAC_Chip_Design/logs/filter_RegionProbes_LOG.txt  --verbose=no
+
+#If we allow X or more non-specific hits of 50% probe length, Y fail:
+#0 hits	     22.14% fail   (allow unique regions only)
+#1 hits	     10.72% fail       (allow duplicated and unique regions only)
+#2 hits	     5.13% fail	       (allow triplicated, duplicated, and unique regions only)
+#3 hits	     4.03% fail	       (allow quadruplicated regions ...)
+#4 hits	     2.98% fail	       (quintuplicated regions)
+#5 hits	     2.32% fail	       (...)
+
+
+/home/malachig/svn/gtac/filterProbes.pl  --infile=/projects/malachig/GTAC_Chip_Design/probes/unfiltered/negativeControlProbes.txt --target_length=70  --target_tm=79.0  --tm_range=10  --masked_percent_limit=10.0  --simfold_score_limit=-13.0  --pairfold_score_limit=-31.0  --complexity_region_percent_limit=10.0  --genomic_50percent_hits_limit=0.0  --genomic_75percent_hits_limit=0.0  --genomic_hit_percent_limit=0.0  --linker_hit_percent_limit=0.0  --nimblegen_cycles_limit=180  --probeset_size=10  --outfile=/projects/malachig/GTAC_Chip_Design/probes/filtered/negativeControlProbes_filtered.txt  --logfile=/projects/malachig/GTAC_Chip_Design/logs/filter_NCProbes_LOG.txt  --verbose=no
+
+#NOTE: These filtering parameters may still need to be adjusted further
+
+
+################################################################################################################
+12.) Summarize probe scores stats AFTER filtering
+
+/home/malachig/svn/gtac/getProbeStats.pl  --r_bin=/home/malachig/R64/R-2.5.1/bin/R  --probe_dir=/projects/malachig/GTAC_Chip_Design/probes/filtered/  --temp_dir=/projects/malachig/GTAC_Chip_Design/stats/  --results_dir=/projects/malachig/GTAC_Chip_Design/stats/filtered_probes/  --logfile=/projects/malachig/GTAC_Chip_Design/logs/getProbeStats_filtered_LOG.txt
+
+
+################################################################################################################
+13.) Probe selection.  Go through all the probes that pass quality tests and select probes to fill a 385k array.
+    - Also create custom ucsc tracks to display the targeted regions and probe positions 
+    - Bias selection towards those probes that overlap with exons?
+    - Once all probes overlapping exons are selected, bias selection towards conserved regions
+    - Create a seperate design in which probes are selected to uniformly cover the target region regardless of exons or conserved regions
+
+
+/home/malachig/svn/gtac/createDesignSubmission.pl  --target_regions=/projects/malachig/GTAC_Chip_Design/TargetExonRegions.txt  --xmr_pcr_regions=/projects/malachig/GTAC_Chip_Design/XMR_Amplicons.bed  --region_probes=/projects/malachig/GTAC_Chip_Design/probes/filtered/regionProbes_filtered.txt  --nc_probes=/projects/malachig/GTAC_Chip_Design/probes/filtered/negativeControlProbes_filtered.txt  --array_capacity=385000  --min_nc_probes=1000  --selected_probes_dir=/projects/malachig/GTAC_Chip_Design/probes/selected/  --design_name=GTAC_V1_385k_hg18  --ucsc_dir=/home/malachig/www/public/htdocs/GTAC_Chip_Design/GTAC_V1_385k_hg18/  --web_path=http://www.bcgsc.ca/people/malachig/htdocs/GTAC_Chip_Design/GTAC_V1_385k_hg18/
+
+
+################################################################################################################
+14.) Summarize probe scores stats after selection
+
+/home/malachig/svn/gtac/getProbeStats.pl  --r_bin=/home/malachig/R64/R-2.5.1/bin/R  --probe_dir=/projects/malachig/GTAC_Chip_Design/probes/selected/  --temp_dir=/projects/malachig/GTAC_Chip_Design/stats/  --results_dir=/projects/malachig/GTAC_Chip_Design/stats/selected_probes/  --logfile=/projects/malachig/GTAC_Chip_Design/logs/getProbeStats_selected_LOG.txt
+ 
+
