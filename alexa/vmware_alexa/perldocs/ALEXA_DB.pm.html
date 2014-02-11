@@ -1,0 +1,1006 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>ALEXA_DB.pm - Basic methods for accessing the Alternative Splicing Expression Analysis Database</title>
+<link rev="made" href="mailto:root@localhost" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<ul>
+
+		<li><a href="#note">NOTE</a></li>
+		<li><a href="#recent_changes">RECENT CHANGES</a></li>
+	</ul>
+
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#examples">EXAMPLES</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+	<li><a href="#bugs">BUGS</a></li>
+	<li><a href="#author">AUTHOR</a></li>
+	<li><a href="#acknowledgements">ACKNOWLEDGEMENTS</a></li>
+	<li><a href="#affliations">AFFLIATIONS</a></li>
+	<li><a href="#subroutines">SUBROUTINES</a></li>
+	<ul>
+
+		<li><a href="#checkmaxpacketsize__"><code>checkMaxPacketSize()</code></a></li>
+		<li><a href="#getallgenes__"><code>getAllGenes()</code></a></li>
+		<li><a href="#getgeneids__"><code>getGeneIds()</code></a></li>
+		<li><a href="#getgeneinfo__"><code>getGeneInfo()</code></a></li>
+		<li><a href="#gettranscripts__"><code>getTranscripts()</code></a></li>
+		<li><a href="#getprobeinfo__"><code>getProbeInfo()</code></a></li>
+		<li><a href="#getgeneprobes__"><code>getGeneProbes()</code></a></li>
+		<li><a href="#getncprobes__"><code>getNcProbes()</code></a></li>
+		<li><a href="#getexons__"><code>getExons()</code></a></li>
+		<li><a href="#getmaskedexons__"><code>getMaskedExons()</code></a></li>
+		<li><a href="#getmaskedgene__"><code>getMaskedGene()</code></a></li>
+		<li><a href="#getgeneterms__"><code>getGeneTerms()</code></a></li>
+		<li><a href="#getexoncontent__"><code>getExonContent()</code></a></li>
+		<li><a href="#getintroncontent__"><code>getIntronContent()</code></a></li>
+		<li><a href="#junctionprobecombinations__"><code>junctionProbeCombinations()</code></a></li>
+		<li><a href="#displaygenestats__"><code>displayGeneStats()</code></a></li>
+		<li><a href="#convertgenecoordinates__"><code>convertGeneCoordinates()</code></a></li>
+		<li><a href="#convertgenomiccoordinates__"><code>convertGenomicCoordinates()</code></a></li>
+		<li><a href="#relativegeneposition__"><code>relativeGenePosition()</code></a></li>
+		<li><a href="#getmicroarrayprobes__"><code>getMicroarrayProbes()</code></a></li>
+		<li><a href="#selectfilteredset__"><code>selectFilteredSet()</code></a></li>
+	</ul>
+
+</ul>
+<!-- INDEX END -->
+
+<hr />
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>ALEXA_DB.pm - Basic methods for accessing the Alternative Splicing Expression Analysis Database (ALEXA)</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<p>use ALEXA_DB qw(:all);</p>
+<p>
+</p>
+<h2><a name="note">NOTE</a></h2>
+<p>Currently located in '~/Array_design/utilities'</p>
+<p>
+</p>
+<h2><a name="recent_changes">RECENT CHANGES</a></h2>
+<p>Various modifications.  Last modified 21 December 2006</p>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>Generic utility for accessing data in the Alternative Splicing Expression Database Analysis.</p>
+<p>
+</p>
+<hr />
+<h1><a name="examples">EXAMPLES</a></h1>
+<p>use lib './';</p>
+<p>use utilities::ALEXA_DB qw(:all);</p>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p>None</p>
+<p>
+</p>
+<hr />
+<h1><a name="bugs">BUGS</a></h1>
+<p>Contact author via email</p>
+<p>
+</p>
+<hr />
+<h1><a name="author">AUTHOR</a></h1>
+<p>Written by Malachi Griffith (<a href="mailto:malachig@bcgsc.ca">malachig@bcgsc.ca</a>)</p>
+<p>
+</p>
+<hr />
+<h1><a name="acknowledgements">ACKNOWLEDGEMENTS</a></h1>
+<p>University of British Columbia Graduate Studies</p>
+<p>Michael Smith Foundation for Health Research</p>
+<p>Natural Sciences and Engineering Research Council</p>
+<p>Genome British Columbia</p>
+<p>
+</p>
+<hr />
+<h1><a name="affliations">AFFLIATIONS</a></h1>
+<p>Malachi Griffith is supervised by Marco A. Marra</p>
+<p>Genome Sciences Centre, BC Cancer Research Centre, BC Cancer Agency, UBC Faculty of Medicine - Medical Genetics</p>
+<p>
+</p>
+<hr />
+<h1><a name="subroutines">SUBROUTINES</a></h1>
+<p>
+</p>
+<h2><a name="checkmaxpacketsize__"><code>checkMaxPacketSize()</code></a></h2>
+<dl>
+<dt><strong><a name="item_function_3a">Function:</a></strong><br />
+</dt>
+<dd>
+Check the database max_allowed_packet variable to ensure that large gene entries will work
+</dd>
+<p></p>
+<dt><strong><a name="item_return_3a">Return:</a></strong><br />
+</dt>
+<dd>
+N/A - Will exit if packet size is not sufficient
+</dd>
+<p></p>
+<dt><strong><a name="item_args_3a">Args:</a></strong><br />
+</dt>
+<dd>
+'-dbh' =&gt; database handle
+</dd>
+<p></p>
+<dt><strong><a name="item_example">Example(s):</a></strong><br />
+</dt>
+<dd>
+&amp;checkMaxPacketSize('-dbh'=&gt;$alexa_dbh);
+</dd>
+<p></p></dl>
+<p>
+</p>
+<h2><a name="getallgenes__"><code>getAllGenes()</code></a></h2>
+<dl>
+<dt><strong>Function:</strong><br />
+</dt>
+<dd>
+Get a complete list of gene IDs from the database (with options)
+</dd>
+<p></p>
+<dt><strong>Return:</strong><br />
+</dt>
+<dd>
+Array of ALEXA gene ids
+</dd>
+<p></p>
+<dt><strong>Args:</strong><br />
+</dt>
+<dd>
+'-dbh' =&gt; database handle
+</dd>
+<dd>
+<p>'-gene_type' =&gt; 'All' or 'Non-pseudo' or 'protein_coding'</p>
+</dd>
+<dd>
+<p>'-evidence' =&gt; 'Known Gene'  Use this to limit your pool of genes to only known genes</p>
+</dd>
+<dd>
+<p>Other valid gene types are: miRNA, miRNA_pseudogene, misc_RNA, misc_RNA_pseudogene, Mt_rRNA, Mt_tRNA, Mt_tRNA_pseudogene, pseudogene, rRNA, rRNA_pseudogene, scRNA, scRNA_pseudogene, snoRNA, snoRNA_pseudogene, snRNA, snRNA_pseudogene, tRNA_pseudogene</p>
+</dd>
+<p></p>
+<dt><strong>Example(s):</strong><br />
+</dt>
+<dd>
+my @gene_ids = @{&amp;getAllGenes ('-dbh'=&gt;$dbh, '-gene_type'=&gt;'protein_coding', '-evidence'=&gt;``Known Gene'')};
+</dd>
+<p></p></dl>
+<p>
+</p>
+<h2><a name="getgeneids__"><code>getGeneIds()</code></a></h2>
+<dl>
+<dt><strong>Function:</strong><br />
+</dt>
+<dd>
+Get the ALEXA gene id for a particular ensembl gene ID
+</dd>
+<p></p>
+<dt><strong>Return:</strong><br />
+</dt>
+<dd>
+Hash of gene ids (keyed on input gene ID!) - for those actually found in the database
+</dd>
+<p></p>
+<dt><strong>Args:</strong><br />
+</dt>
+<dd>
+'-dbh' =&gt; database handle
+</dd>
+<dd>
+<p>'-ensembl_g_id' =&gt; '$ensembl_g_id'</p>
+</dd>
+<dd>
+<p>'-alexa_id' =&gt; '$alexa_id'</p>
+</dd>
+<p></p>
+<dt><strong>Example(s):</strong><br />
+</dt>
+<dd>
+my %gene_ids = %{&amp;getGeneIds ('-dbh'=&gt;$dbh, '-ensembl_g_ids'=&gt;\@ensembl_g_ids)};
+</dd>
+<dd>
+<p>my %gene_ids = %{&amp;getGeneIds ('-dbh'=&gt;$dbh, '-alexa_ids'=&gt;\@alexa_ids)};</p>
+</dd>
+<p></p></dl>
+<p>
+</p>
+<h2><a name="getgeneinfo__"><code>getGeneInfo()</code></a></h2>
+<dl>
+<dt><strong>Function:</strong><br />
+</dt>
+<dd>
+Get a complete gene object for a particular gene ID
+</dd>
+<p></p>
+<dt><strong>Return:</strong><br />
+</dt>
+<dd>
+Gene object as a hash
+</dd>
+<p></p>
+<dt><strong>Args:</strong><br />
+</dt>
+<dd>
+'-dbh' =&gt; database handle
+</dd>
+<dd>
+<p>'-gene_id' =&gt; '$gene_id'</p>
+</dd>
+<dd>
+<p>'-sequence' =&gt; 1 to include sequence</p>
+</dd>
+<dd>
+<p>'-silent' =&gt; yes (prevent output to standard out)</p>
+</dd>
+<p></p>
+<dt><strong>Example(s):</strong><br />
+</dt>
+<dd>
+my %gene = %{&amp;getGeneInfo ('-dbh'=&gt;$dbh, '-gene_id'=&gt;$gene_id, '-sequence'=&gt;``no'')};
+</dd>
+<dd>
+<p>my %genes = %{&amp;getGeneInfo ('-dbh'=&gt;$dbh, '-gene_ids'=&gt;\@gene_ids,'-sequence'=&gt;``no'')};</p>
+</dd>
+<p></p></dl>
+<p>
+</p>
+<h2><a name="gettranscripts__"><code>getTranscripts()</code></a></h2>
+<dl>
+<dt><strong>Function:</strong><br />
+</dt>
+<dd>
+Get the transcripts and corresponding exons for a particular gene ID
+</dd>
+<p></p>
+<dt><strong>Return:</strong><br />
+</dt>
+<dd>
+Genes object (keyed on genes ids) as a hash reference
+</dd>
+<dd>
+<p>Each gene has a reference to a transcript object which in turn contains a reference to an exon object</p>
+</dd>
+<p></p>
+<dt><strong>Args:</strong><br />
+</dt>
+<dd>
+'-dbh' =&gt; database handle
+</dd>
+<dd>
+<p>'-gene_ids' =&gt; \@gene_ids</p>
+</dd>
+<dd>
+<p>'-sequence' =&gt; ``yes'' or ``no''</p>
+</dd>
+<p></p>
+<dt><strong>Example(s):</strong><br />
+</dt>
+<dd>
+my $gene_transcripts_ref = &amp;getTranscripts('-dbh'=&gt;$dbh, '-gene_ids'=&gt;\@gene_ids, '-sequence'=&gt;``no'');
+</dd>
+<p></p></dl>
+<p>
+</p>
+<h2><a name="getprobeinfo__"><code>getProbeInfo()</code></a></h2>
+<dl>
+<dt><strong>Function:</strong><br />
+</dt>
+<dd>
+Get information for a specific ALEXA probe ID
+</dd>
+<dd>
+<p>Note that each probe has two IDs:</p>
+</dd>
+<dd>
+<p>One which is assured to match that from generated probe files</p>
+</dd>
+<dd>
+<p>The second is an auto-increment ID, which will only match if the probe ID in probe files if ALL probes were imported in order</p>
+</dd>
+<dd>
+<p>If in doubt, use the '-probe_count_id' option</p>
+</dd>
+<p></p>
+<dt><strong>Return:</strong><br />
+</dt>
+<dd>
+Probe object (keyed on various properties) as a hash
+</dd>
+<p></p>
+<dt><strong>Args:</strong><br />
+</dt>
+<dd>
+'-dbh' =&gt; database handle
+</dd>
+<dd>
+<p>'-probe_id' =&gt; '$probe_id'</p>
+</dd>
+<dd>
+<p>'-probe_count_id' =&gt; '$probe_id'</p>
+</dd>
+<p></p>
+<dt><strong>Example(s):</strong><br />
+</dt>
+<dd>
+my %probe = %{&amp;getProbeInfo ('-dbh'=&gt;$dbh, '-probe_id'=&gt;$probe_id)};
+</dd>
+<dd>
+<p>my %probe = %{&amp;getProbeInfo ('-dbh'=&gt;$dbh, '-probe_count_id'=&gt;$probe_id)};</p>
+</dd>
+<dd>
+<p>$probe_pair_id = $probe{probe_pair_id};</p>
+</dd>
+<dd>
+<p>Other possible values: sequence,type,offset,tm,exons_skipped,gene_id,unit1_start,unit1_end,unit2_start,unit2_end</p>
+</dd>
+<dd>
+<p>Note that for negative control probes, all values related to the gene target will be 'na'</p>
+</dd>
+<p></p></dl>
+<p>
+</p>
+<h2><a name="getgeneprobes__"><code>getGeneProbes()</code></a></h2>
+<dl>
+<dt><strong>Function:</strong><br />
+</dt>
+<dd>
+Get information for a specific ALEXA probe ID
+</dd>
+<dd>
+<p>Note that each probe has two IDs:</p>
+</dd>
+<dd>
+<p>One which is assured to match that from generated probe files</p>
+</dd>
+<dd>
+<p>The second is an auto-increment ID, which will only match if the probe ID in probe files if ALL probes were imported in order</p>
+</dd>
+<dd>
+<p>If in doubt, use the '-probe_count_id' option</p>
+</dd>
+<p></p>
+<dt><strong>Return:</strong><br />
+</dt>
+<dd>
+Probe object (keyed on various properties) as a hash
+</dd>
+<p></p>
+<dt><strong>Args:</strong><br />
+</dt>
+<dd>
+'-dbh' =&gt; database handle
+</dd>
+<dd>
+<p>'-gene_ids' =&gt; '\@gene_ids'</p>
+</dd>
+<dd>
+<p>'-silent' =&gt; 'yes' or 'no'</p>
+</dd>
+<p></p>
+<dt><strong>Example(s):</strong><br />
+</dt>
+<dd>
+my %gene_probes = %{&amp;getGeneProbes ('-dbh'=&gt;$dbh, '-gene_ids'=&gt;\@gene_ids, '-filtered'=&gt;``no'', '-silent'=&gt;``yes'')};
+</dd>
+<dd>
+<p>my %gene_probes = %{&amp;getGeneProbes ('-dbh'=&gt;$dbh, '-gene_ids'=&gt;\@gene_ids, '-filtered'=&gt;``yes'', '-filter_set'=&gt;1, '-silent'=&gt;``yes'')};</p>
+</dd>
+<dd>
+<p>my $probes_ref = $gene_probes{$gene_id}{probes};</p>
+</dd>
+<dd>
+<p>Possible values for a particular probe ID: type,offset,tm,exons_skipped,gene_id,unit1_start,unit1_end,unit2_start,unit2_end,mrna_thl,est_thl,$enst_thl</p>
+</dd>
+<dd>
+<p>Note that for negative control probes, all values related to the gene target will be 'na'</p>
+</dd>
+<p></p></dl>
+<p>
+</p>
+<h2><a name="getncprobes__"><code>getNcProbes()</code></a></h2>
+<dl>
+<dt><strong>Function:</strong><br />
+</dt>
+<dd>
+Get all filtered/unfiltered Negative Control probe from an ALEXA DB
+</dd>
+<dd>
+<p>Note that each probe has two IDs:</p>
+</dd>
+<dd>
+<p>One which is assured to match that from generated probe files</p>
+</dd>
+<dd>
+<p>The second is an auto-increment ID, which will only match if the probe ID in probe files if ALL probes were imported in order</p>
+</dd>
+<dd>
+<p>If in doubt, use the '-probe_count_id' option</p>
+</dd>
+<p></p>
+<dt><strong>Return:</strong><br />
+</dt>
+<dd>
+Probe object (keyed on various properties) as a hash
+</dd>
+<p></p>
+<dt><strong>Args:</strong><br />
+</dt>
+<dd>
+'-dbh' =&gt; database handle
+</dd>
+<dd>
+<p>'-filtered' =&gt; yes/no flag</p>
+</dd>
+<p></p>
+<dt><strong>Example(s):</strong><br />
+</dt>
+<dd>
+my %probes = %{&amp;getNcProbes ('-dbh'=&gt;$dbh, '-filtered'=&gt;``yes'', '-filtered_set'=&gt;$filtered_set_id)};
+</dd>
+<dd>
+<p>my %probes = %{&amp;getNcProbes ('-dbh'=&gt;$dbh, '-filtered'=&gt;``no'')};</p>
+</dd>
+<dd>
+<p>Note that for negative control probes, many probe info values will be 'na'</p>
+</dd>
+<p></p></dl>
+<p>
+</p>
+<h2><a name="getexons__"><code>getExons()</code></a></h2>
+<dl>
+<dt><strong>Function:</strong><br />
+</dt>
+<dd>
+Get the exons for a particular gene ID (all exons from all transcripts)
+</dd>
+<dd>
+<p>NOTE: THESE ARE NOT NECCESSARILY UNIQUE!!!  If there are multiple transcripts you will often get duplicate exons with the same coordinates!</p>
+</dd>
+<p></p>
+<dt><strong>Return:</strong><br />
+</dt>
+<dd>
+Exons object (keyed on exon ids or gene_id if multiple genes IDs were supplied) as a hash
+</dd>
+<p></p>
+<dt><strong>Args:</strong><br />
+</dt>
+<dd>
+'-dbh' =&gt; database handle
+</dd>
+<dd>
+<p>'-gene_ids' =&gt; \@gene_ids</p>
+</dd>
+<p></p>
+<dt><strong>Example(s):</strong><br />
+</dt>
+<dd>
+my $gene_exons_ref = &amp;getExons ('-dbh'=&gt;$dbh, '-gene_ids'=&gt;\@gene_ids, '-sequence'=&gt;``no'');
+</dd>
+<p></p></dl>
+<p>
+</p>
+<h2><a name="getmaskedexons__"><code>getMaskedExons()</code></a></h2>
+<dl>
+<dt><strong>Function:</strong><br />
+</dt>
+<dd>
+Get the UNIQUE masked exons for a particular gene ID (all exons from all transcripts)
+</dd>
+<dd>
+<p>Sequence is derived from a repeat masked meta-transcript - Sequences corresponding to repetitive elements are</p>
+</dd>
+<dd>
+<p>replaced with Ns</p>
+</dd>
+<p></p>
+<dt><strong>Return:</strong><br />
+</dt>
+<dd>
+Exons object (keyed on exon ids) as a hash
+</dd>
+<p></p>
+<dt><strong>Args:</strong><br />
+</dt>
+<dd>
+'-dbh' =&gt; database handle
+</dd>
+<dd>
+<p>'-gene_id' =&gt; $gene_id</p>
+</dd>
+<p></p>
+<dt><strong>Example(s):</strong><br />
+</dt>
+<dd>
+my %maskedExons = %{&amp;getMaskedExons ('-dbh'=&gt;$dbh, '-gene_id'=&gt;$gene_id)};
+</dd>
+<p></p></dl>
+<p>
+</p>
+<h2><a name="getmaskedgene__"><code>getMaskedGene()</code></a></h2>
+<dl>
+<dt><strong>Function:</strong><br />
+</dt>
+<dd>
+Get the complete masked gene sequence for a particular gene ID
+</dd>
+<dd>
+<p>Complete gene sequences were masked by RepeatMasker and stored in a seperate table 'MaskedGene' for performance reasons</p>
+</dd>
+<dd>
+<p>Bases that correspond to repetitive elements as defined by a library of repeats are replaced with Ns</p>
+</dd>
+<p></p>
+<dt><strong>Return:</strong><br />
+</dt>
+<dd>
+Gene object (keyed on gene id) as a hash
+</dd>
+<p></p>
+<dt><strong>Args:</strong><br />
+</dt>
+<dd>
+'-dbh' =&gt; database handle
+</dd>
+<dd>
+<p>'-gene_id' =&gt; \@gene_ids</p>
+</dd>
+<p></p>
+<dt><strong>Example(s):</strong><br />
+</dt>
+<dd>
+my %maskedGene = %{&amp;getMaskedGene ('-dbh'=&gt;$dbh, '-gene_ids'=&gt;\@gene_ids)};
+</dd>
+<p></p></dl>
+<p>
+</p>
+<h2><a name="getgeneterms__"><code>getGeneTerms()</code></a></h2>
+<dl>
+<dt><strong>Function:</strong><br />
+</dt>
+<dd>
+Get the associated external IDs associated with a particular gene ID (all GO terms for example)
+</dd>
+<p></p>
+<dt><strong>Return:</strong><br />
+</dt>
+<dd>
+Hash of ALEXA gene IDs, each associated with a hash of external IDs of the type specified
+</dd>
+<p></p>
+<dt><strong><a name="item_note_3a">Note:</a></strong><br />
+</dt>
+<dd>
+This will collapse terms to the gene level and remove duplicates (transcript specific info is lost)
+</dd>
+<p></p>
+<dt><strong>Args:</strong><br />
+</dt>
+<dd>
+'-dbh' =&gt; database handle
+</dd>
+<dd>
+<p>'-gene_ids' =&gt; \@gene_ids</p>
+</dd>
+<dd>
+<p>'-id_type' =&gt; $type</p>
+</dd>
+<dd>
+<p>Example 'id_types' include: CCDS, EMBL, EntrezGene, GO, HUGO, IPI, MIM, PDB, protein_id, Refseq_dna, Refseq_dna_predicted, Refseq_peptide, Refseq_peptide_predicted, UniGene, Uniprot/SPTREMBL, Uniprot/SWISSPROT</p>
+</dd>
+<p></p>
+<dt><strong>Example(s):</strong><br />
+</dt>
+<dd>
+my $gene_ids_ref = &amp;getGeneTerms ('-dbh'=&gt;$dbh, '-gene_ids'=&gt;\@gene_ids, '-id_type'=&gt;$type);
+</dd>
+<p></p></dl>
+<p>
+</p>
+<h2><a name="getexoncontent__"><code>getExonContent()</code></a></h2>
+<dl>
+<dt><strong>Function:</strong><br />
+</dt>
+<dd>
+Get the start/stop positions for the exon content of a gene (all expressed bases from any transcript of a gene)
+</dd>
+<dd>
+<p>Does not neccessarily represent any actual transcript</p>
+</dd>
+<p></p>
+<dt><strong>Return:</strong><br />
+</dt>
+<dd>
+Exon Content object (keyed on expressed region count) as a hash
+</dd>
+<p></p>
+<dt><strong>Args:</strong><br />
+</dt>
+<dd>
+'-dbh' =&gt; database handle
+</dd>
+<dd>
+<p>'-gene_ids' =&gt; \@gene_ids</p>
+</dd>
+<p></p>
+<dt><strong>Example(s):</strong><br />
+</dt>
+<dd>
+my $genes_ref = &amp;getExonContent ('-dbh'=&gt;$dbh, '-gene_ids'=&gt;\@gene_ids);
+</dd>
+<dd>
+<p>my $exonContent_ref = $genes_ref-&gt;{$gene_id}-&gt;{exon_content}; #Get exon content for each gene</p>
+</dd>
+<p></p></dl>
+<p>
+</p>
+<h2><a name="getintroncontent__"><code>getIntronContent()</code></a></h2>
+<dl>
+<dt><strong>Function:</strong><br />
+</dt>
+<dd>
+Get the start/stop positions for the intron content of a gene (all NON-expressed bases from any transcript of a gene)
+</dd>
+<dd>
+<p>Each intron does not neccessarily represent one from a single actual transcript</p>
+</dd>
+<p></p>
+<dt><strong>Return:</strong><br />
+</dt>
+<dd>
+Gene Intron Content object (keyed on expressed region count) as a hash
+</dd>
+<p></p>
+<dt><strong>Args:</strong><br />
+</dt>
+<dd>
+'-dbh' =&gt; database handle
+</dd>
+<dd>
+<p>'-gene_ids' =&gt; \@gene_ids</p>
+</dd>
+<p></p>
+<dt><strong>Example(s):</strong><br />
+</dt>
+<dd>
+my $genes_ref = &amp;getIntronContent ('-dbh'=&gt;$dbh, '-gene_ids'=&gt;\@gene_ids);
+</dd>
+<dd>
+<p>my $intronContent_ref = $genes_ref-&gt;{$gene_id}-&gt;{intron_content}; #Get exon content for each gene</p>
+</dd>
+<p></p></dl>
+<p>
+</p>
+<h2><a name="junctionprobecombinations__"><code>junctionProbeCombinations()</code></a></h2>
+<dl>
+<dt><strong>Function:</strong><br />
+</dt>
+<dd>
+Get the number of theoretically possible valid exon-exon and intron-exon junction probes possible for a particular gene
+</dd>
+<dd>
+<p>Specify the max number of exons to consider in each exon skipping event (say 10 exons or less).</p>
+</dd>
+<dd>
+<p>If '-exon_skip_limit' is not specified, no maximum will be considered and all valid combinations will be counted as theoretical probe combinations</p>
+</dd>
+<p></p>
+<dt><strong>Return:</strong><br />
+</dt>
+<dd>
+Summary object (keyed on gene id) as a hash - Contains number of each type of probe
+</dd>
+<p></p>
+<dt><strong>Args:</strong><br />
+</dt>
+<dd>
+'-dbh' =&gt; database handle
+</dd>
+<dd>
+<p>'-gene_ids' =&gt; \@gene_ids</p>
+</dd>
+<dd>
+<p>'-exon_skip_limit' =&gt; $exon_skip_threshold (say 10 exons)</p>
+</dd>
+<p></p>
+<dt><strong>Example(s):</strong><br />
+</dt>
+<dd>
+my $probe_counts_ref = &amp;junctionProbeCombinations ('-dbh'=&gt;$dbh, '-gene_ids'=&gt;\@gene_ids, '-exon_skip_limit'=&gt;$exon_skip_threshold);
+</dd>
+<dd>
+<p>my $exon_exon = $probe_counts_ref-&gt;{$gene_id}-&gt;{exon_exon};</p>
+</dd>
+<dd>
+<p>my $intron_exon = $probe_counts_ref-&gt;{$gene_id}-&gt;{intron_exon};</p>
+</dd>
+<p></p></dl>
+<p>
+</p>
+<h2><a name="displaygenestats__"><code>displayGeneStats()</code></a></h2>
+<dl>
+<dt><strong>Function:</strong><br />
+</dt>
+<dd>
+Print out a variety of information about a gene and its transcripts, exons, etc.
+</dd>
+<p></p>
+<dt><strong>Return:</strong><br />
+</dt>
+<dd>
+Print results to standard output
+</dd>
+<p></p>
+<dt><strong>Args:</strong><br />
+</dt>
+<dd>
+'-dbh' =&gt; database handle
+</dd>
+<dd>
+<p>'-alexa_id' =&gt; $gene_id</p>
+</dd>
+<dd>
+<p>'-ensembl_id' =&gt; $gene_id</p>
+</dd>
+<p></p>
+<dt><strong>Example(s):</strong><br />
+</dt>
+<dd>
+&amp;displayGeneStats ('-dbh'=&gt;$dbh, '-alexa_id'=&gt;$gene_id);
+</dd>
+<dd>
+<p>&amp;displayGeneStats ('-dbh'=&gt;$dbh, '-ensembl_id'=&gt;$gene_id);</p>
+</dd>
+<p></p></dl>
+<p>
+</p>
+<h2><a name="convertgenecoordinates__"><code>convertGeneCoordinates()</code></a></h2>
+<dl>
+<dt><strong>Function:</strong><br />
+</dt>
+<dd>
+Convert exon, transcript, or gene coordinates that are relative to the gene to chromosome coordinates
+</dd>
+<dd>
+<p>For a given gene ID, start position and end position, return the chromosome number, chromsome start and chromosome end</p>
+</dd>
+<dd>
+<p>Note: Generally, all coordinates in ALEXA objects are relative to the gene (ie. 1 to length of genes genomic sequence)</p>
+</dd>
+<p></p>
+<dt><strong>Return:</strong><br />
+</dt>
+<dd>
+Coordinate object (keyed on gene id) as a hash - Contains chromosome, chromosome start pos, and chromosome end pos
+</dd>
+<p></p>
+<dt><strong>Args:</strong><br />
+</dt>
+<dd>
+'-dbh' =&gt; database handle
+</dd>
+<dd>
+<p>'-gene_id' =&gt; $gene_id</p>
+</dd>
+<dd>
+<p>'-start_pos' =&gt; $start</p>
+</dd>
+<dd>
+<p>'-end_pos' =&gt; $end</p>
+</dd>
+<p></p>
+<dt><strong>Example(s):</strong><br />
+</dt>
+<dd>
+my %coords = %{&amp;convertGeneCoordinates ('-dbh'=&gt;$dbh, '-gene_id'=&gt;$gene_id, '-start_pos'=&gt;$start, '-end_pos'=&gt;$end)};
+</dd>
+<dd>
+<p>my $chr_start = $coords{$gene_id}{chr_start};</p>
+</dd>
+<dd>
+<p>my $chr_end = $coords{$gene_id}{chr_end};</p>
+</dd>
+<dd>
+<p>my $chromsome = $coords{$gene_id}{chr_name};</p>
+</dd>
+<dd>
+<p>my $strand = $coords{$gene_id}{strand};</p>
+</dd>
+<p></p></dl>
+<p>
+</p>
+<h2><a name="convertgenomiccoordinates__"><code>convertGenomicCoordinates()</code></a></h2>
+<dl>
+<dt><strong>Function:</strong><br />
+</dt>
+<dd>
+Convert exon, transcript, or gene coordinates that are relative to the chromosome to gene coordinates
+</dd>
+<dd>
+<p>For a given gene ID, start position and end position, return the chromosome number, gene start and gene end</p>
+</dd>
+<dd>
+<p>Note: Generally, all coordinates in ALEXA objects are already relative to the gene (ie. 1 to length of genes genomic sequence)</p>
+</dd>
+<p></p>
+<dt><strong>Return:</strong><br />
+</dt>
+<dd>
+Coordinate object (keyed on gene id) as a hash - Contains chromosome, gene start pos, and gene end pos
+</dd>
+<p></p>
+<dt><strong>Args:</strong><br />
+</dt>
+<dd>
+'-dbh' =&gt; database handle
+</dd>
+<dd>
+<p>'-gene_id' =&gt; $gene_id</p>
+</dd>
+<dd>
+<p>'-start_pos' =&gt; $start</p>
+</dd>
+<dd>
+<p>'-end_pos' =&gt; $end</p>
+</dd>
+<p></p>
+<dt><strong>Example(s):</strong><br />
+</dt>
+<dd>
+my %coords = %{&amp;convertGenomicCoordinates ('-dbh'=&gt;$dbh, '-gene_id'=&gt;$gene_id, '-start_pos'=&gt;$start, '-end_pos'=&gt;$end)};
+</dd>
+<dd>
+<p>my $gene_start = $coords{$gene_id}{gene_start};</p>
+</dd>
+<dd>
+<p>my $gene_end = $coords{$gene_id}{gene_end};</p>
+</dd>
+<dd>
+<p>my $chromsome = $coords{$gene_id}{chr_name};</p>
+</dd>
+<dd>
+<p>my $strand = $coords{$gene_id}{strand};</p>
+</dd>
+<p></p></dl>
+<p>
+</p>
+<h2><a name="relativegeneposition__"><code>relativeGenePosition()</code></a></h2>
+<dl>
+<dt><strong>Function:</strong><br />
+</dt>
+<dd>
+Given a coordinate position for a particular ALEXA gene, determine the relative position of that coordinate within the gene
+</dd>
+<dd>
+<p>For example, for a coordinate representing the centre of a particular probe which represents a particular exon:</p>
+</dd>
+<dd>
+<p>This function will determine where in the possible transcript of this gene this coordinate is found (distance from 5 prime end say)</p>
+</dd>
+<dd>
+<p>Specifically it determines the amount of exon content (bases) upstream and downstream of the specified position given the known transcripts</p>
+</dd>
+<dd>
+<p>of the specified gene.</p>
+</dd>
+<p></p>
+<dt><strong>Return:</strong><br />
+</dt>
+<dd>
+Coordinate object (keyed on gene id) as a hash - Contains chromosome, chromosome start pos, and chromosome end pos
+</dd>
+<p></p>
+<dt><strong>Args:</strong><br />
+</dt>
+<dd>
+'-dbh' =&gt; database handle
+</dd>
+<dd>
+<p>'-gene_id' =&gt; $gene_id</p>
+</dd>
+<dd>
+<p>'-position' =&gt; $position</p>
+</dd>
+<p></p>
+<dt><strong>Example(s):</strong><br />
+</dt>
+<dd>
+my %gene_pos = %{&amp;relativeGenePosition ('-dbh'=&gt;$dbh, '-gene_id'=&gt;$gene_id, '-position'=&gt;$position)};
+</dd>
+<dd>
+<p>my $distance_from_start = $gene_pos{$gene_id}{dist_5prime};</p>
+</dd>
+<dd>
+<p>my $distance_from_end = $gene_pos{$gene_id}{dist_3prime};</p>
+</dd>
+<dd>
+<p>my $total_expressed_bases = $gene_pos{$gene_id}{total_exon_bases};</p>
+</dd>
+<p></p></dl>
+<p>
+</p>
+<h2><a name="getmicroarrayprobes__"><code>getMicroarrayProbes()</code></a></h2>
+<dl>
+<dt><strong>Function:</strong><br />
+</dt>
+<dd>
+Given a particular microarray design name (ex. 'Druggable_Genome'), return the probe IDs for all probes
+</dd>
+<p></p>
+<dt><strong>Return:</strong><br />
+</dt>
+<dd>
+Probe IDs or Probe Count IDs (which are not neccessarily the same - if in doubt use Probe Count IDs) and associated Gene IDs
+</dd>
+<dd>
+<p>Also a hash (keyed on probe_id) containing probe info such as (unit1 and unit2 start and end positions, probe type, etc.)</p>
+</dd>
+<p></p>
+<dt><strong>Args:</strong><br />
+</dt>
+<dd>
+'-dbh' =&gt; database handle
+</dd>
+<dd>
+<p>'-name' =&gt; $microarray_name</p>
+</dd>
+<dd>
+<p>'-id_type' =&gt; ``probe_count_id'' or ``probe_id'' - Determines what the hash will be keyed on</p>
+</dd>
+<p></p>
+<dt><strong>Example(s):</strong><br />
+</dt>
+<dd>
+my %probe_ids = %{&amp;getMicroarrayProbes ('-dbh'=&gt;$dbh, '-name'=&gt;``Druggable_Genome'', '-id_type'=&gt;``probe_count_id'')};
+</dd>
+<p></p></dl>
+<p>
+</p>
+<h2><a name="selectfilteredset__"><code>selectFilteredSet()</code></a></h2>
+<dl>
+<dt><strong>Function:</strong><br />
+</dt>
+<dd>
+Determines what filtered sets of probes are available in an ALEXA instance and asks the user to select one
+</dd>
+<p></p>
+<dt><strong>Return:</strong><br />
+</dt>
+<dd>
+ALEXA filtered set ID (id from Probe_set table)
+</dd>
+<p></p>
+<dt><strong>Args:</strong><br />
+</dt>
+<dd>
+'-dbh' =&gt; database handle
+</dd>
+<p></p>
+<dt><strong>Example(s):</strong><br />
+</dt>
+<dd>
+my $filtered_set = &amp;selectFilteredSet ('-dbh'=&gt;$dbh);
+</dd>
+<p></p></dl>
+
+</body>
+
+</html>

@@ -1,0 +1,2 @@
+ensembl_g_id_house_mouse	gene_name	percent_identity	homolog_type	GENE
+ENSMUSG00000022814	Umps	88	ortholog_one2one	ENSG00000114491

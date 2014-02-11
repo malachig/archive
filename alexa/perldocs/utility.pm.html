@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>utility.pm - library modules that contains generic utilities</title>
+<link rev="made" href="mailto:root@localhost" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<ul>
+
+		<li><a href="#note">NOTE</a></li>
+		<li><a href="#recent_changes">RECENT CHANGES</a></li>
+	</ul>
+
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#examples">EXAMPLES</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+	<li><a href="#bugs">BUGS</a></li>
+	<li><a href="#author">AUTHOR</a></li>
+	<li><a href="#acknowledgements">ACKNOWLEDGEMENTS</a></li>
+	<li><a href="#affliations">AFFLIATIONS</a></li>
+	<li><a href="#subroutines">SUBROUTINES</a></li>
+	<ul>
+
+		<li><a href="#connectdb">connectDB</a></li>
+		<li><a href="#createnewdir">createNewDir</a></li>
+	</ul>
+
+</ul>
+<!-- INDEX END -->
+
+<hr />
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>utility.pm - library modules that contains generic utilities</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<p>use utility qw(:all);</p>
+<p>
+</p>
+<h2><a name="note">NOTE</a></h2>
+<p>currently located in '~/Array_design/utilities'</p>
+<p>
+</p>
+<h2><a name="recent_changes">RECENT CHANGES</a></h2>
+<p>None.  Last modified 21 December 2006</p>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>Generic utility</p>
+<p>
+</p>
+<hr />
+<h1><a name="examples">EXAMPLES</a></h1>
+<p>use lib './';</p>
+<p>use utilities::utility qw(:all);</p>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p>None</p>
+<p>
+</p>
+<hr />
+<h1><a name="bugs">BUGS</a></h1>
+<p>Contact author via email</p>
+<p>
+</p>
+<hr />
+<h1><a name="author">AUTHOR</a></h1>
+<p>Written by Malachi Griffith (<a href="mailto:malachig@bcgsc.ca">malachig@bcgsc.ca</a>)</p>
+<p>
+</p>
+<hr />
+<h1><a name="acknowledgements">ACKNOWLEDGEMENTS</a></h1>
+<p>University of British Columbia Graduate Studies</p>
+<p>Michael Smith Foundation for Health Research</p>
+<p>Natural Sciences and Engineering Research Council</p>
+<p>Genome British Columbia</p>
+<p>
+</p>
+<hr />
+<h1><a name="affliations">AFFLIATIONS</a></h1>
+<p>Malachi Griffith is supervised by Marco A. Marra</p>
+<p>Genome Sciences Centre, BC Cancer Research Centre, BC Cancer Agency, UBC Faculty of Medicine - Medical Genetics</p>
+<p>
+</p>
+<hr />
+<h1><a name="subroutines">SUBROUTINES</a></h1>
+<p>
+</p>
+<h2><a name="connectdb">connectDB</a></h2>
+<dl>
+<dt><strong><a name="item_function_3a">Function:</a></strong><br />
+</dt>
+<dd>
+Get database connection handler
+</dd>
+<p></p>
+<dt><strong><a name="item_return_3a">Return:</a></strong><br />
+</dt>
+<dd>
+database handle
+</dd>
+<p></p>
+<dt><strong><a name="item_args_3a">Args:</a></strong><br />
+</dt>
+<dd>
+'-database' - mysql database name
+</dd>
+<dd>
+<p>'-server' - mysql host</p>
+</dd>
+<dd>
+<p>'-user' - mysql user name</p>
+</dd>
+<dd>
+<p>'-password' - mysql password</p>
+</dd>
+<p></p>
+<dt><strong><a name="item_example">Example(s):</a></strong><br />
+</dt>
+<dd>
+$dbh = &amp;connectDB('-database'=&gt;'database_name', '-server'=&gt;'server_name', '-user'=&gt;'user_name', '-password'=&gt;'passwd')
+</dd>
+<p></p></dl>
+<p>
+</p>
+<h2><a name="createnewdir">createNewDir</a></h2>
+<dl>
+<dt><strong>Function:</strong><br />
+</dt>
+<dd>
+Create a new directory cleanly in the specified location - Prompt user for confirmation
+</dd>
+<p></p>
+<dt><strong>Return:</strong><br />
+</dt>
+<dd>
+Full path to new directory
+</dd>
+<p></p>
+<dt><strong>Args:</strong><br />
+</dt>
+<dd>
+'-path' - Full path to new directoy
+</dd>
+<dd>
+<p>'-new_dir_name' - Name of new directory</p>
+</dd>
+<p></p>
+<dt><strong>Example(s):</strong><br />
+</dt>
+<dd>
+my $fasta_dir = &amp;createNewDir('-path'=&gt;$temp_dir, '-new_dir_name'=&gt;``ensembl_genes_fasta'');
+</dd>
+<p></p></dl>
+
+</body>
+
+</html>

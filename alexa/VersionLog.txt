@@ -1,0 +1,23 @@
+This version log covers both the ALEXA platform source code as well as the ALEXA Virtual Machine (which contains that code)
+
+#################
+ALEXA Version 1.0
+- Initial external release of code after countless internal beta versions.
+
+#################
+ALEXA Version 1.1
+- Updated RNA folding code to use a modified version of MultiRNAFold_1.7 which processes batches of sequences in a file
+  - This dramatically increases the network and File I/O performance of these tests. 
+- Update EnsEMBL API scripts to work with EnsEMBL v46
+
+
+#################
+ALEXA Version 2.0
+
+- Update EnsEMBL API scripts to work with EnsEMBL v46
+- Masked sequence is now imported directly from EnsEMBL (so this is masked by RepeatMasker, Tandem Repeat Finder, and Dust)
+  - The option of masking with RepeatMasker using a custom library or options is still available but this code was moved to /utilities
+- Updated RNA folding code to use a modified version of MultiRNAFold_1.8 which processes batches of sequences in a file
+  - This dramatically increases the network and File I/O performance of these tests. 
+- Changed EnsEMBL database connections to use the 'Registry' method.  This method is supported for EnsEMBL v.34 or higher
+

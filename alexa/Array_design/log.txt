@@ -1,0 +1,28 @@
+
+User Specified the following options:
+gene_file = test.txt
+target_taxon_id = 10090
+min_percent_id = 50.0
+outfile = out.txt
+logfile = log.txt
+
+
+Parsing the first column of test.txt for EnsEMBL gene Ids
+
+
+Found 1 EnsEMBL gene Ids
+
+
+
+1	Processing: ENSG00000114491.  This gene comes from species: human (Homo sapiens)
+		Homology description: ortholog_one2one	Subtype: Euarchontoglires
+			ID: ENSMUSG00000022814	Name: Umps	Species: house mouse	Taxon: 10090	Percent_identity: 88
+		Found 1 homologs for this gene
+Found a total of 1 homologs for the 1 genes supplied
+
+
+Found 1 genes with at least one homolog and 0 genes without any homologs
+
+
+Printing appended output file to: out.txt
+
