@@ -1,0 +1,43 @@
+#!/bin/bash
+#Written by Malachi Griffith
+#Copyright 2009 Malachi Griffith
+#This file is part of 'ALEXA-Seq'
+#ALEXA-Seq is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+#ALEXA-Seq is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+#You should have received a copy of the GNU General Public License along with ALEXA-Seq (COPYING.txt).  If not, see <http://www.gnu.org/licenses/>.
+
+# This script counts the jobs on the cluster for a user every N seconds
+E_BADARGS=65
+if [ ! -n "$1" ]
+then
+  echo "Usage: `basename $0` [r|all]"
+  exit $E_BADARGS
+fi  
+
+if [ ! -e /opt/sge/bin/lx24-amd64/qstat ]
+then
+  echo "qstat not found - log into cluster head node before using"
+  exit $E_BADARGS
+fi
+
+if [ "$1" == 'r' ];
+then
+  RESULT=$(qstat | perl -ne 'if ($_ =~ /\S+\s+\S+\s+\S+\s+(\S+)\s+r\s+\S+\s+\S+\s+\S+\s+(\S+)/){$users{$1}+=$2;$users{total}+=$2}if(eof){foreach my $user (sort {$users{$a} <=> $users{$b}} keys %users){print "$user=$users{$user}\n"}}')
+fi
+
+if [ "$1" == 'all' ];
+then
+  RESULT=$(qstat | perl -ne 'if ($_ =~ /\S+\s+\S+\s+\S+\s+(\S+)/){$users{$1}++;$users{total}++} if(eof){foreach my $user (sort {$users{$a} <=> $users{$b}} keys %users){print "$user=$users{$user}\n"}}')
+fi
+
+
+DATE=$(date)
+echo Current jobs for jobs $1 at $DATE
+echo $RESULT
+
+
+
+
+

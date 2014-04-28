@@ -1,0 +1,180 @@
+#!/usr/bin/perl -w
+#Written by Malachi Griffith
+#Copyright 2009-2011 Malachi Griffith
+#This file is part of 'ALEXA-Seq'
+#ALEXA-Seq is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+#ALEXA-Seq is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+#You should have received a copy of the GNU General Public License along with ALEXA-Seq (COPYING.txt).  If not, see <http://www.gnu.org/licenses/>.
+
+#This script is used for convenience in an environment without an SGE cluster and mqsub, that instead has LSF and bsub
+#It allows you to submit the GSC style cluster command and converts this to bsub commands for you
+
+#e.g. starting with: mqsub  --file parseTranscripts.sh  --qsub '-l mem_total=7G'  --name pt  --mkdir  --delay 60
+#Submit the appropriate bsub jobs
+
+use strict;
+use Data::Dumper;
+use Getopt::Long;
+use Term::ANSIColor qw(:constants);
+use File::Basename;
+
+my $file = '';
+my $name = '';
+my $mkdir = '';
+my $delay = '';
+my $qsub = '';
+my $queue = '';
+my $max_jobs = '';
+my $ncpus = '';
+
+GetOptions ('file=s'=>\$file, 'name=s'=>\$name, 'mkdir'=>\$mkdir, 'delay=i'=>\$delay, 'qsub=s'=>\$qsub, 'queue=s'=>\$queue, 'max_jobs=i'=>\$max_jobs, 'ncpus=i'=>\$ncpus);
+if ($file && $name){
+  #parameter ok
+}else{
+  print RED, "\nRequired input parameter(s) missing\n\n", RESET;
+  print GREEN, "e.g. mqsub  --file parseTranscripts.sh  --name pt  --mkdir  --queue techd\n\n", RESET;
+  print GREEN, "e.g. mqsub  --file parseTranscripts.sh  --qsub '-l mem_total=7G'  --name pt  --mkdir  --delay 60 --queue techd  --max_jobs=100\n\n", RESET;
+  print GREEN, "e.g. mqsub  --file parseTranscripts.sh  --ncpus=4  --qsub '-l mem_total=7G'  --name pt  --mkdir  --delay 60 --queue techd  --max_jobs=100\n\n", RESET;
+  exit();
+}
+#Make sure the user specified a queue
+unless ($queue && $max_jobs){
+  print RED, "\n\nYou must specify a queue.  e.g.  --queue=techd  --queue=long", RESET;
+  print RED, "\nYou must also specify a max number of concurrent jobs.  e.g.  --max_jobs=100\n\n", RESET;
+  exit();
+}
+
+
+#bsub format - normal memory jobs jobs
+#bsub -i $job_script -oo $job_name.$job_count.out -eo $job_name.$job_count.err -J $job_name 
+
+#bsub format - high memory jobs
+#bsub -i $job_script -oo $job_name.$job_count.out -eo $job_name.$job_count.err -J $job_name -M $hard_cap -R 'select[mem>$job_mem_mb] rusage[mem=$job_mem_mb]'
+#-M [hard_cap] specifies max memory in Kb - go beyond this and the job will be kill
+#-R 'select[mem>$job_mem_mb] rusage[mem=$job_mem_mb]' tells bsub to select a node with at least $job_mem_mb memory available and then to reserve that memory.  Specified in Mb
+
+#Set the dir 
+my $current_path = `pwd`;
+chomp($current_path);
+$current_path .= "/";
+
+my $working_path;
+if ($mkdir){
+  $working_path = "$current_path"."$name/";
+}else{
+  $working_path = "$current_path";
+}
+
+#If the user specified '--mkdir', Make sure the working dir does not already exist
+if ($mkdir && -e $working_path && -d $working_path){
+  print RED, "\n\nDir already exists: $working_path\n\n", RESET;
+  exit();
+}
+
+#Make the dir
+if ($mkdir){
+  mkdir($working_path);
+}
+
+#Keep track of the jobs submitted
+my $job_count = 0;
+
+#Open the input jobs file
+open(JOBS, "$file") || die "\n\nCould not open input file: $file\n\n";
+
+#Move to the working dir
+chdir($working_path);
+
+while(<JOBS>){
+  #Go through each line in the bash file and create a corresponding bjobs command, save this command to $job_count.sh
+  $job_count++;
+  chomp($_);
+
+  #Skip blank lines or comment lines
+  if ($_ =~ /^\#/){
+    next();
+  }
+  unless ($_ =~ /\w+/){
+    next();
+  }
+
+  my $job_name = "$name"."."."$job_count";
+  my $job_file = "$working_path"."$name"."."."$job_count".".sh";
+  my $stdout_file = "$working_path"."$name"."."."$job_count".".stdout";
+  my $stderr_file = "$working_path"."$name"."."."$job_count".".stderr";
+
+  open(OUT, ">$job_file") || die "\n\nCould not open: $job_file for writing\n\n";
+  print OUT "$_";
+  close(OUT);
+
+  #Tailor bjob command according to qsub options specified
+  my $rmod = '';
+  my $mmod = '';
+  if ($qsub =~ /mem\_total\=(\d+)G/){
+    my $mem_gb = $1;                  #Number in Gb
+    my $hard_cap = $mem_gb * 1000000; #Converted to Kb
+    my $job_mem_mb = ($hard_cap/1000);#Converted to Mb
+    $rmod .= " select[mem>$job_mem_mb] rusage[mem=$job_mem_mb] ";
+    $mmod .= " $hard_cap ";
+  }
+
+  my $bjob_cmd = "bsub -q $queue -oo $stdout_file -eo $stderr_file -J $job_name ";
+
+  if ($ncpus){
+    $rmod .= " span[hosts=1] ";
+  }
+  if ($rmod){
+    $bjob_cmd .= " -R '$rmod' ";
+  }
+  if ($mmod){
+    $bjob_cmd .= " -M $mmod ";
+  }
+  if ($ncpus){
+    $bjob_cmd .= " -n $ncpus ";
+  }
+
+  $bjob_cmd .= " 'bash $job_file' ";
+
+  #Now actually submit the job to the cluster:
+  print BLUE, "Submitting: $job_name  -> \n\t$bjob_cmd", RESET;
+
+  #Before submitting the job, check the status of the cluster.  If there are more than $max_jobs for the current user, wait and check again
+  my $wait = 1;
+  while ($wait){
+    my $jobs_submitted = 0;
+    my @result = `bjobs`;
+    chomp(@result);
+    foreach my $result (@result){
+      if ($result =~ /^\d+/){
+        #Check if this job is in the user specified queue (don't count it otherwise)
+        if ($result =~ /$queue/){
+          $jobs_submitted++;
+        }
+      }
+    }
+
+    if ($jobs_submitted >= $max_jobs){
+      #Wait a minute and then try again
+       $| = 1; print YELLOW, ".", RESET; $| = 0;
+      sleep 60;
+    }else{
+      $wait = 0;
+    }
+  }
+  system($bjob_cmd);
+
+  #If the user specified a delay, sleep the specified number of seconds
+  if ($delay){
+    sleep $delay;
+  }
+}
+close(JOBS);
+
+print "\n\n";
+
+exit();
+
+
+

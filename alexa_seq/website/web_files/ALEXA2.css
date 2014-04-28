@@ -1,0 +1,283 @@
+BODY
+{
+    BACKGROUND-COLOR: #FCFBE6;
+    COLOR: #000000;
+    FONT-FAMILY: Tahoma;
+    FONT-SIZE: 11px
+}
+P
+{
+    COLOR: #000000;
+    FONT-FAMILY: Tahoma;
+    FONT-SIZE: 13px;
+    MARGIN-BOTTOM: 4px;
+    MARGIN-TOP: 4px
+}
+
+TABLE.Links
+{
+    MARGIN-LEFT: 12px;
+    BACKGROUND-COLOR:#CCFFCC;
+    BORDER-STYLE: solid;
+    BORDER-WIDTH: thin;
+    BORDER-COLOR: black;
+}
+TABLE.Links2
+{
+    MARGIN-LEFT: 24px;
+    BACKGROUND-COLOR:#CCFFCC;
+    BORDER-STYLE: solid;
+    BORDER-WIDTH: thin;
+    BORDER-COLOR: black;
+}
+TABLE.Data
+{
+    MARGIN-LEFT: 12px;
+    PADDING: 0;
+    BORDER-WIDTH: medium;
+    BORDER-STYLE: solid;
+    BORDER-COLOR: black;
+    BACKGROUND-COLOR:#D6ECF9
+}
+TABLE.Data2
+{
+    MARGIN-LEFT: 24px;
+    PADDING: 0;
+    BORDER-WIDTH: medium;
+    BORDER-STYLE: solid;
+    BORDER-COLOR: black;
+    BACKGROUND-COLOR:#D6ECF9
+}
+TABLE.Data3
+{
+    MARGIN-LEFT: 24px;
+    PADDING: 0;
+    BORDER-WIDTH: thin;
+    BORDER-STYLE: solid;
+    BORDER-COLOR: black;
+    BACKGROUND-COLOR:#D6ECF9
+}
+TABLE.Text
+{
+    MARGIN-LEFT: 12px;
+    PADDING: 0;
+    BORDER-WIDTH: medium;
+    BORDER-STYLE: none;
+}
+TABLE.Text2
+{
+    MARGIN-LEFT: 24px;
+    PADDING: 0;
+    BORDER-WIDTH: medium;
+    BORDER-STYLE: none;
+}
+TD.Color1
+{
+    BACKGROUND-COLOR: #D6ECF9
+}
+TD.Head1
+{
+    COLOR: #000000;
+    FONT-FAMILY: Tahoma;
+    FONT-SIZE: 16px;
+    FONT-WEIGHT:bold;
+    PADDING: 5;
+    TEXT-ALIGN: left;
+    BORDER: black thin solid; 
+}
+TD.Head2
+{
+    COLOR: #000000;
+    FONT-FAMILY: Tahoma;
+    FONT-SIZE: 16px;
+    FONT-WEIGHT:bold;
+    PADDING: 5;
+    PADDING-LEFT: 25;
+    BORDER: black thin solid; 
+}
+TD.Head3
+{
+    COLOR: #000000;
+    FONT-FAMILY: Tahoma;
+    FONT-SIZE: 16px;
+    FONT-WEIGHT:bold;
+    PADDING: 5;
+    TEXT-ALIGN: center;
+    BORDER: black thin solid; 
+}
+TD.Head4
+{
+    COLOR: #000000;
+    FONT-FAMILY: Tahoma;
+    FONT-SIZE: 13px;
+	FONT-WEIGHT:bold;
+    PADDING: 5;
+    TEXT-ALIGN: left;
+    BORDER: black thin solid; 
+}
+TD.Data1
+{
+    COLOR: #000000;
+    FONT-FAMILY: Tahoma;
+    FONT-SIZE: 13px;
+    PADDING: 5;
+    TEXT-ALIGN: left;
+    BORDER: gray thin solid;
+}
+TD.Data2
+{
+    COLOR: #000000;
+    FONT-FAMILY: Tahoma;
+    FONT-SIZE: 13px;
+    PADDING: 5;
+    TEXT-ALIGN: center;
+    BORDER: gray thin solid;
+}
+TD.Data3
+{
+    COLOR: #000000;
+    FONT-FAMILY: Tahoma;
+    FONT-SIZE: 13px;
+    FONT-WEIGHT: bold;
+    PADDING: 5;
+    TEXT-ALIGN: left;
+    BORDER: gray thin solid;
+}
+TD.Data4
+{
+    COLOR: #000000;
+    FONT-FAMILY: Tahoma;
+    FONT-SIZE: 13px;
+    FONT-WEIGHT:bold;
+    PADDING: 5;
+    TEXT-ALIGN: center;
+    BORDER: gray thin solid;
+}
+TD.Data5
+{
+    COLOR: #000000;
+    FONT-FAMILY: Tahoma;
+    FONT-SIZE: 16px;
+    PADDING: 5;
+    TEXT-ALIGN: left;
+    BORDER: none;
+}
+TD.Data6
+{
+    COLOR: #000000;
+    FONT-FAMILY: Tahoma;
+    FONT-SIZE: 16px;
+    FONT-WEIGHT: bold;
+    PADDING: 5;
+    TEXT-ALIGN: left;
+	VERTICAL-ALIGN: top;
+    BORDER: none;
+}
+TD.Data7
+{
+    COLOR: #000000;
+    FONT-FAMILY: Tahoma;
+    FONT-SIZE: 16px;
+    PADDING: 5;
+    TEXT-ALIGN: center;
+    BORDER: none;
+}
+TD.Data8
+{
+    COLOR: #000000;
+    FONT-FAMILY: Tahoma;
+    FONT-SIZE: 16px;
+    FONT-WEIGHT: bold;
+    PADDING: 5;
+    TEXT-ALIGN: center;
+	VERTICAL-ALIGN: center;
+    BORDER: none;
+}
+.GoogleSearchBox
+{
+  WIDTH: 800px;
+}
+.Navigation
+{
+    FONT-FAMILY: Tahoma;
+    FONT-SIZE: 13px;
+    COLOR: gray;
+}
+.Indented12LR
+{
+    MARGIN-LEFT: 12px;
+    MARGIN-RIGHT: 12px;
+    FONT-SIZE: 13px;
+}
+.Indented12LR_spaced
+{
+    MARGIN-LEFT: 12px;
+    MARGIN-RIGHT: 12px;
+    MARGIN-TOP: 5px;
+    MARGIN-BOTTOM: 15px;
+    FONT-SIZE: 13px;
+}
+.Indented12LR_bold
+{
+    MARGIN-LEFT: 12px;
+    MARGIN-RIGHT: 12px;
+    FONT-WEIGHT: bold;
+    FONT-SIZE: 13px;
+}
+.Indented24LR
+{
+    MARGIN-LEFT: 24px;
+    MARGIN-RIGHT: 24px;
+    FONT-SIZE: 13px;
+}
+.Indented24LR_bold
+{
+    MARGIN-LEFT: 24px;
+    MARGIN-RIGHT: 24px;
+    FONT-WEIGHT: bold;
+    FONT-SIZE: 13px;
+}
+.Indented12LR_s16
+{
+    MARGIN-LEFT: 12px;
+    MARGIN-RIGHT: 12px;
+    FONT-SIZE: 16px;
+}
+.Indented12LR_s16_bold
+{
+    MARGIN-LEFT: 12px;
+    MARGIN-RIGHT: 12px;
+    FONT-WEIGHT: bold;
+    FONT-SIZE: 16px;
+}
+.Indented24LR_s16
+{
+    MARGIN-LEFT: 24px;
+    MARGIN-RIGHT: 24px;
+    FONT-SIZE: 16px;
+}
+.Indented24LR_s16_bold
+{
+    MARGIN-LEFT: 24px;
+    MARGIN-RIGHT: 24px;
+    FONT-WEIGHT: bold;
+    FONT-SIZE: 16px;
+}
+
+
+
+.Indented12LR_s19_bold
+{
+    MARGIN-LEFT: 12px;
+    MARGIN-RIGHT: 12px;
+    FONT-WEIGHT: bold;
+    FONT-SIZE: 19px;
+}
+.Pic_bordered {
+    BORDER-COLOR: #000000;
+    BORDER: 2px solid
+}
+.Pic_unbordered {
+    BORDER: 0px solid
+}
+

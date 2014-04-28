@@ -1,0 +1,135 @@
+
+#Generate fasta seq files
+#Strip out reads that have more than one N!
+#Create unique read IDs
+
+#HS1118 - 30UALAAXX_1 - paired 50-mers
+bzcat /archive/analysis2/HS1118/30UALAAXX_1/30UALAAXX_1_1_export.txt.bz2 | perl -ne 'chomp ($_); @line=split("\t",$_); my $n_count = ($line[8] =~ tr/N/N/); unless ($n_count > 5){print ">30UALAAXX_L1_$line[1]_$line[2]_$line[3]_$line[4]_$line[5]_$line[6]_$line[7]\n$line[8]\n"}' > /projects/malachig/solexa/tesa_chrX_analysis/HS1118/30UALAAXX_1_1.fa
+bzcat /archive/analysis2/HS1118/30UALAAXX_1/30UALAAXX_1_2_export.txt.bz2 | perl -ne 'chomp ($_); @line=split("\t",$_); my $n_count = ($line[8] =~ tr/N/N/); $seq = reverse($line[8]); $seq =~ tr/gatcnGATCN/ctagnCTAGN/; unless ($n_count > 5){print ">30UALAAXX_L1_$line[1]_$line[2]_$line[3]_$line[4]_$line[5]_$line[6]_$line[7]\n$seq\n"}' > /projects/malachig/solexa/tesa_chrX_analysis/HS1118/30UALAAXX_1_2.fa
+
+#HS1118 - 30V41AAXX_1 - paired 50-mers
+bzcat /archive/analysis2/HS1118/30V41AAXX_1/30V41AAXX_1_1_export.txt.bz2 | perl -ne 'chomp ($_); @line=split("\t",$_); my $n_count = ($line[8] =~ tr/N/N/); unless ($n_count > 5){print ">30V41AAXX_L1_$line[1]_$line[2]_$line[3]_$line[4]_$line[5]_$line[6]_$line[7]\n$line[8]\n"}' > /projects/malachig/solexa/tesa_chrX_analysis/HS1118/30V41AAXX_1_1.fa
+bzcat /archive/analysis2/HS1118/30V41AAXX_1/30V41AAXX_1_2_export.txt.bz2 | perl -ne 'chomp ($_); @line=split("\t",$_); my $n_count = ($line[8] =~ tr/N/N/); $seq = reverse($line[8]); $seq =~ tr/gatcnGATCN/ctagnCTAGN/; unless ($n_count > 5){print ">30V41AAXX_L1_$line[1]_$line[2]_$line[3]_$line[4]_$line[5]_$line[6]_$line[7]\n$seq\n"}' > /projects/malachig/solexa/tesa_chrX_analysis/HS1118/30V41AAXX_1_2.fa
+
+#HS1223 - 302LNAAXX_6 - single 75-mer
+bzcat /archive/analysis2/HS1223/302LNAAXX_6/302LNAAXX_6_export.txt.bz2 | perl -ne 'chomp ($_); @line=split("\t",$_); my $n_count = ($line[8] =~ tr/N/N/); unless ($n_count > 5){print ">302LNAAXX_L6_$line[1]_$line[2]_$line[3]_$line[4]_$line[5]_$line[6]_$line[7]\n$line[8]\n"}' > /projects/malachig/solexa/tesa_chrX_analysis/HS1223/302LNAAXX_6_1.fa
+
+#HS1223 - 30WK1AAXX_4 - paired 50-mer
+zcat /archive/analysis2/HS1223/30WK1AAXX_4/30WK1AAXX_4_1_export_f1b6.txt.gz | perl -ne 'chomp ($_); @line=split("\t",$_); my $n_count = ($line[8] =~ tr/N/N/); unless ($n_count > 5){print ">30WK1AAXX_L4_$line[1]_$line[2]_$line[3]_$line[4]_$line[5]_$line[6]_$line[7]\n$line[8]\n"}' > /projects/malachig/solexa/tesa_chrX_analysis/HS1223/30WK1AAXX_4_1.fa
+zcat /archive/analysis2/HS1223/30WK1AAXX_4/30WK1AAXX_4_2_export_f1b6.txt.gz | perl -ne 'chomp ($_); @line=split("\t",$_); my $n_count = ($line[8] =~ tr/N/N/); $seq = reverse($line[8]); $seq =~ tr/gatcnGATCN/ctagnCTAGN/; unless ($n_count > 5){print ">30WK1AAXX_L4_$line[1]_$line[2]_$line[3]_$line[4]_$line[5]_$line[6]_$line[7]\n$seq\n"}' > /projects/malachig/solexa/tesa_chrX_analysis/HS1223/30WK1AAXX_4_2.fa
+
+
+#HS1242 - 302LNAAXX_7 - single 75-mer
+bzcat /archive/analysis2/HS1242/302LNAAXX_7/302LNAAXX_7_export.txt.bz2 | perl -ne 'chomp ($_); @line=split("\t",$_); my $n_count = ($line[8] =~ tr/N/N/); unless ($n_count > 5){print ">302LNAAXX_L7_$line[1]_$line[2]_$line[3]_$line[4]_$line[5]_$line[6]_$line[7]\n$line[8]\n"}' > /projects/malachig/solexa/tesa_chrX_analysis/HS1242/302LNAAXX_7_1.fa
+
+#HS1242 - 30WK1AAXX_5 - paired 50-mer
+bzcat /archive/analysis2/HS1242/30WK1AAXX_5/30WK1AAXX_5_1_export.txt.bz2 | perl -ne 'chomp ($_); @line=split("\t",$_); my $n_count = ($line[8] =~ tr/N/N/); unless ($n_count > 5){print ">30WK1AAXX_L5_$line[1]_$line[2]_$line[3]_$line[4]_$line[5]_$line[6]_$line[7]\n$line[8]\n"}' > /projects/malachig/solexa/tesa_chrX_analysis/HS1242/30WK1AAXX_5_1.fa
+bzcat /archive/analysis2/HS1242/30WK1AAXX_5/30WK1AAXX_5_2_export.txt.bz2 | perl -ne 'chomp ($_); @line=split("\t",$_); my $n_count = ($line[8] =~ tr/N/N/); $seq = reverse($line[8]); $seq =~ tr/gatcnGATCN/ctagnCTAGN/; unless ($n_count > 5){print ">30WK1AAXX_L5_$line[1]_$line[2]_$line[3]_$line[4]_$line[5]_$line[6]_$line[7]\n$seq\n"}' > /projects/malachig/solexa/tesa_chrX_analysis/HS1242/30WK1AAXX_5_2.fa
+
+
+#Get the chromosome DNA sequence for this region and create a fasta file with it
+
+#I selected a 103 bp region (i.e. 100 bases + your potentially deleted bases) centred on the size of deletion
+cd /projects/malachig/solexa/tesa_chrX_analysis/HS1118/blastdb
+/home/malachig/svn/collab/getEnsemblChromosomeSegmentData.pl  --ensembl_api_version=54  --connect_type=local  --ensembl_server=ensembl01.bcgsc.ca  --ensembl_user=ensembl  --ensembl_password=ensembl  --species=Human  --segment_file=NSDHL_K_Deletion_Coords_103bp.txt  --fasta_file=NSDHL_K_Deletion_Coords_103bp.fa  --gene_file=NSDHL_K_Deletion_GeneList.txt
+/home/malachig/svn/collab/getEnsemblChromosomeSegmentData.pl  --ensembl_api_version=54  --connect_type=local  --ensembl_server=ensembl01.bcgsc.ca  --ensembl_user=ensembl  --ensembl_password=ensembl  --species=Human  --segment_file=NSDHL_K_Deletion_Coords_153bp.txt  --fasta_file=NSDHL_K_Deletion_Coords_153bp.fa  --gene_file=NSDHL_K_Deletion_GeneList.txt
+
+
+#Make a blastable database out of this segment
+cd /projects/malachig/solexa/tesa_chrX_analysis/blastdb/
+/home/pubseq/BioSw/BLAST2/blast2.2.18_x64/bin/formatdb -i NSDHL_K_Deletion_Coords_103bp.fa -t NSDHL_K_Deletion_Coords_103bp -p F -o T -n NSDHL_K_Deletion_Coords_103bp
+/home/pubseq/BioSw/BLAST2/blast2.2.18_x64/bin/formatdb -i NSDHL_K_Deletion_Coords_153bp.fa -t NSDHL_K_Deletion_Coords_153bp -p F -o T -n NSDHL_K_Deletion_Coords_153bp
+
+
+#Create a 'dummy' sequence to ensure that if a read of size 50 contains your expected deletion it will actually be found!
+/projects/malachig/solexa/tesa_chrX_analysis/HS1118/test_seqs.fa
+
+#Join this sequence with the other fasta file
+cd /projects/malachig/solexa/tesa_chrX_analysis/HS1118/
+cat test_seqs.fa 30UALAAXX_1_1.fa 30UALAAXX_1_2.fa > 30UALAAXX_L1.fa
+cat test_seqs.fa 30V41AAXX_1_1.fa 30V41AAXX_1_2.fa > 30V41AAXX_L1.fa
+
+cd /projects/malachig/solexa/tesa_chrX_analysis/HS1223/
+cat test_seqs.fa 302LNAAXX_6_1.fa > 302LNAAXX_L6.fa
+cat test_seqs.fa 30WK1AAXX_4_1.fa 30WK1AAXX_4_2.fa > 30WK1AAXX_L4.fa
+
+cd /projects/malachig/solexa/tesa_chrX_analysis/HS1242/
+cat test_seqs.fa 302LNAAXX_7_1.fa > 302LNAAXX_L7.fa
+cat test_seqs.fa 30WK1AAXX_5_1.fa 30WK1AAXX_5_1.fa > 30WK1AAXX_L5.fa
+
+
+#Delete individual fasta files
+cd /projects/malachig/solexa/tesa_chrX_analysis/HS1118/
+rm -f 30UALAAXX_1_1.fa 30UALAAXX_1_2.fa 30V41AAXX_1_1.fa 30V41AAXX_1_2.fa
+
+cd /projects/malachig/solexa/tesa_chrX_analysis/HS1223/
+rm -f 302LNAAXX_6_1.fa 30WK1AAXX_4_1.fa 30WK1AAXX_4_2.fa
+
+cd /projects/malachig/solexa/tesa_chrX_analysis/HS1242/
+rm -f 302LNAAXX_7_1.fa 30WK1AAXX_5_1.fa 30WK1AAXX_5_1.fa
+
+
+#Count the sequences
+cd /projects/malachig/solexa/tesa_chrX_analysis/HS1118/
+grep ">" 30UALAAXX_L1.fa | wc -l > 30UALAAXX_L1_ReadCount.txt
+grep ">" 30V41AAXX_L1.fa | wc -l > 30V41AAXX_L1_ReadCount.txt
+
+cd /projects/malachig/solexa/tesa_chrX_analysis/HS1223/
+grep ">" 302LNAAXX_L6.fa | wc -l > 302LNAAXX_L6_ReadCount.txt
+grep ">" 30WK1AAXX_L4.fa | wc -l > 30WK1AAXX_L4_ReadCount.txt
+
+cd /projects/malachig/solexa/tesa_chrX_analysis/HS1242/
+grep ">" 302LNAAXX_L7.fa | wc -l > 302LNAAXX_L7_ReadCount.txt
+grep ">" 30WK1AAXX_L5.fa | wc -l > 30WK1AAXX_L5_ReadCount.txt
+
+#Count the bases
+cd /projects/malachig/solexa/tesa_chrX_analysis/HS1118/
+perl -ne 'if ($_ =~ /^\>/){}else{$c += ($_ =~ tr/[ATCG]/[ATCG]/);} if (eof){print "$c"}' 30UALAAXX_L1.fa > 30UALAAXX_L1_BaseCount.txt
+perl -ne 'if ($_ =~ /^\>/){}else{$c += ($_ =~ tr/[ATCG]/[ATCG]/);} if (eof){print "$c"}' 30V41AAXX_L1.fa > 30V41AAXX_L1_BaseCount.txt
+
+cd /projects/malachig/solexa/tesa_chrX_analysis/HS1223/
+perl -ne 'if ($_ =~ /^\>/){}else{$c += ($_ =~ tr/[ATCG]/[ATCG]/);} if (eof){print "$c"}' 302LNAAXX_L6.fa > 302LNAAXX_L6_BaseCount.txt
+perl -ne 'if ($_ =~ /^\>/){}else{$c += ($_ =~ tr/[ATCG]/[ATCG]/);} if (eof){print "$c"}' 30WK1AAXX_L4.fa > 30WK1AAXX_L4_BaseCount.txt
+
+cd /projects/malachig/solexa/tesa_chrX_analysis/HS1242/
+perl -ne 'if ($_ =~ /^\>/){}else{$c += ($_ =~ tr/[ATCG]/[ATCG]/);} if (eof){print "$c"}' 302LNAAXX_L7.fa > 302LNAAXX_L7_BaseCount.txt
+perl -ne 'if ($_ =~ /^\>/){}else{$c += ($_ =~ tr/[ATCG]/[ATCG]/);} if (eof){print "$c"}' 30WK1AAXX_L5.fa > 30WK1AAXX_L5_BaseCount.txt
+
+
+#Blast fasta seq files against this region
+#Word size of 11
+#Min bit score of 40.0 prevents a million tiny hits from being reported
+#centre_span and target_size option 
+/home/pubseq/BioSw/BLAST2/blast2.2.18_x64/bin/blastall -p blastn -d /projects/malachig/solexa/tesa_chrX_analysis/blastdb/NSDHL_K_Deletion_Coords_103bp -m 8 -F F -W 11 -i /projects/malachig/solexa/tesa_chrX_analysis/HS1118/30UALAAXX_L1.fa | /home/malachig/svn/solexa_analysis/filterBlastStream2.pl  --min_bit_score=40.0  --centre_span=3  --target_size=103 > /projects/malachig/solexa/tesa_chrX_analysis/HS1118/30UALAAXX_L1_DeletionMappedSeqs.txt
+
+/home/pubseq/BioSw/BLAST2/blast2.2.18_x64/bin/blastall -p blastn -d /projects/malachig/solexa/tesa_chrX_analysis/blastdb/NSDHL_K_Deletion_Coords_103bp -m 8 -F F -W 11 -i /projects/malachig/solexa/tesa_chrX_analysis/HS1118/30V41AAXX_L1.fa | /home/malachig/svn/solexa_analysis/filterBlastStream2.pl  --min_bit_score=40.0  --centre_span=3  --target_size=103 > /projects/malachig/solexa/tesa_chrX_analysis/HS1118/30V41AAXX_L1_DeletionMappedSeqs.txt
+
+/home/pubseq/BioSw/BLAST2/blast2.2.18_x64/bin/blastall -p blastn -d /projects/malachig/solexa/tesa_chrX_analysis/blastdb/NSDHL_K_Deletion_Coords_153bp -m 8 -F F -W 11 -i /projects/malachig/solexa/tesa_chrX_analysis/HS1223/302LNAAXX_L6.fa | /home/malachig/svn/solexa_analysis/filterBlastStream2.pl  --min_bit_score=40.0  --centre_span=3  --target_size=153 > /projects/malachig/solexa/tesa_chrX_analysis/HS1223/302LNAAXX_L6_DeletionMappedSeqs.txt
+
+/home/pubseq/BioSw/BLAST2/blast2.2.18_x64/bin/blastall -p blastn -d /projects/malachig/solexa/tesa_chrX_analysis/blastdb/NSDHL_K_Deletion_Coords_103bp -m 8 -F F -W 11 -i /projects/malachig/solexa/tesa_chrX_analysis/HS1223/30WK1AAXX_L4.fa | /home/malachig/svn/solexa_analysis/filterBlastStream2.pl  --min_bit_score=40.0  --centre_span=3  --target_size=103 > /projects/malachig/solexa/tesa_chrX_analysis/HS1223/30WK1AAXX_L4_DeletionMappedSeqs.txt
+
+/home/pubseq/BioSw/BLAST2/blast2.2.18_x64/bin/blastall -p blastn -d /projects/malachig/solexa/tesa_chrX_analysis/blastdb/NSDHL_K_Deletion_Coords_153bp -m 8 -F F -W 11 -i /projects/malachig/solexa/tesa_chrX_analysis/HS1242/302LNAAXX_L7.fa | /home/malachig/svn/solexa_analysis/filterBlastStream2.pl  --min_bit_score=40.0  --centre_span=3  --target_size=153 > /projects/malachig/solexa/tesa_chrX_analysis/HS1242/302LNAAXX_L7_DeletionMappedSeqs.txt
+
+/home/pubseq/BioSw/BLAST2/blast2.2.18_x64/bin/blastall -p blastn -d /projects/malachig/solexa/tesa_chrX_analysis/blastdb/NSDHL_K_Deletion_Coords_103bp -m 8 -F F -W 11 -i /projects/malachig/solexa/tesa_chrX_analysis/HS1242/30WK1AAXX_L5.fa | /home/malachig/svn/solexa_analysis/filterBlastStream2.pl  --min_bit_score=40.0  --centre_span=3  --target_size=103 > /projects/malachig/solexa/tesa_chrX_analysis/HS1242/30WK1AAXX_L5_DeletionMappedSeqs.txt
+
+
+#Grab reads for all the hits identified
+#BLAT reads to genome to confirm their location and non-ambiguiety
+cd /projects/malachig/solexa/tesa_chrX_analysis/HS1118/
+cut -f 1 30UALAAXX_L1_DeletionMappedSeqs.txt | grep -f - -A 1 30UALAAXX_L1.fa > 30UALAAXX_L1_DeletionMappedSeqs.fa
+cut -f 1 30V41AAXX_L1_DeletionMappedSeqs.txt | grep -f - -A 1 30V41AAXX_L1.fa > 30V41AAXX_L1_DeletionMappedSeqs.fa
+
+cd /projects/malachig/solexa/tesa_chrX_analysis/HS1223/
+cut -f 1 302LNAAXX_L6_DeletionMappedSeqs.txt | grep -f - -A 1 302LNAAXX_L6.fa > 302LNAAXX_L6_DeletionMappedSeqs.fa
+cut -f 1 30WK1AAXX_L4_DeletionMappedSeqs.txt | grep -f - -A 1 30WK1AAXX_L4.fa > 30WK1AAXX_L4_DeletionMappedSeqs.fa
+
+cd /projects/malachig/solexa/tesa_chrX_analysis/HS1242/
+cut -f 1 302LNAAXX_L7_DeletionMappedSeqs.txt | grep -f - -A 1 302LNAAXX_L7.fa > 302LNAAXX_L7_DeletionMappedSeqs.fa
+cut -f 1 30WK1AAXX_L5_DeletionMappedSeqs.txt | grep -f - -A 1 30WK1AAXX_L5.fa > 30WK1AAXX_L5_DeletionMappedSeqs.fa
+
+
+#Concatenate all resulting sequences into one fasta file
+cd /projects/malachig/solexa/tesa_chrX_analysis/
+cat */*DeletionMappedSeqs.fa | grep -A 1 "AAXX" > Combined_DeletionMappedSeqs.fa
+/home/pubseq/BioSw/BLAST2/blast2.2.18_x64/bin/blastall -p blastn -d /projects/malachig/solexa/tesa_chrX_analysis/blastdb/NSDHL_K_Deletion_Coords_153bp -F F -W 11 -i Combined_DeletionMappedSeqs.fa | grep -P "Query|\||Sbjct" > Combined_DeletionMappedSeqs_ALIGN.txt
+

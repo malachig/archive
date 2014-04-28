@@ -1,0 +1,115 @@
+
+######################################################################################################################################################
+PIPELINE PROCESS OVERVIEW
+0.) Concatenate *_seq.txt file from /Archive directory to create a combined master raw seq data file
+    #NOTE that the format of these files is as follows:
+    - Lane  Tile X-coord    Y-Coord  Sequence(read1 and read2 pasted for paired reads)
+    - Bases which could not be resolved are represented by a '.'
+
+1.) processRawSolexaReads.pl - make a read file which describes each read and the number of ambiguous and low complexity reads present
+2.) ... create a fasta file for all those reads which pass basic quality criteria
+3.) Create a blast database for all EnsEMBL transcripts
+4.) Divide fasta file into pieces and BLAST against EnsEMBL transcripts using the cluster.
+5.) Run eland on the complete fasta file to map reads directly to Genome (using only first 32 bp of read)
+6.) Get Anthony to generate transcript coverage bias histogram data
+7.) Parse blast results from (4) to 
+    - identify the top hit of each read
+    - determine the position of reads within transcripts
+    - determine the distance between paired reads
+    - identify the chromosome coordinates of each read from their mapped transcript coordinates
+    - etc.
+8.) Cut out selected columns of the summary file and use an R script to generate basic statistics and figures
+9.) Use a Perl script to create a summary of reads at the Gene level and display these in the UCSC genome browser 
+    - e.g. #reads per gene, % coverage of each gene, etc.
+10.) Use a script to summarize putative gene fusion events in the data and display these in the UCSC genome browser 
+
+
+######################################################################################################################################################
+#DAVID HUNSTMAN OVARIAN CANCER READ LOCATIONS
+#Flow Cell ID: 13288AAXX
+#Library ID: HS0327-1
+
+- /archive/solexa1_2/data2/080204_SOLEXA4_0014_13288AAXX/HS03271..L1/Data/C1-74_Firecrest1.9.1_13-02-2008_aldente/Bustard1.9.1_13-02-2008_aldente/*_seq.txt
+- /archive/solexa1_2/data2/080204_SOLEXA4_0014_13288AAXX/HS03271..1.L2/Data/C1-74_Firecrest1.9.1_13-02-2008_aldente/Bustard1.9.1_13-02-2008_aldente/*_seq.txt
+
+
+######################################################################################################################################################
+#HUNTSMAN LIBRARY ANALYSIS COMMAND RECORD - 13288AAXX_Lanes1-2_HS03271
+/home/malachig/svn/solexa_analysis/processRawSolexaReads.pl --input_file=/projects/malachig/solexa/raw_seq_data/13288AAXX_Lanes1-2_HS03271.txt  --read_file=/projects/malachig/solexa/read_records/13288AAXX_Lanes1-2_HS03271_ReadRecords.txt  --mdust_bin=/home/malachig/AlternativeSplicing/tools/dust/mdust/mdust  --temp_dir=/projects/malachig/solexa/temp  --log_file=/projects/malachig/solexa/logs/HS03271/convertSolexaSeqsToFasta_LOG.txt
+Unknown option: fasta_file
+
+/home/malachig/svn/solexa_analysis/createEnsemblTranscriptFasta.pl  --database=ALEXA_hs_48_36j  --server=jango.bcgsc.ca  --user=malachig  --password=gEEnom$  --outfile=/projects/malachig/solexa/blast_db/ensembl_transcripts_hs_48_36j/alexa_transcripts.fa  --logfile=/projects/malachig/solexa/logs/HS03271/createEnsemblTranscriptsFasta_LOG.txt
+
+/home/pubseq/BioSw/BLAST2/blast2.2.15_x64/bin/formatdb -i alexa_transcripts.fa -t alexa_transcripts -p F -o T -n alexa_transcripts
+
+/home/malachig/svn/solexa_analysis/createSolexaReadFasta.pl  --read_file=/projects/malachig/solexa/read_records/13288AAXX_Lanes1-2_HS03271_ReadRecords.txt  --ambig_base_cutoff=1  --mdust_base_cutoff=18  --fasta_file=/projects/malachig/solexa/fasta_seq_data/13288AAXX_Lanes1-2_QualityFiltered.fa  --log_file=/projects/malachig/solexa/logs/13288AAXX_Lanes1-2_HS03271/createSolexaReadFasta_FILTERED_LOG.txt
+
+#Use BLAST to map reads to a human EnsEMBL transcriptome
+# - Break the fasta file of reads into chunks and use commands such as the following to map reads on the Apollo cluster
+/home/pubseq/BioSw/BLAST2/blast2.2.15_x64/bin/blastall -p blastn -d /projects/malachig/solexa/blast_db/ensembl_transcripts_hs_48_36j/alexa_transcripts
+ -i /projects/malachig/solexa/fasta_seq_data/x00 -m 8 -F F -W 15 -a 2 -o /projects/malachig/solexa/blast_results/13288AAXX_Lanes1-2/x00.txt
+
+
+#Parse these reads and create summary files
+/home/malachig/svn/solexa_analysis/parseEnsemblTranscriptBlastResults.pl  --database=ALEXA_hs_48_36j  --server=jango.bcgsc.ca  --user=malachig  --password=gEEnom$  --read_records_infile=/projects/malachig/solexa/read_records/13288AAXX_Lanes1-2_HS03271/13288AAXX_Lanes1-2_HS03271_ReadRecords.txt   --blast_results_dir=/projects/malachig/solexa/blast_results/13288AAXX_Lanes1-2/  --top_hits_outfile=/projects/malachig/solexa/read_records/13288AAXX_Lanes1-2_HS03271/13288AAXX_Lanes1-2_HS03271_TOP_HITS.txt  --summary_outfile=/projects/malachig/solexa/read_records/13288AAXX_Lanes1-2_HS03271/13288AAXX_Lanes1-2_HS03271_ReadRecords_SUMMARY.txt  --filter_pseudogene_hits=yes  --logfile=/projects/malachig/solexa/logs/13288AAXX_Lanes1-2_HS03271/parseEnsemblTranscriptBlastResults_LOG.txt
+
+
+#Examine a portion of the summary file and use R to generate basic statistics and figures
+head 13288AAXX_Lanes1-2_HS03271_ReadRecords_SUMMARY.txt | cut -f 1,2,3,4,8,9,11,13,14,18,22,23,25,27,28
+cut -f 1,2,3,4,8,9,11,13,14,18,22,23,25,27,28 13288AAXX_Lanes1-2_HS03271_ReadRecords_SUMMARY.txt > 13288AAXX_Lanes1-2_HS03271_SelectedColumns.txt
+
+/home/malachig/svn/solexa_analysis/R_bin/SummarizeReads.R
+
+
+#Summarize all reads mapped to transcripts and the Gene and Gene-Fusion level.  Create custom UCSC tracks for visualization
+/home/malachig/svn/solexa_analysis/summarizeGeneResults.pl  --database=ALEXA_hs_48_36j  --server=jango.bcgsc.ca  --user=malachig  --password=gEEnom$  --read_records_infile=/projects/malachig/solexa/read_records/13288AAXX_Lanes1-2_HS03271/13288AAXX_Lanes1-2_HS03271_ReadRecords_SUMMARY.txt  --align_length_cutoff=21  --gf_align_length_cutoff=30  --gap_size_limit=100000  --gf_support_level=2  --gene_description_file=/projects/malachig/solexa/EnsEMBL_48_GeneDescriptions.txt  --gene_summary_file=/projects/malachig/solexa/read_records/13288AAXX_Lanes1-2_HS03271/Summary/GeneSummary.txt --fusion_summary_file=/projects/malachig/solexa/read_records/13288AAXX_Lanes1-2_HS03271/Summary/FusionSummary.txt  --ucsc_dir=/home/malachig/www/public/htdocs/solexa/13288AAXX_Lanes1-2_HS03271/  --web_path=http://www.bcgsc.ca/people/malachig/htdocs/solexa/13288AAXX_Lanes1-2_HS03271/
+
+
+
+
+
+
+#Use Eland to map reads directly to the human genome
+/home/pubseq/BioSw/Solexa/current/Eland/eland_32 /projects/malachig/solexa/fasta_seq_data/13288AAXX_Lanes1-2_QualityFiltered.fa  /home/pubseq/genomes/Homo_sapiens/current  /projects/malachig/solexa/eland_output/13288AAXX_Lanes1-2_QualityFiltered.eland.txt
+
+- Use Grep to count reads classified by Eland as mapping to the human genome (U0, U1 or U2)
+wc -l 13288AAXX_Lanes1-2_QualityFiltered.eland.txt   -> 6068408
+grep "U\d+" -P 13288AAXX_Lanes1-2_QualityFiltered.eland.txt | wc -l    -> 3957569
+i.e. 65.2% of these reads map to the human genome
+
+
+
+#Ryan's Analysis with MAQ
+
+#MAQ program files:
+#/home/rmorin/maq/maq-0.6.4_x86_64-linux/
+
+#MAQ view files:
+#/home/rmorin/maq/maqview-0.2.1_x86_64-linux
+
+#Used MAQ to map all reads of the two ovarian cancer lanes to a custom database of all chromosomes plus exon-junctions (from UCSC known genes, ACEview, and TROME (alt splice database))
+# - The exon junctions are identified from mRNAs, ESTs, etc. but the actual sequence is derived from the genome using chromosome coordinates from mapping the transcripts to the genome.
+# - So the file being used for mapping by MAQ contains complete chromosome sequences plus junction sequences from the genome.  
+# - The junctions themselves are concatenated into one long string seperated by N's and Ryan tracks the order of these to deconvolute them later
+
+#Mapping database file used:
+#
+#/home/rmorin/sequence/all_chr_plus_more_junctions.fa
+#/home/rmorin/sequence/all_chr_plus_more_junctions.bfa (maqs binary fasta format)
+
+#Use the following command to create an 'assembly' against the original fasta file used for mapping:
+# - This will give you a consensus score at every position of the genome (as defined in your input mapping file)
+#/home/rmorin/maq/maq-0.6.4_x86_64-linux/maq assemble both_lanes.cns /home/rmorin/sequence/all_chr_plus_more_junctions.bfa both_lanes.map
+
+
+#Index map file for viewing with maqview
+#/home/rmorin/maq/maqview-0.2.1_x86_64-linux/maqindex -i both_lanes.map
+
+#This will create index files in the current directory.  This should be the same directory as your map files
+#From within this directory you can view the assembly at an arbitrary chromosome location with the following command
+# - First login to an xhost using -X to export display options
+
+#/home/rmorin/maq/maqview-0.2.1_x86_64-linux/maqview both_lanes.map chrX:1000
+
+#To get MAQ to actually call SNPS you need to run cns2snp on the cns file
+#/home/rmorin/maq/maq-0.6.4_x86_64-linux/maq cns2snp both_lanes.cns > both_lanes_SNPs.txt

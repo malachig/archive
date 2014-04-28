@@ -1,0 +1,42 @@
+#!/bin/bash
+#Written by Malachi Griffith
+#Copyright 2009 Malachi Griffith
+#This file is part of 'ALEXA-Seq'
+#ALEXA-Seq is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+#ALEXA-Seq is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+#You should have received a copy of the GNU General Public License along with ALEXA-Seq (COPYING.txt).  If not, see <http://www.gnu.org/licenses/>.
+
+# This script counts the jobs on the cluster for a user every N seconds
+E_BADARGS=65
+if [ ! -n "$1" ]
+then
+  echo "Usage: `basename $0` malachig 300 100 (i.e. [user_name] [delay between queries] [reps])"
+  exit $E_BADARGS
+fi  
+
+if [ ! -e /opt/sge/bin/lx24-amd64/qstat ]
+then
+  echo "qstat not found - log into cluster head node before using"
+  exit $E_BADARGS
+fi
+
+i="0"
+while [ $i -lt $3 ]
+do
+  USER_NAME=$1
+  export USER_NAME
+
+  #RESULT=$(qstat | perl -ne '$test=$ENV{"USER_NAME"}; $line=$_; if($line =~ /$test/){$user_total++; if ($line =~ /\S+\s+\S+\s+\S+\s+\S+\s+(\w+)\s+\S+\s+\S+\s+\S+\s+(\S+)/){$status{$1}+=$2;}} if ($line =~ /\S+\s+\S+\s+\S+\s+\S+\s+(\w+)\s+\S+\s+\S+\s+\S+\s+(\S+)/){$total+=$2;}  if (eof){unless ($status{r}){$status{r}=0}; unless ($status{qw}){$status{qw}=0}; unless ($status{Eqw}){$status{Eqw}=0}; unless ($total){$total=0}; unless ($user_total){$user_total=0}; print "$user_total (submitted) $status{r} (running) $status{qw} (qw) $status{Eqw} (Eqw) [Total jobs on cluster = $total]"};')
+
+  RESULT=$(qstat | perl -ne 'chomp($_); $test_user=$ENV{"USER_NAME"}; $user=""; $status=""; $line=$_; if($line =~ /\S+\s+\S+\s+\S+\s+(\S+)\s+(\w+)\s+\S+\s+\S+\s+(\S+)\s+\d+\-\d+\:\d+/){$user=$1; $status=$2; $cpus=$3;}elsif($line =~ /\S+\s+\S+\s+\S+\s+(\S+)\s+(\w+)\s+\S+\s+\S+\s+\S+\s+(\S+)/){$user=$1; $status=$2; $cpus=$3}elsif($line =~ /\S+\s+\S+\s+\S+\s+(\S+)\s+(\w+)\s+\S+\s+\S+\s+(\S+)/){$user=$1; $status=$2; $cpus=$3;} $STATUS{$status}+=$cpus; if ($status eq "r"){$CPUS{$user}+=$cpus;} if ($status =~ /\w+/){$CPUS_U{$user}+=$cpus;} if($user eq $test_user){$STATUS_U{$status}+=$cpus;} if (eof){$user_list=""; foreach $u (sort {$a cmp $b} keys %CPUS){$user_list.="$u=($CPUS{$u})  ";} foreach $u (sort {$a cmp $b} keys %CPUS_U){$user_list_u.="$u=($CPUS_U{$u})  ";}        unless($STATUS{r}){$STATUS{r}=0}; unless($STATUS{qw}){$STATUS{qw}=0}; unless($STATUS{Eqw}){$STATUS{Eqw}=0}; unless($STATUS{dr}){$STATUS{dr}=0}; unless($STATUS_U{r}){$STATUS_U{r}=0}; unless($STATUS_U{qw}){$STATUS_U{qw}=0}; unless($STATUS_U{Eqw}){$STATUS_U{Eqw}=0}; unless($STATUS_U{dr}){$STATUS_U{dr}=0}; $total=0; foreach $s (keys %STATUS){$total+=$STATUS{$s};} $total_u=0; foreach $s (keys %STATUS_U){$total_u+=$STATUS_U{$s};} print "\\n\\nCLUSTER USAGE SUMMARY\\nCPUS REQUESTED: $user_list_u\\nCPUS IN USE: $user_list\\nJOB STATUS FOR ALL USERS: total=($total) running=($STATUS{r}) qw=($STATUS{qw}) Eqw=($STATUS{Eqw}) dr=($STATUS{dr})\\nJOB STATUS FOR $test_user : total=($total_u) running=($STATUS_U{r}) qw=($STATUS_U{qw}) Eqw=($STATUS_U{Eqw}) dr=($STATUS_U{dr})\\n";}')
+
+  i=$[$i+1]
+  echo -e $RESULT 
+  sleep $2
+done
+
+
+
+
