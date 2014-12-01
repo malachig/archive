@@ -1,0 +1,966 @@
+'H A N G M A N
+
+'                               ÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+'
+
+'                    By Keith Koshman (AKA Guardian Bob)
+
+'
+
+'                       (c) 1997, 1998 KeiProductions
+
+'        That means NO copying my code and putting your name on it!     
+
+'
+
+'  Well, this is my Hangman game. Nothing that fancy, but hey, it's one of
+
+'   my first games. I took my very, very first version I made in 1997 and
+
+'  updated it with text effects and SUB's, and an easier-to-use interface.
+
+'
+
+'                                 *   *   *
+
+'
+
+'                        This was made in QBasic 1.1
+
+'
+
+'                 NOW PRESS SHIFT - F5 TO START IT ALREADY!
+
+'
+
+'ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+
+
+DEFINT A-Z  'Well, speed up the game..I mean, who needs decimal places?!
+
+
+
+DECLARE SUB centertype (row!, text$)
+
+DECLARE SUB colorandom ()
+
+DECLARE SUB drawhang ()
+
+DECLARE SUB pause (Seconds!)
+
+DECLARE SUB typeit (text$)
+
+DECLARE SUB wipe ()
+
+
+
+SCREEN 12  'Hmmm...this was the hard part. I didn't choose SCREEN 13 because
+
+           'the text was only 40 columns wide, only allowing 20 characters in
+
+           'a phrase. SCREEN 0 was a good choice, but had no graphics. Since
+
+           'I had started out in SCREEN 12 in my original, I stuck with it.
+
+
+
+snd = 1  'Sound - 1/On, 2/Off, change this to what you want to start out with,
+
+         'although you can always change it using the option menu.
+
+
+
+pi# = 22 / 7  'For making half-circles
+
+
+
+mainmenu:
+
+used$ = ""     'The used letters, cleared because of previous games
+
+phrase$ = ""   'The phrase, also cleared because of previous games
+
+triesleft = 6  'Number of tries left before you lose - DON'T CHANGE THIS!
+
+
+
+CLS
+
+
+
+pause .5  'Pause shortly because SCREEN 12 takes a moment to load
+
+
+
+drawhang  'See the SUB drawhang, basically it draws the hangman stand.
+
+
+
+menu$(1) = "1) Start a one-player game"
+
+menu$(2) = "2) Start a two-player game"
+
+menu$(3) = "3) View/change options"
+
+menu$(4) = "4) Quit Hangman"
+
+
+
+LOCATE 29, 10: COLOR 7: PRINT "Hangman (C) 1998 KeiProductions";
+
+
+
+' Hey, are you still reading this code? I doubt if it will help you; I wrote
+
+'it in a pretty messy manner, however if it teaches you something, great!  :)
+
+
+
+ttext$ = "H  A  N  G  M  A  N": N = 9
+
+colorandom  'See colorandom SUB - gets a random bright color
+
+
+
+FOR letters = 1 TO LEN(ttext$) STEP 3                       'Drop
+
+ FOR drop = 1 TO 8                                          '
+
+ LOCATE drop, N + letters: PRINT MID$(ttext$, letters, 1);  'the
+
+ FOR p = 1 TO 10000: NEXT p                                 '
+
+ LOCATE drop, N + letters: PRINT " ";                       'Hangman
+
+ NEXT drop                                                  '
+
+ LOCATE drop, N + letters: PRINT MID$(ttext$, letters, 1);  'text
+
+NEXT letters                                                '
+
+
+
+z = 9: ON TIMER(1) GOSUB colorchange  'The color-changing border!!!
+
+TIMER ON
+
+
+
+COLOR 15
+
+FOR sm = 1 TO 4
+
+ FOR typet = 1 TO LEN(menu$(sm))
+
+ LOCATE sm + 10, 9 + typet: COLOR 7: PRINT MID$(menu$(sm), typet, 1);
+
+ FOR p = 1 TO 10000: NEXT p
+
+ LOCATE sm + 10, 9 + typet: COLOR 15: PRINT MID$(menu$(sm), typet, 1);
+
+ FOR p = 1 TO 5000: NEXT p
+
+ NEXT typet
+
+NEXT sm
+
+
+
+getmainchoice:
+
+board$ = INKEY$
+
+IF board$ = "" THEN GOTO getmainchoice         'Loop until a key is pressed.
+
+IF board$ = "1" THEN GOTO oneplay              'If it's the 1 key...
+
+IF board$ = "2" THEN GOTO twoplay              'If it's the 2 key...
+
+IF board$ = "3" THEN GOTO options              'If it's the 3 key...
+
+IF board$ = "4" THEN TIMER OFF: GOTO finished  'If it's the 4 key...
+
+GOTO getmainchoice                             'If it's none of them...
+
+
+
+options:                                       'OPTIONS
+
+                                               'branch...
+
+colorandom
+
+
+
+ttext$ = "O  P  T  I  O  N  S": N = 9
+
+
+
+FOR A = 1 TO LEN(ttext$)                       'Make the OPTIONS text
+
+LOCATE 17, 2: PRINT RIGHT$(ttext$, A)          '"move in" from behind
+
+FOR p = 1 TO 8000: NEXT p                      'the border...
+
+NEXT A
+
+
+
+FOR M = 2 TO 9                                 'Then move it
+
+LOCATE 17, M: PRINT ttext$;                    'across so it
+
+FOR p = 1 TO 8000: NEXT p                      'lines up with
+
+LOCATE 17, M: PRINT STRING$(LEN(ttext$), 255)  'the HANGMAN
+
+NEXT M                                         'text...
+
+LOCATE 17, M: PRINT ttext$;
+
+
+
+redrawit:
+
+IF snd = 1 THEN snd$ = "On" ELSE snd$ = "Off"
+
+LOCATE 19, 10: COLOR 15: PRINT "1) Sound/Music: "; snd$; " "
+
+LOCATE 21, 10: PRINT "Press 1 to toggle Sound/Music on/off"
+
+LOCATE 22, 10: PRINT "Press Esc to return to the Main Menu"
+
+
+
+geto:
+
+z$ = INKEY$
+
+IF z$ = "" THEN GOTO geto
+
+IF z$ = "1" THEN                        'If 1 is pressed...
+
+ IF snd = 1 THEN snd = 0 ELSE snd = 1   'Switch between sound off/on
+
+ GOTO redrawit
+
+END IF
+
+IF z$ = CHR$(27) THEN                   'If Esc is pressed...
+
+ FOR down = 250 TO 350                  '
+
+  LINE (2, down)-(400, down), 0         'Erase options text
+
+  FOR p = 1 TO 4000: NEXT p             '
+
+ NEXT down                              '
+
+ GOTO getmainchoice                     'Return to Main Menu
+
+END IF
+
+GOTO geto
+
+
+
+oneplay:                                'ONE PLAYER branch...
+
+
+
+'You can make your own phrases easy. Just add on to the DATA statements and
+
+'make sure you change the NumberOfPhrases variable to include the new phrases.
+
+'And the phrases can only be 38 characters long or less.
+
+
+
+NumberOfPhrases = 17  'Change this if you add new phrases
+
+
+
+DATA "QBasic is a great programming language","Are you talking to me?"
+
+DATA "It's about time!","See you later!","Isn't this program the best?"
+
+DATA "You guessed the phrase, great!", "This is Keith's first program."
+
+DATA "Once upon a time...", "Don't look at me!","What am I, a weirdo?"
+
+DATA "Because I said so!","If you're sure about this...","What in the world!?"
+
+DATA "What we need is a plan","THAT takes the cake! THAT'S IT!"
+
+DATA "As if things weren't bad enough...","The great computer crash of 2000."
+
+DATA "I want QBasic 4.5!!!","This was made in QBasic 1.1","Feel free to add your own phrases."
+
+
+
+rp = INT(RND * NumberOfPhrases) + 1
+
+
+
+RESTORE
+
+
+
+FOR gt = 1 TO rp - 1
+
+READ nonsense$
+
+NEXT gt
+
+
+
+READ phrase$
+
+
+
+copyofphrase$ = LEFT$(phrase$, LEN(phrase$))
+
+
+
+GOTO mainloop
+
+
+
+twoplay:                                'TWO PLAYER branch...
+
+
+
+TIMER OFF                               'Stop the border, then
+
+wipe                                    'wipe the screen (see wipe SUB)
+
+
+
+z = 9: ON TIMER(1) GOSUB colorchange
+
+TIMER ON
+
+
+
+LINE (0, 0)-(639, 479), 9, B
+
+GOTO gettphrase
+
+
+
+colorchange:                            'The colorchange branch...
+
+z = z + 1: IF z = 15 THEN z = 9         'changes the border
+
+LINE (0, 0)-(639, 479), z, B            'every second if TIMER ON
+
+LINE (1, 1)-(638, 478), z, B
+
+RETURN
+
+
+
+gettphrase:
+
+COLOR 15: centertype 2, "Player 1, input the phrase."
+
+ps = 2
+
+chars$ = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.,!?'1234567890 "
+
+
+
+DO
+
+LOCATE 4, ps: PRINT "Û";
+
+loopk:
+
+z$ = INKEY$: IF z$ = "" THEN GOTO loopk
+
+IF z$ = CHR$(13) AND phrase$ <> "" THEN EXIT DO
+
+IF z$ = CHR$(8) AND ps > 2 THEN
+
+ LOCATE 4, ps - 1: PRINT "  "; : LOCATE 4, ps - 1: ps = ps - 1
+
+ phrase$ = LEFT$(phrase$, (LEN(phrase$) - 1))
+
+END IF
+
+ IF INSTR(chars$, z$) THEN
+
+ IF ps = 41 THEN GOTO loopk
+
+ phrase$ = phrase$ + z$: LOCATE 4, ps: PRINT z$; : ps = ps + 1
+
+END IF
+
+LOOP
+
+
+
+'Above isn't that complicated, basically like a controlled INPUT sub
+
+
+
+LOCATE 4, ps: PRINT " ";
+
+
+
+copyofphrase$ = LEFT$(phrase$, LEN(phrase$))  'Phrase copy, needed if you lose
+
+
+
+COLOR 15
+
+centertype 6, "Now Player 2 must try to guess it."
+
+colorandom
+
+centertype 8, "Press any key to start."
+
+
+
+WHILE INKEY$ = "": WEND  'Wait for a press from the user
+
+
+
+mainloop:
+
+
+
+TIMER OFF                'Stop the border...
+
+wipe                     'Wipe the screen...
+
+COLOR 15
+
+
+
+LINE (0, 0)-(639, 479), 12, B   'Red and
+
+LINE (1, 1)-(638, 478), 6, B    'Bright Red
+
+LINE (2, 2)-(637, 477), 6, B    'Border
+
+
+
+ps = INT(41 - (LEN(phrase$) * 2) / 2)  'Co-ordinates to
+
+LOCATE 2, ps                           'center the blanks
+
+
+
+letters$ = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" 'Put
+
+FOR A = 1 TO LEN(phrase$)                                         'the
+
+ sc$ = MID$(phrase$, A, 1)                                        'blanks
+
+ IF INSTR(letters$, sc$) THEN PRINT " _";  ELSE PRINT " "; sc$;   'in
+
+NEXT A
+
+
+
+drawhang
+
+
+
+LOCATE 25, 5: COLOR 9: PRINT "LETTERS USED"
+
+
+
+startagain:
+
+
+
+LOCATE 15, 5: COLOR 9: PRINT "TRIES LEFT:"; : COLOR 15: PRINT triesleft;
+
+LOCATE 26, 5: COLOR 15: PRINT used$
+
+LOCATE 8, 5: COLOR 15: PRINT "Enter a letter: Û"; :
+
+
+
+getletter:
+
+
+
+z$ = INKEY$
+
+IF z$ = "" THEN GOTO getletter              'If no key is pressed
+
+IF z$ = CHR$(27) THEN wipe: GOTO mainmenu   'If Esc is pressed, quit
+
+IF INSTR(letters$, z$) THEN                 'If a letter is pressed...
+
+ IF INSTR(used$, z$) THEN GOTO getletter    'forget it if it's used,
+
+ LOCATE , POS(0) - 1: PRINT z$;             'otherwise print it...
+
+ GOTO checkforit                            'and goto the checkforit branch
+
+END IF
+
+GOTO getletter                              'If none of above, return to top
+
+
+
+checkforit:                                 'Get a lowercase and uppercase
+
+c1$ = z$                                    '\/  sample of the letter
+
+IF UCASE$(c1$) = c1$ THEN c2$ = LCASE$(c1$) ELSE c2$ = UCASE$(c1$)
+
+                     
+
+used$ = used$ + LCASE$(z$)                  'Add to the USED string
+
+
+
+flag = 0
+
+FOR c = 1 TO LEN(phrase$)
+
+sctn$ = MID$(phrase$, c, 1)
+
+IF sctn$ = c1$ THEN                         'If it's found, then...
+
+ LOCATE 2, ps - 1 + (c * 2)                 'print it in it's right spot
+
+ PRINT c1$                                  'and set the flag to 1
+
+ flag = 1                                   'to indicate a match was found
+
+ ELSEIF sctn$ = c2$ THEN
+
+ LOCATE 2, ps - 1 + (c * 2)
+
+ PRINT c2$;
+
+ flag = 1
+
+END IF
+
+NEXT c
+
+
+
+IF flag THEN GOTO seeifyouwon               'If flag is 1, goto checkifyouwon
+
+
+
+IF snd THEN PLAY "o0 c"                     'Otherwise you must of guessed a
+
+                                            'wrong letter, so if sound is on,
+
+triesleft = triesleft - 1                   'play a low tone; decrease your
+
+                                            'tries you have left
+
+SELECT CASE triesleft
+
+CASE 5                                              'The head,
+
+ CIRCLE (400, 165), 30, 15                          'face
+
+ CIRCLE (390, 158), 3, 15: PAINT (390, 158), 9, 15  'eyes
+
+ CIRCLE (410, 158), 3, 15: PAINT (410, 158), 9, 15  'and
+
+ CIRCLE (400, 185), 15, 15, 0, pi#                  'frown
+
+CASE 4
+
+ LINE (400, 195)-(400, 200), 15                     'The
+
+ LINE (400, 200)-(380, 210), 15                     'person's
+
+ LINE (400, 200)-(420, 210), 15                     'green
+
+ PSET (380, 210), 15: DRAW "c15 d100 r40 u100"      'shirt
+
+ PAINT (381, 211), 10, 15
+
+CASE 3
+
+ LINE (380, 210)-(350, 270), 15                     'His right arm
+
+CASE 2
+
+ LINE (420, 210)-(450, 270), 15                     'His left arm
+
+CASE 1
+
+ PSET (380, 310): DRAW "c15 d100 r20 u100"          'One of his legs
+
+ PAINT (381, 311), 9, 15
+
+CASE 0
+
+ PSET (420, 310): DRAW "c15 d100 l20 u100"          'The other of his legs --
+
+ PAINT (419, 311), 9, 15                            'now he's complete, so
+
+ GOTO youlose                                       'you lose! Branch to
+
+END SELECT                                          'youlose.
+
+
+
+GOTO startagain                                     'If the triesleft was more
+
+                                                    'than 0, go back up
+
+seeifyouwon:
+
+FOR A = 1 TO 80                                     'Check if you won. This
+
+IF SCREEN(2, A) = ASC("_") THEN GOTO startagain     'checks the top line and
+
+NEXT A                                              'if no blanks are found
+
+                                                    'you won, otherwise go
+
+                                                    'back up.
+
+
+
+IF snd THEN PLAY "mb o2 t240 cc1" ELSE pause .4     'If you got here, well,
+
+                                                    'you won!
+
+pause 1
+
+
+
+FOR A = 1 TO 8000
+
+colorandom
+
+z = INT(RND * 30) + 1                         'Print "YOU WIN"s
+
+y = INT(RND * 71) + 1                         'all over
+
+LOCATE z, y: PRINT " YOU WIN! ";              'the screen...
+
+IF INKEY$ <> "" THEN wipe: GOTO mainmenu      'until a key is pressed...
+
+FOR p = 1 TO 100: NEXT p
+
+NEXT A
+
+
+
+wipe                                          'Or until it's done it
+
+GOTO mainmenu                                 '8000 times.
+
+                        
+
+finished:
+
+FOR b = 0 TO 480                              'Wipe the
+
+LINE (0, b)-(640, b), 0                       'screen from
+
+pause 1D-27                                   'top to bottom,
+
+NEXT                                          'then exit.
+
+SYSTEM
+
+
+
+youlose:
+
+IF snd THEN PLAY "mf o2 t240 c2 < g. g a-2 g2... b2 > c2" ELSE pause 1
+
+CLS : COLOR 9: centertype 1, "YOU LOSE."
+
+COLOR 15: centertype 3, "The correct phrase was: " + copyofphrase$
+
+COLOR 14: centertype 5, "Press a key to return to the Main Menu."
+
+
+
+'Above - you lost. If sound is on play a tune. Show the right phrase.
+
+
+
+WHILE INKEY$ = "": WEND
+
+
+
+wipe
+
+GOTO mainmenu
+
+
+
+'ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+'                     Well, th..th..that's all, folks!
+
+'                              - Keith Koshman
+
+'ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+
+
+DEFSNG A-Z
+
+'
+
+
+
+DEFINT A-Z
+
+SUB centertype (row!, text$)
+
+'ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+'CENTERTYPE SUB
+
+'
+
+'Function: Types a specified string centered on the screen.
+
+'
+
+'Parameters: Row!  = The row, from 1 to 30, where the text will be
+
+'            Text$ = The text to type
+
+'ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+col = INT(41 - LEN(text$) / 2)
+
+LOCATE row!, col
+
+FOR tp = 1 TO LEN(text$)
+
+ PRINT MID$(text$, tp, 1);
+
+ FOR p = 1 TO 8000: NEXT p
+
+NEXT tp
+
+END SUB
+
+SUB colorandom
+
+'ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+'COLORANDOM SUB
+
+'
+
+'Function: Gets a random color between 9 and 14, and changes to that color.
+
+'
+
+'Parameters: None
+
+'ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+RANDOMIZE TIMER
+
+r% = INT(RND * 6) + 9
+
+COLOR r%
+
+END SUB
+
+SUB drawhang
+
+'ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+'DRAWHANG SUB
+
+'
+
+'Function: Draws the Hangman stand on the right side of the screen.
+
+'
+
+'Parameters: None
+
+'ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+PSET (500, 460)
+
+DRAW "c15r100"
+
+PSET (550, 460)
+
+DRAW "c15u400l150d75"
+
+END SUB
+
+DEFSNG A-Z
+SUB pause (Seconds)
+
+'ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+'PAUSE SUB
+
+'
+
+'Function: Pauses everything for a specified amount of seconds
+
+'
+
+'Parameters: Seconds = The amount to pause, can include decimals
+
+'ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+waitforit = TIMER
+
+DO WHILE TIMER < waitforit + Seconds: LOOP
+
+END SUB
+
+DEFINT A-Z
+SUB wipe
+
+'ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+'WIPE SUB
+
+'
+
+'Function: Clears the screen in one of three cool ways, looks way better
+
+'          then CLS.
+
+'
+
+'Parameters: None
+
+'ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+RANDOMIZE TIMER
+
+z = INT(RND * 3) + 1
+
+
+
+IF z = 1 THEN
+
+ LINE (0, 479)-(100, 479), 0
+
+ u = 480
+
+ FOR d = 0 TO 480
+
+  LINE (0, 0)-(640, d), 0
+
+  LINE (640, 480)-(0, u), 0
+
+  u = u - 1
+
+ NEXT d
+
+
+
+ CLS : LOCATE 1, 1
+
+ pause .1
+
+ EXIT SUB
+
+
+
+ELSEIF z = 2 THEN
+
+
+
+ FOR A = 240 TO 0 STEP -1
+
+ LINE (320, 240)-(640, A), 0
+
+ FOR p = 1 TO 50: NEXT p
+
+ NEXT A
+
+
+
+ FOR A = 640 TO 0 STEP -1
+
+ LINE (320, 240)-(A, 0), 0
+
+ FOR p = 1 TO 50: NEXT p
+
+ NEXT A
+
+
+
+ FOR A = 0 TO 480
+
+ LINE (320, 240)-(0, A), 0
+
+ FOR p = 1 TO 50: NEXT p
+
+ NEXT A
+
+
+
+ FOR A = 0 TO 640
+
+ LINE (320, 240)-(A, 480), 0
+
+ FOR p = 1 TO 50: NEXT p
+
+ NEXT A
+
+
+
+ FOR A = 480 TO 240 STEP -1
+
+ LINE (320, 240)-(640, A), 0
+
+ FOR p = 1 TO 50: NEXT p
+
+ NEXT A
+
+
+
+EXIT SUB
+
+
+
+ELSEIF z = 3 THEN
+
+
+
+ z = 640
+
+ FOR A = 0 TO 640
+
+
+
+ LINE (A, 0)-(A, 240), 0
+
+ LINE (z, 241)-(z, 480), 0
+
+ z = z - 1
+
+ FOR p = 1 TO 100: NEXT p
+
+ NEXT A
+
+ FOR p = 1 TO 1000: NEXT p
+
+
+
+END IF
+
+
+
+END SUB
+

@@ -1,0 +1,11 @@
+
+Property Class		Selling Price		Commission Earned
+     1		        $456000.00		    $20520.00
+     1		        $189000.00		    $8505.00
+     1		        $29000.00		    $1305.00
+     1		        $345500.00		    $15547.50
+
+Total commission earned was $45877.50
+
+After deletion of linked list:
+The list is empty.

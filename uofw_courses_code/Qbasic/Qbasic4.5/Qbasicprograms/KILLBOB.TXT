@@ -1,0 +1,135 @@
+-----------------------------------------------------------------------------
+
+                           Bob Saget Killer 2000
+                      
+                      by Molnar \ Kucalaba Productions
+                      
+                      http://members.aol.com/mkwebsite
+-----------------------------------------------------------------------------
+
+
+This file contains information about the game "Bob Saget Killer 2000", by
+Molnar \ Kucalaba Productions.  It includes game tips, troubleshooting, 
+background information, and other garbage that you might enjoy reading.
+
+-----------------------------------------------------------------------------
+
+
+
+
+DISCLAIMER
+ 
+ Molnar \ Kucalaba Productions does not support killing Bob Saget in reality.
+If you kill him, don't blame it on us.  (If you are stupid enough to kill
+him, then you might be stupid enough to blame us.)  This game also contains 
+loads of copyright violations.  We don't care.
+
+ Also, this game, like every other game that's been made in the last 2 years,
+contains extreme violence.  If you don't like violence, don't play it, and 
+most importantly, don't bother us about it.  
+
+ On the other hand, if you like the game, feel free to write us and tell us 
+all about it!  It encourages us to waste more time on these things.  We are
+open to requests for another game, but we don't have any plans to make
+another one, and if we do use your idea, we probably won't give you credit
+for it because we probably hate the same people that you do.
+
+
+
+
+BACKGROUND INFORMATION
+ 
+ Anyone who watches TV often, which would include just about everyone in the
+world except Amish people, has seen Bob Saget.  Most know him as the host
+of "America's Funniest Home Videos".  Other people might recognize him
+as one of those idiots from "Full House".  Maybe you know him from somewhere
+else.
+
+ Bob tells the worst, most annoying jokes in the world, and the effect is 
+only enhanced by that dopey smile he always sports.  He might not write the
+jokes, but there's no disputing the fact that he tells them.  Plus, all the
+shows he appears on are absolutely horrible.  Anyways, it's hard not to hate 
+Bob Saget, so we thought if we made a game where you killed him, someone out 
+there might enjoy it.
+
+
+
+
+GAME TIPS
+ 
+ First and foremost, this is not really a game.  All you do is kill Bob.  If
+killed properly, you will know when the game is over.  The biggest tip we
+can offer you is to start at the top of his head and work your way down.
+Remember that, because you could be waiting a long, long time for something
+to happen if you don't.
+
+ Playing the game requires no explanation, but here's one anyways.  Aim
+with the mouse.  Shoot with the left mouse button.  Hit escape to leave
+if you can't beat the game.
+
+
+
+
+TROUBLESHOOTING
+
+ If Bob Saget Killer 2000 crashes your computer, it's likely due to a
+Sound Blaster problem.  Bob Saget Killer 2000 takes your SB information
+directly from your BLASTER environment settings, so make sure that
+is configured correctly, which is probably already is.
+
+ If problems persist, start the game from the command line with the "/x" 
+parameter, which will deactivate all sound routines.  Sound is a huge part
+of any game, especially this game, so it might suck without sound.
+Example :
+
+c:\> killbob /x
+ 
+ If you happen to hear only music, but no sound effects, then exit the
+game and try something else that has sound effects, like Wolfenstein 3D
+or some other game.  Then try playing Bob Saget Killer 2000.  That fixes
+the problem on my computer.
+
+
+
+
+CREDITS
+
+ Main Progammer : Luke Molnar
+ Title Screen   : Ted Southard or DigitFlux Entertainment
+
+
+
+
+AUTHORS
+ 
+ Molnar \ Kucalaba Productions can be reached via email at blood225@aol.com
+They wrote this game primarily in QuickBASIC 4.5.  The source code is not
+available. If you are interested in other games by M \ K Productions, you 
+are encouraged to visit our website at
+
+ http://members.aol.com/mkwebsite/index.html
+
+ Our site includes games like this, and also tons of stuff for QBasic
+programmers.  There's something for everyone, I guess.
+
+
+
+
+INTERNET BOB SAGET RESOURCES
+
+ There are a few web sites dedicated to Bob Saget.  They are very informative
+and well worth the visit.  They are :
+
+
+1)  The Anti-Bob Saget Page
+    http://www.nmaa.org/member/ernest0/index.htm
+
+
+2)  The BeezleBob Saget Page :  The Official Bob Saget Hate Page
+    http://www.asacomp.com/~mdutro/bob.htm  
+    (Yes, that is the same picture on that site as in our game.  We took it 
+    from them with permission.)
+
+
+3)  Bob Saget Hate Club Registration
+    http://www.intercom.net/user/webster/bobhate2.html 

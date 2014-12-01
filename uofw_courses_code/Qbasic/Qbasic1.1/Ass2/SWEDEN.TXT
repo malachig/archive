@@ -1,0 +1,14 @@
+A birth interval program using data from a Swedish
+Population
+
+Interval      Interval Mortality Rate     Relative Risk
+ 0             17.7                        2.269231 
+ 12            16.3                        2.089743 
+ 18            11.3                        1.448718 
+ 24            7.8                         1 
+ 36            9.7                         1.24359 
+ 48            11.9                        1.525641 
+ 60            12.6                        1.615385 
+
+The weighted population mean = 11.0615 
+The proportion of deaths that could be avoided = 29.7%

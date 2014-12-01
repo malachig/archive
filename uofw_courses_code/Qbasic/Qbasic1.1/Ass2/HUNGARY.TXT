@@ -1,0 +1,14 @@
+A birth interval program using data from a Hungarian
+Population
+
+Interval      Interval Mortality Rate     Relative Risk
+ 0             63.8                        3.393617 
+ 12            25.2                        1.340426 
+ 18            18.8                        1 
+ 24            20.4                        1.085106 
+ 36            21.9                        1.164894 
+ 48            24                          1.276596 
+ 60            31.3                        1.664894 
+
+The weighted population mean = 25.5293 
+The proportion of deaths that could be avoided = 26%

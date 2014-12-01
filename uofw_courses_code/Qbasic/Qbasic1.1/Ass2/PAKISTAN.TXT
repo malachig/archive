@@ -1,0 +1,17 @@
+A birth interval program using data from a Pakistani
+Population.
+
+Interval      Interval Mortality Rate     Relative Risk
+ 0             258                         4.03125 
+ 12            200                         3.125 
+ 18            151                         2.359375 
+ 24            120                         1.875 
+ 30            101                         1.578125 
+ 36            75                          1.171875 
+ 42            95                          1.484375 
+ 48            81                          1.265625 
+ 54            85                          1.328125 
+ 64            64                          1 
+
+The weighted population mean = 126.2575 
+The proportion of deaths that could be avoided = 49.3%

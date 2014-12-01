@@ -1,0 +1,23 @@
+Notes on compilation.  This program, house_pet is made up of three files:
+
+	house_pet.cpp -> contains the Method Code (definition)
+			 ie. it contains the methods for the class HousePet.
+			 The header file house_pet.h doesn't make any sense
+			 without it (and vice versa).
+
+	
+	house_pet.h -> contains the actual class definition.
+		       is it contains the attributes and behaviours of the 
+		       class, but not the methods for those behaviours.
+
+	house_pet_main_2.cpp -> The actual main() program.  It utilizes the 
+			        header and therefore also needs house_pet.cpp.
+
+
+	To Compile this program you must do something like:
+
+	c++ house_pet_main_2.cpp house_pet.cpp
+
+	Both files are compiled and produce a single object file (a.out by 
+	default).
+

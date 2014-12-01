@@ -1,0 +1,53 @@
+bash-2.03$ cc multiple_files.c
+bash-2.03$ a.out
+ 
+Output files have been named out1.dat for class 1, out2.dat for class 2, etc.
+ 
+Enter the name of the file to display > out1.dat
+ 
+Summary for Class Stored in 'out1.dat'
+ 
+Selling Price ($)       Commission Earned ($)
+    456000.00                20520.00
+    189000.00                 8505.00
+     29000.00                 1305.00
+    345500.00                15547.50
+ 
+The total commission earned for this class was $45877.50
+ 
+Would you like to view another file? (Y or N) > Y
+ 
+ 
+Enter the name of the file to display > out2.dat
+ 
+Summary for Class Stored in 'out2.dat'
+ 
+Selling Price ($)       Commission Earned ($)
+    349000.00                17450.00
+    234340.00                11717.00
+ 
+The total commission earned for this class was $29167.00
+ 
+Would you like to view another file? (Y or N) > y
+ 
+ 
+Enter the name of the file to display > ooops.dat
+** Invalid Filename! **
+ 
+ 
+Enter the name of the file to display > out3.dat
+ 
+Summary for Class Stored in 'out3.dat'
+ 
+Selling Price ($)       Commission Earned ($)
+    145500.00                 8730.00
+    156700.00                 9402.00
+     78900.00                 4734.00
+ 
+The total commission earned for this class was $22866.00
+ 
+Would you like to view another file? (Y or N) > N
+bash-2.03$ 
+bash-2.03$ 
+bash-2.03$ 
+bash-2.03$ 

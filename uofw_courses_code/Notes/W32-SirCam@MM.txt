@@ -1,0 +1,361 @@
+McAfee.com - W32/SirCam@MM Help CenterMcAfee.com Home | Business | 
+            Kids | McAfee Store 
+
+
+             My Account Info | Renew | Log In  
+
+             
+
+
+
+                     Online Services  |  Anti-Virus  |  Business Corner  |  
+                  About Us  |  Shopping  |  Support  |  Downloads   
+
+       
+
+
+                              Update ActiveShield
+
+                              DAT Updates
+
+                              Free Virus Map
+
+                              Free Virus News
+
+                              Virus Information Library
+
+                              Virus Calendar
+
+                              Virus Hoaxes
+
+                              Virus Support
+
+                              Virus Glossary
+
+                              Anti-Virus Tips
+
+                              Regional Virus Info
+
+                              What's On Sale 
+
+
+
+
+
+
+
+                                NEED HELP?
+                                •Forgot your password?
+                                Click here
+                                •Redeem a gift certificate
+                                •Buy a gift certificate
+                                •Visit the Support Central
+
+
+
+
+
+
+
+            W32/SirCam@MM Help Center
+
+            DESCRIPTION - What virus is this?
+
+            This is a HIGH RISK virus that is spread to email recipients found 
+            in the Windows Address Book and addresses found in cached files. The 
+            infected email can come from addresses that you recognize. Attached 
+            is a file with two different extensions. The file name itself 
+            varies. 
+            The email message can appear as follows:
+            Subject: [filename (random)]
+                  Body:Hi! How are you?
+                  I send you this file in order to have your advice
+                  or I hope you can help me with this file that I send
+                  or I hope you like the file that I sendo you
+                  or This is the file with the information that you ask for
+                  See you later. Thanks 
+                  --- the same message may be received in Spanish --- 
+                  Hola como estas ?
+                  Te mando este archivo para que me des tu punto de vista
+                  or Espero me puedas ayudar con el archivo que te mando
+                  or Espero te guste este archivo que te mando
+                  or Este es el archivo con la información que me pediste
+                  Nos vemos pronto, gracias. 
+
+
+
+
+            PAYLOAD - What can this virus do?
+
+            When run, the document will be saved to the C:\RECYCLED folder and 
+            then opened while the virus copies itself to C:\RECYCLED\SirC32.exe 
+            folder to conceal its presence and creates a registry key value to 
+            load itself whenever .EXE files are executed. 
+            The virus searches for .GIF, .JPG, .JPEG, .MPEG, .MOV, .MPG, .PDF, 
+            .PNG, .PS, and .ZIP files in the MY DOCUMENTS folder and attempts to 
+            send copies of these documents to email recipients found in the 
+            Windows Address Book and addresses found in cached files. 
+
+
+
+            DETECTION AND REMOVAL 
+            - How can I detect and remove this virus?
+
+             McAfee.com VirusScan and Clinic users, 
+             click here to update ActiveShield.
+
+             Retail McAfee VirusScan users, 
+             click here to get the latest DAT file.
+
+            Scan Your System for Infected Files 
+              McAfee.com VirusScan Online and Clinic users, click here to 
+              perform a Scan. 
+              If W32/SirCam@MM is found, use the delete option to remove it. 
+
+            Manual Removal
+
+            If you are unable to use the W32/SirCam@mm standalone removal tool, 
+            see: 
+            (http://www.mcafeeb2b.com/naicommon/avert/avert-research-center/tools.asp#sircam) 
+            SCRMOVE2.zip, then you need to remove the worm manually. Directions 
+            follow.
+
+            IMPORTANT: Users with 24-hour Internet connectivity and/or those on 
+            a network need to disconnect the computer from these sources. Follow 
+            the removal procedures for all computers as well as the server. 
+            Before reconnecting computers to the network or Internet, shared 
+            files and/or drives should be password protected or have sharing 
+            disabled altogether. Contact your network administrator for 
+            assistance and advice concerning file sharing.
+            Edit the Registry
+
+                    Copy Regedit.exe to Regedit.com: 
+                      Windows 95/98 users: Click Start, point to Programs, and 
+                      click MS-DOS Prompt. 
+                      Windows ME users: Click Start, point to Programs, point to 
+                      Accessories, and then click MS-DOS Prompt. 
+                      Windows NT/2000 users: 
+                        Click Start, and click Run. 
+                        Click Browse, and browse to the \Winnt folder. 
+                        Double-click the Command.com file, and then click OK. 
+                     
+                    Type the following and then press Enter: 
+                      copy regedit.exe regedit.com 
+
+            Backup the Registry
+
+                    Click on the Start button. 
+                    Click on Run. 
+                    Type REGEDIT.com in the Open field. 
+                    Click the OK button. The Registry Editor window will appear. 
+
+                    Click on the Registry pull-down menu. 
+                    Click on Export Registry File. 
+                    In the File Name field type "backup" (without the quotation 
+                    marks). 
+                    In the Save In field be sure that the desktop is selected 
+                    (if it is not, click on the pull down menu and select 
+                    "Desktop"). 
+                    Select "All" in the Export Range group box. 
+                    Click on the Save button. The registry will then be saved. 
+                    Click the X in the top right corner to close the Registry 
+                    Editor. 
+                  NOTE: You now have a backup of your Registry saved as "backup" 
+                  on your desktop. If you need to restore the Registry you can 
+                  double-click on the "backup" file located on the desktop. Once 
+                  these instructions are complete and everything is running 
+                  properly be sure to delete this backup file by right-clicking 
+                  on it then left-clicking on Delete from the pop-up menu that 
+                  appears. This will ensure that the old registry is not 
+                  accidentally restored once the worm has been removed. 
+
+            Remove the Worm Entries from the Registry
+
+            As you go through this process, you will be asked to confirm each 
+            change. Make sure that the change is correct, then confirm each 
+            change. 
+              Click the Start button. 
+              Click on Run. 
+              Type in REGEDIT.com in the Open field. 
+              Click the OK button. The Registry Editor window will appear. 
+              Click on the plus sign next to HKEY_CLASSES_ROOT. 
+              Click on the plus sign next to exefile. 
+              Click on the plus sign next to shell. 
+              Click on the plus sign next to open. 
+              Single-click on command so it is highlighted. 
+              On the right side of the screen is a Name column and a Data 
+              column. Locate and right-click on (Default) under the Name column. 
+
+              A pop-up menu will appear. Left-click on Modify. 
+              The Edit String dialog box will appear with the value highlighted. 
+              Delete all text in the Value and type the following characters 
+              (WITHOUT THE BRACKETS): ["%1" %*] If you are unsure of how the 
+              characters should be, the following is a spelled out version of 
+              the correct characters: quote, percentage, one, quote, space, 
+              percentage, asterisk. 
+              Click the OK button to close the Edit String dialog box. 
+              On the left side of the screen click on the minus sign next to 
+              open. 
+              Click on the minus sign next to shell. 
+              Click on the minus sign next to exefile. 
+              click on the minus sign next to HKEY_CLASSES_ROOT. 
+              Click on the plus sign next to HKEY_LOCAL_MACHINE. 
+              Click on the plus sign next to SOFTWARE. 
+              Single click on the SIRCAM folder so it is highlighted, then hit 
+              delete. 
+              Click the plus sign next to Microsoft. 
+              Click the plus sign next to Windows. 
+              Click the plus sign next to CurrentVersion. 
+              Single click on the RunServices Folder so it is highlighted. 
+              On the right side of the screen is a Name column and a Data 
+              column. Under the Name column locate and single-click on Driver32 
+              = C:\WINDOWS\SYSTEM\SCam32.exe so it is highlighted. 
+              Press the Delete key on the keyboard to remove the entry. 
+              Close the Registry Editor by clicking the X in the top right 
+              corner. 
+            Scan to Remove the Worm :
+
+                    Connect to the Internet. 
+                    Go to http://www.mcafee.com. 
+                    Enter your password and email address, and click the Login 
+                    button. 
+                    Near the top-left of the page, locate the "Site Shortcuts" 
+                    drop-down menu. 
+                    Click the drop-down arrow and choose Scan, from under 
+                    VirusScan Online. A new page will then load. 
+                    Click the "Start" link in the box: Current users click here 
+                    to start. 
+                    If you are using this service for the first time you will 
+                    then see a page with a "Start Download" link. Click on the 
+                    "Start Download" link to download the necessary components. 
+                    In the Scan In box select the drive you would like to scan 
+                    (C: drive, etc). Then click the Scan button located in the 
+                    lower right corner. 
+                    The program will then scan the selected drive for viruses. 
+                    If a virus is found a notification will appear in the Scan 
+                    Results box. Delete infected files if they cannot be 
+                    cleaned. 
+
+            Windows ME Info:
+
+            NOTE: Windows ME utilizes a backup utility that backs up selected 
+            files automatically to the C:\_Restore folder. This means that an 
+            infected file could be stored there as a backup file, and VirusScan 
+            will be unable to delete these files. If the scan turns up an 
+            infected file in the C:\_restore folder follow these instructions to 
+            remove the infected files.
+
+            Disabling the Restore Utility
+
+                    Right click the My Computer icon on the Desktop and choose 
+                    PROPERTIES. 
+                    Click on the Performance Tab. 
+                    Click on the File System button. 
+                    Click on the Troubleshooting Tab. 
+                    Put a check mark next to "Disable System Restore". 
+                    Click the Apply button. 
+                    Click the Close button. 
+                    Click the Close button again. 
+                    You will be prompted to restart the computer. Click Yes. 
+                    NOTE: The Restore Utility will now be disabled. 
+                    Browse to the C:\_Restore folder and remove the infected 
+                    files. 
+                  NOTE: To re-enable the Restore Utility, follow steps 1-9 and 
+                  on step 5 remove the check mark next to "Disable System 
+                  Restore". The infected file's are removed and the System 
+                  Restore is once again active. 
+
+            Check the Autoexec.bat file:
+
+            No reference to the worm may be found here, but it is best to double 
+            check.
+
+                    Click Start, and click Run. 
+                    Type the following, and then click OK. 
+                      sysedit
+
+                    The MS-DOS Editor opens.
+
+
+                    A screen with 5 windows stacked will open. The first window 
+                    will be the Autoexec.bat window. 
+                    Search for the following line(no quotations): "@win 
+                    \recycled\sirc32.exe" 
+                    Delete only this portion if you find it. 
+                    Click File and then click Save. 
+                    Exit the MS-DOS Editor 
+
+            Empty the Recycle Bin:
+
+            Do not simply click on "Empty Recycle Bin" as you would normally. 
+            You must use Windows Explorer to delete the file 
+            C:\Recycled\Sircam.sys if it is present. 
+
+
+
+            ANTI-VIRUS OPTIONS
+
+                  McAfee.com Online Services
+                  Not a subscriber to McAfee.com VirusScan Online or Clinic?
+                  Select a button below:
+
+                   McAfee.com
+                        VirusScan OnlineMcAfee.com
+                        Clinic
+
+                            
+
+
+
+                  Retail McAfee Software
+                   Retail McAfee VirusScan 4.0.70 and above with DAT file 4149 
+                  will detect and remove this virus.
+
+                         Purchase McAfee VirusScan 5.21
+
+
+                          Purchase VirusScan Software Maintenance Plan, and 
+                          never get caught with an out-of-date version. 
+
+
+
+
+             Click here for more information about this virus.
+
+
+
+
+
+
+                  My answer was not listed. I wish to contact Technical Support.
+
+
+
+
+
+             
+
+
+
+
+
+
+
+
+
+
+
+
+             McAfee.com BrowserBuy VirusScan 5.1Software Under $20 
+
+            Corporate VirusScanOptimize Your PCVirtual Bookstore
+
+
+            FAQs | What's On Sale? | Events | Investor Relations
+            Partners | Jobs | FREE Virus News
+
+
+      Copyright © 2001 McAfee.com Corporation. All Rights Reserved.
+      Please read our Privacy Policy.
+
+

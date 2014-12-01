@@ -1,0 +1,30 @@
+Calculation of the Natural Logarithm
+
+REM I created this program because I was curious about how the natural log
+REM could be derived.
+REM e = 1 + 1/2! + 1/3! + ... 1/n!
+REM Simple idea but I found it quite difficult to figure out the loops.
+REM 2.718281828459046......
+
+10 CLS
+20 PRINT "The value of the natural log, e ="
+30 PRINT
+40 INPUT "Number of iterations"; n
+50 FOR z# = 1 TO n
+60 GOSUB 2000
+
+70 x# = (1 / i#)
+80 e# = e# + x#
+90 NEXT z#
+100 e# = e# + 1
+110 PRINT "e="; e#
+120 END
+
+
+2000
+2010 i# = 1
+2020 FOR f# = 1 TO z#
+2030 i# = i# * f#
+2040 NEXT f#
+2050 RETURN
+

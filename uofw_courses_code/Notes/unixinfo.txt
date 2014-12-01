@@ -1,0 +1,390 @@
+Basic Commands
+date : Date and Time
+who : Lists all users currently logged in
+whatis : Gives one line of info on a command
+apropos : Lists all manual entries for a given command
+ls : List directory contents 
+						-a (include system files) 
+						-l (list in long format with dates, etc.)
+						-R (list files in subdirectories as well) 
+						-F (mark directories with /, executable files with *)
+cd : Change directory
+pwd : Print working directory - displays the current directory
+cat : concatenate files - copies file or files to output
+more : a pager - displays a file by screen size and ask for more
+cp : copy a file - copies a file to a new name or directory
+mv : move a file - renames a file or moves it to a new directory
+mkdir : make a directory
+rmdir : remove a directory
+rm : remove a file
+chmod : Changes permissions for one of your files
+		ex.  % chmod {u, g, o}{+, -, =}{r, w, x, -} filename
+cc : use cc filename to compile C source code
+ln : use ln [source file] [/directory/shortcut name] to make a symbolic link or shortcut.
+
+ 
+Note: When you log in, you are prompted to enter a name that specifies the type of terminal you are using.  Pressing <return> at this point gives you the default, which is 'vt100'.
+Examples of terminals:
+			dtx: Datamedia DT80/3 or Elite terminals 
+			sun: Sun workstation consoles 
+			vt102: NCSA Telnet on a PC
+
+To check which shell you are currently using:
+	echo $SHELL
+
+You can change your terminal type at any time:
+For example, if you are in the c Shell (/bin/csh), type:
+	set term=vt100 (for using VI editor for example)
+Then you can reset the terminal by typing:
+	tset
+ 
+Directories
+Similar to dos in many respects.
+cd {directory name}: changes directory to stated directory.
+cd .. : moves up to parent (don't forget space).
+cd by itself returns to home directory.
+cd ~ : returns to home directory.
+cdup : moves up to parent at an FTP prompt.
+pwd : lists current working directory. 
+ls : lists contents of current directory.
+
+Permissions
+File permissions give other users the ability read, write, or execute a file.
+Permissions can be granted to another user in your group, or all others. Use the
+chmod command to change file permission for a file:
+
+	who     means         permission   means		change      means
+     ---     -------       ----------   ------       ------		-----
+       u   	    you  		    r       read          +	       add
+       g     your group           w      write      	  -		remove
+       o     all others           x     execute 	  =		set to
+																				 -							none
+
+ex.  chmod ugo=rwx test.file  
+		Allows all types of access to everyone for the file test.file
+
+You can change the default protection for new files with the umask command. This
+              command has an obscure numeric parameter too complex to document in this
+              handout, but here are some common uses of the command:
+
+              umask                   show current umask
+
+              umask 77              set no access by group or other for new files
+
+              umask 22              set read or execute access by group or other for
+			                                     new files
+
+Options and Operands for Commands 
+	-options are introduced with a dash
+	-operands are usually file names or  expressions that exand into file names
+
+ex. % ls -al *.c  where "%" is the current directory or prompt.
+	"a" refers to all
+	"l" means long form
+
+">" and "<" are used to redirect the input and output of commands 
+ex. % ls > temp.file   This commands creates the file "temp.file" and places the output of ls into the file.
+
+ex. % cat < temp.file    This commands reads input from the file and copies it to the output which is the terminal screen.  You can also use the "|" symbol to "pipe" commands.
+
+ex. % ls -l | more     This command generates a long listing of files and pipes it into the 
+"more" command, so you can view it a screenfull at a time.
+
+The Unix Online Manual
+Unix has a manual for users and administrators.  The manual is divided into sections.
+
+To access the manual you can simply type "man" followed by the name of the command you
+are curious about.  You can also access the manual by sections.
+ex.  man -s4 acct
+Useful manual sections on simple commands:
+	% man -s1 Intro (case sensitive)
+	% man -sl intro (case sensitive)
+
+	% findman news    This command will display all commands related to "news"
+
+The Sections of the Manual are as Follows:
+1: commands
+2: system calls
+3: C library functions
+4: file formats 
+
+l: local commands
+5: headers tables and macros
+6: games
+7: special files
+n: new commands
+
+Manual files are in /local/share/man and can be viewed directly with the cat command.
+
+The Unix Shell:	
+The shell is the command interpreter that finds the programs you specify and executes 
+them for you.
+The shell you are using is called the "c" shell.  For more info on it use % man csh
+
+Email
+% mail to check mail
+% mail griffit0@cc.umanitoba.ca to send mail
+often %pine can be used also
+
+Printing
+To send output to a printer try:
+	% lpr "filename"
+Unless you designate the printer destination though it will default to a printer at
+the Fort Garry campus.
+
+Defaults
+The default behaviour of unix is determined by dotfiles in your home directory.
+You can see them with the command: % ls - a 
+
+FTP by Telnet
+Telnet documentation at ftp.ncsa.uiuc.edu.
+ftp : initiates ftp program giving an FTP prompt.
+user : allows you to login 
+help : lists ftp commands
+
+a.) To FTP to your home folder on the Unix Server
+Go to the folder you want to download the files to such as /home/u4/griffit0/files
+$ FTP {target FTP server name}
+$ anonymous
+$ mgriffith78@hotmail.com
+$ get {filename} 
+use ls and cd to find the folder or files you want
+
+b.) To FTP to your hard drive from a regular Telnet prompt
+This seems to be different...
+To download from the U of M Unix server.  Log on to the server.  Find the file you want to download.  Then do one of the following. 
+You must turn on server mode in the edit - preferences - FTP Server menu of TELNET.
+	Then select Send FTP Command under the network menu. 
+																			-or-
+  Enter FTP<space> then select Send IP Number under the network menu
+																			-or-
+  Enter FTP<space>your IP number<return>
+
+This should change the working directory to your hard drive.
+You can now change directories on your local hard drive and this will be where the file is downloaded to when you type "put {filename}".
+
+c.) To FTP to your hard drive from a Telnet FTP session
+Check the FTP Session box when making the connection and type in the name of the FTP server.
+Type:
+% user anonymous
+% {email address}
+use ls, cd and dir to find what you are looking 
+% get {filename}
+% quit
+
+EMACS - A Text Editor
+
+Simple documents, some data files, and source codes for FORTRAN and C programs are
+written as ASCII text files. This requires an ASCII editor such as emacs, vi, or textedit.
+
+Emacs, a very powerful editor available at many UNIX sites and standard on Linux. It  
+was written by the GNU organization and is therefore public domain software. Among 
+its many capabilities are: 
+
+-Full X-window support, including all the mouse functions available under textedit. 
+-The ability to handle multiple files in multiple buffers, with split-screen and
+-Multi-window display. 
+-Intelligent file-, buffer-, and command-completion. 
+-Memory of all commands issued since the editing session started, and the ability to
+ undo or modify arbitrarily many previous commands (vi and textedit can undo only
+ the last one or few commands). 
+-Support for many different ``modes'', e.g. TeX, Fortran, C,..., allowing the user to
+ customize each. 
+-The capability of opening a UNIX shell within a buffer, so that all output is
+ automatically captured and is immediately available for editing. 
+-Automatic backups of all open files, and the ability to recover files after (e.g.) a
+ system crash. 
+-Potential for virtually unlimited customization via Lisp-language macros. 
+
+Basic Commands
+<control> h for help.
+		k - allows you to get help on a key.  After pressing k type the command key you
+					wish to learn about.  ex <control> f
+		t - for a tutorial on using Emacs.
+<control> x u to undo changes.
+<control> x <control> c to kill the Emacs job.
+<control> z to exit emacs.
+note: within emacs c- means <control> key
+	   	 within emacs m- refers the <meta> key... If there is no meta key press and release 
+				the <esc> key and then whichever option key.
+
+Moving the Cursor
+<control> f = forward
+<control> b = back
+<control> n = next
+<control> p = previous
+<meta> f = forward next word
+<meta> b = back to previous word
+<control> a = start of line
+<control> e = end of line
+<meta> a = start of sentence (can be used to scroll through sentences) 
+<meta> e = end of sentence (can be used to scroll through sentences)
+
+Any of these functions can be performed as repeated commands
+To do this type: <control> u followed by the number of times you want and
+finally the command.
+ex. <control> u  20  <control> f  
+this command moves the cursor forward 20 spaces.
+
+Deleting Characters
+<control> d              delete the next character after the cursor
+<meta> d                 kill the next word after the cursor
+<control> k              kill from the cursor position to end of line
+<meta> k                  kill to the end of the current sentence
+<control> y 				     return the last killed item
+<meta> y								  returns previous killed items
+<control> x u						Undo.  Unlimited multiple undo
+<control> -							Undo. Unlimited multiple undo
+note: you can repeat the undo operation by using the <control> u funtion to give
+it a numerical argument.
+
+Other Commands
+<control> g  will discard any started command you wish to abandon.
+It can also stop the program when is is hung.
+<control> x 1 wil close all "windows" except the one with the cursor.
+
+Files
+		In order to make the text you edit permanent, you must put it in a
+file.  Otherwise, it will go away when your invocation of Emacs goes
+away.  You put your editing in a file by "finding" the file.  What
+finding means is that you see the contents of the file in your Emacs;
+and, loosely speaking, what you are editing is the file itself.
+However, the changes still don't become permanent until you "save" the
+file.  This is so you can have control to avoid leaving a half-changed
+file around when you don't want to.  Even then, Emacs leaves the
+original file under a changed name in case your changes turn out
+to be a mistake.
+
+		The commands for finding and saving files are unlike the other
+commands you have learned in that they consist of two characters.
+They both start with the character Control-x.  There is a whole series
+of commands that start with Control-x; many of them have to do with
+files, buffers, and related things, and all of them consist of
+Control-x followed by some other character.
+
+		Another thing about the command for finding a file is that you have
+to say what file name you want.  We say the command "reads an argument
+from the terminal" (in this case, the argument is the name of the
+file).  After you type the command
+
+        <control> x <control> f       which finds a file
+
+		Emacs asks you to type the file name.  It echoes on the bottom
+line of the screen.  You are using the minibuffer now!  this is
+what the minibuffer is for.  When you type <Return> to end the
+file name, the minibuffer is no longer needed, so it disappears.		
+		To save a file use the command:
+
+				<control> x <control> s				saves a file
+				on some systems <control> x s   is used instead
+
+		The contents of Emacs are written into the file.  The first time you
+do this, the original file is renamed to a new name so that it
+is not lost.  The new name is made by appending "~" to the end
+of the original file's name.
+
+		To make a new file, just find it "as if" it already existed.  Then
+start typing in the text.  When you ask to "save" the file, Emacs
+will really create the file with the text that you have inserted.
+From then on, you can consider yourself to be editing an already
+existing file.
+						
+Buffers
+
+		If you find a second file with <control> x <control> f, the first file remains
+inside Emacs.  You can switch back to it by finding it again with
+<control> x <control> f.  This way you can get quite a number of files inside Emacs.
+
+		The object inside Emacs which holds the text read from one file
+is called a "buffer."  Finding a file makes a new buffer inside Emacs.
+To see a list of the buffers that exist in Emacs, type
+
+     <control> x <control> b   Lists the current buffers
+
+		If you make changes to the text of one file, then find another file,
+this does not save the first file.  Its changes remain inside Emacs,
+in that file's buffer.  The creation or editing of the second file's
+buffer has no effect on the first file's buffer.  This is very useful,
+but it also means that you need a convenient way to save the first
+file's buffer.  It would be a nuisance to have to switch back to
+it with C-x C-f in order to save it with C-x C-s.  So we have
+
+        <control> x s     Save some buffers
+
+<control> x s goes through the list of all the buffers you have
+and finds the ones that contain files you have changed.
+
+EXTENDING THE COMMAND SET
+
+		There are many, many more Emacs commands than could possibly be put
+on all the control and meta characters.  Emacs gets around this with
+the X (eXtend) command.  This comes in two flavors:
+
+        <control> x     Character eXtend.  Followed by one character.
+        <meta> x     Named command eXtend.  Followed by a long name.
+
+		These are commands that are generally useful but used less than the
+commands you have already learned about.  One example is the command to 
+tell Emacs that you'd like to stop editing and get rid of Emacs.
+The command to do this is:
+
+<control> x <control> c.
+
+(Don't worry; it offers to save each changed file before it kills the
+Emacs.)
+
+		<control> z is the usual way to exit Emacs, because it is always better not to
+kill the Emacs if you are going to do any more editing.  On systems
+which allow it, <control> z exits from Emacs to the shell but does not destroy
+the Emacs; if you use the C shell, you can resume Emacs with the `fg'
+command (or, more generally, with `%emacs', which works even if your
+most recent job was some other).  On systems where suspending is not
+possible, <control> z creates a subshell running under Emacs to give you the
+chance to run other programs and return to Emacs afterward, but it
+does not truly "exit" from Emacs.  In this case, the shell command
+`exit' is the usual way to get back to Emacs from the subshell.
+
+		You would use <control> x <control> c if you were about to log out.  You would
+also use it to exit an Emacs invoked under mail handling programs
+and other random utilities, since they may not believe you have
+really finished using the Emacs if it continues to exist.
+
+		There are many <control> x commands.  The ones already discussed are:
+
+        <control> x <control> f         Find file.
+        <control> x <control> s         Save file.
+        <control> x <control> b         List buffers.
+        <control> x <control> c         Quit Emacs.
+        <control> x u                        Undo.
+
+		Named eXtended commands are commands which are used even less
+frequently, or commands which are used only in certain modes.  These
+commands are usually called "functions".  An example is the function
+replace-string, which globally replaces one string with another.  When
+you type <meta> x, Emacs prompts you at the bottom of the screen with
+<meta> x and you should type the name of the function you wish to call; in
+this case, "replace-string".  Just type "repl s<TAB>" and Emacs will
+complete the name.  End the command name with <Return>.
+Then type the two "arguments"--the string to be replaced, and the string
+to replace it with--each one ended with a Return.
+
+ex. to replace a string 
+
+   type <esc> x repl s <Return> "word" <Return> "new word" <Return>.
+
+Every occurance of "word" after the cursor will be changed to "new word"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,17 @@
+A birth interval program using data given in lab
+
+Interval      Interval Mortality Rate     Relative Risk
+ 0             231.3                       17.13333 
+ 3             101.3                       7.503704 
+ 6             95.5                        7.074074 
+ 9             81.8                        6.059259 
+ 12            66.4                        4.918519 
+ 15            63.6                        4.711111 
+ 18            28.6                        2.118519 
+ 21            76.9                        5.696296 
+ 24            13.5                        1 
+ 27            22.9                        1.696296 
+ 39            34.4                        2.548148 
+
+The weighted population mean = 77.59767 
+The proportion of deaths that could be avoided= 83%

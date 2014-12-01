@@ -1,0 +1,9 @@
+Birth Interval Program for Bangladesh Population
+space
+Interval      Interval Mortality Rate     Relative Risk
+ 0             151                         2.359375 
+ 20            101                         1.578125 
+ 38            64                          1 
+
+The weighted population mean = 93.32433 
+The proportion of deaths which could be avoided = 68.59592 %
