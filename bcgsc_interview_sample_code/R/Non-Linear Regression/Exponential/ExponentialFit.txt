@@ -1,0 +1,60 @@
+expfit<-function(iter)
+#ANALYSIS OF BIOLOGICAL OXYGEN DEMAND DATA
+#FITTING OF EXPONENTIAL MODEL
+
+{
+	x<-c(1,2,3,4,5,7)
+	y<-c(8.3,10.3,19.0,16.0,15.6,19.8)
+	
+	#Transform the model to a linear one (ignoring the error term)
+	#So as to get starting values
+	
+	k1<-max(y+0.1) #where k1 is the initial value of theta1
+	               #note 0.1 added to avoid a domain error in the line below
+ 
+	y1<-log(1-(y/k1))	
+	x1<-x
+	lmfit<-lm(y1~0+x1) #Using a linear model with no intercept
+                           #this fit will allow us to find k2,
+			   #our initial value of theta2		
+	
+	b<-lmfit$coef
+	k2<-b[1] #negative because of our model definition.  
+		 #b[1] because there is no intercept in this model
+	theta0<-c(k1,k2)
+	
+	
+	#Now theta0 is the starting value
+	#The iteractive procedure is described below
+	
+	theta<-NULL
+	sse<-NULL
+	for(i in 1:iter)
+	{
+		f<-theta0[1]*(1-(exp(theta0[2]*x)))
+		res<-y-f #Residuals according to the non-linear model used
+		sse0<-sum(res^2)
+		f1<-1-(exp(theta0[2]*x))
+		f2<--theta0[1]*(exp(x*theta0[2]))*x
+		ls.fit<-lsfit(cbind(f1,f2),res,intercept=FALSE)
+		delta<-ls.fit$coef
+		theta0<-theta0+delta #A running total of the coefficients		
+		theta<-cbind(theta,c(theta0)) #Value after each iteration
+		sse<-cbind(sse,sse0)
+	}
+
+	par(mfrow=c(2,1))
+	xx<-seq(1,7,length=50)
+	ff<-theta0[1]*(1-(exp(theta0[2]*xx)))
+	plot(x,y,main="Exponential Model Fit")
+	lines(xx,ff)
+	plot(x,res,main="A Plot of the Residuals against the Predictor x",ylim=c(-4,4))
+	abline(h=0,lty=2)
+	
+	mse<-sse0/4
+	x.mat<-cbind(f1,f2)
+	cov.mat<-mse*solve(t(x.mat)%*%x.mat) #where "solve" finds the inverse,
+					     #"t" means transpose, and 
+					     #"%*%" is matrix multiply.
+	list(theta=theta,sse=sse,theta0=theta0,cov.mat=cov.mat)
+}

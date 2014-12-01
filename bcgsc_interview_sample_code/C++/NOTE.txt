@@ -1,0 +1,13 @@
+TOPICS COVERED:
+
+- New features of C++
+- Object Oriented Programming Concepts
+- Implementing a Class with C++
+- Static Class Memebers
+- Friend Functions and Friend Classes
+- Operator Overloading
+- Inheritance
+- Polymorphism
+- Multiple Inheritance
+- Virtual Functions
+- Exception Handling

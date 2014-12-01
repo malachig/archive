@@ -1,0 +1,115 @@
+#FITTING A MULTIPLE LINEAR REGRESSION MODEL
+
+multiple.linear<-function()
+{
+cat("\n\nAssignment #8 Multiple Linear Regression\n\n")
+
+#PART A
+#First I must define the design matrix
+n<-5
+p<-2
+x<-matrix(c(1,1,1,1,1,-1,-1,0,1,1,-1,0,0,0,1,),n,p+1)
+y<-matrix(c(7.2,8.1,9.8,12.3,12.9),5,1)
+
+#PART B-I
+x.transpose<-t(x)
+xtx<-t(x)%*%x
+xtx.inverse<-solve(xtx)
+xty<-t(x)%*%y
+
+#PART B-II
+beta.hat<-xtx.inverse%*%xty #LS estimate of Beta Hat
+b0<-beta.hat[1]
+b1<-beta.hat[2]
+b2<-beta.hat[3]
+
+#PART B-III
+#Generating an ANOVA Table
+#Testing the significance of the overall regression
+fitted.y<-(x%*%beta.hat)#The design matrix multiplied by estimates of Beta
+res<-(y-fitted.y)
+res.transpose<-t(res)
+RSS<-(res.transpose%*%res)#Residual Sum of Squares
+s2<-c(RSS/(n-(p+1)))#Where p is defined in the model I have shown
+		    #s2 is the residual mean squares
+ybar<-mean(y)
+Syy<-sum((y-ybar)^2)
+SSreg<-(Syy-RSS)
+MSreg<-SSreg/p
+Total.SS<-(RSS+SSreg)
+F<-(MSreg/s2)
+df1<-p
+df2<-n-(p+1)
+prob<-(1-pf(F,df1,df2))
+
+#PART B-IV
+cov.matrix<-s2*xtx.inverse
+#Standard error is the squareroot of the variance for each estimate
+std.error.b0<-sqrt(cov.matrix[1,1])
+std.error.b1<-sqrt(cov.matrix[2,2])
+std.error.b2<-sqrt(cov.matrix[3,3])
+
+#PART C
+#PART C-I
+#Testing the significance of the individual coefficient Beta1 hat
+t10<-(b1-0)/std.error.b1
+prob1<-2*(1-pt(t10,df2))
+
+#PART C-II
+#Testing the significance of the individual coefficient Beta2 hat
+t20<-(b2-0)/std.error.b2
+prob2<-2*(1-pt(t20,df2))
+
+#PART C-III
+#Testing the hypothesis H0:B1=B2=0
+#Compares the full model calulated in B-III to a reduced model
+x1<-matrix(c(1,1,1,1,1),5,1)
+xtx1<-t(x1)%*%x1
+xtx1.inverse<-solve(xtx1)
+xty1<-t(x1)%*%y
+beta.hat1<-xtx1.inverse%*%xty1 #LS estimate of Beta Hat
+b01<-beta.hat[1]
+fitted.y1<-(x1%*%beta.hat1)#The design matrix multiplied by estimate of Beta0 only
+res1<-(y-fitted.y1)
+res.transpose1<-t(res1)
+RSS.reduced<-(res.transpose1%*%res1)#Residual Sum of Squares
+q<-(3-1)
+F1<-((RSS.reduced-RSS)/q)/(RSS/(n-(p+1)))
+prob3<-(1-pf(F1,2,2))
+
+#PART D
+#Finding fitted y value given x10=0.5 and x20=0 
+x10<-0.5
+x20<-0
+y0.hat<-(b0+(x10*b1)+(x20*b2))
+
+#PART E
+#Standard error and 95% CI of this fitted y value
+table.t<-qt(0.975,df2)
+z<-matrix(c(1,x10,x20),1,3)
+zt<-t(z)
+var.y0<-s2*(z%*%xtx.inverse%*%zt)
+se.y0<-sqrt(var.y0)
+lower.bound<-y0.hat-(table.t*se.y0)
+upper.bound<-y0.hat+(table.t*se.y0)
+interval<-data.frame(x10,x20,y0.hat,lower.bound,upper.bound)
+
+#PART F
+#Plot residuals against predictor variable x1
+x1<-c(-1,-1,0,1,1)
+plot(x1,res,main="Residuals versus Predictor Variable X1",cex=1.0,col="dark blue",
+     xlab="Predictor X1",ylab="Residuals",ylim=c(-0.3,0.3),pch=22,bg="dark blue")	
+     abline(h=0,lty=2,col="dark red")
+
+list(X.Design.Matrix=x,Y.Matrix=y,Transposed.X=x.transpose,X.transpose.X=xtx,
+X.transpose.X.inverse=xtx.inverse,X.transpose.Y=xty,beta.hat=beta.hat,
+b0=b0,b1=b1,b2=b2,fitted.y=fitted.y,SSreg=SSreg,df1=df1,MSreg=MSreg,
+Residual.SS=RSS,df2=df2,S2=s2,Total.SS=Total.SS,F.Value=F,Probability=prob,
+covariance.matrix=cov.matrix,Standard.error.b0=std.error.b0,
+Standard.error.b1=std.error.b1,Standard.error.b2=std.error.b2,
+t10=t10,Probability.beta1.hat=prob1,t20=t20,Probability.beta2.hat=prob2,
+b0.reduced=b01,Residual.SS.reduced=RSS.reduced,F.Value.Comparison=F1,
+Probability.beta1.beta2.hat=prob3,
+Fitted.y.value=y0.hat,X.Transpose.X.Inverse.Matrix=xtx.inverse,Z.matrix=z,Zt.matrix=zt,
+Standard.Error.Y0.hat=se.y0,Confidence.Interval=round(interval,digits=4),residuals=res)
+}

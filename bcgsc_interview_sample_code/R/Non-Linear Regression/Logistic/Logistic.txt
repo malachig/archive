@@ -1,0 +1,53 @@
+logitfit<-function(iter)
+#ANALYSIS OF CONTRAST DATA
+#FITTING OF LOGISTIC MODEL
+{
+	y<-c(0.02,0.06,0.10,0.18,0.35,0.56,0.78,0.86,0.94,0.99)
+	x<-c(0.000,0.005,0.010,0.015,0.020,0.025,0.030,0.035,0.040,0.045)
+
+	#Transform the model to a linear one (ignoring the error term0
+	#so as to get starting values
+	y1<-log(y/(1-y))
+	lmfit<-lm(y1~x)
+	beta0<-lmfit$coef
+	print("Initial Beta is")
+	print(beta0)
+	#Now beta0 is hte starting value
+	#The iterative procedure is described below
+	n<-length(y)
+	p<-length(beta0)
+	beta<-NULL
+	sse<-NULL
+	for(i in 1:iter)
+	{
+		eta0<-exp(beta0[1]+beta0[2]*x)
+		f<-eta0/(1+eta0)
+		res<-y-f
+		sse0<-sum(res^2)
+		f1<-f*(1-f)
+		f2<-f*(1-f)*x
+		ls.fit<-lsfit(cbind(f1,f2),res,intercept=FALSE)
+		delta<-ls.fit$coef
+		beta0<-beta0+delta
+		beta<-cbind(beta,c(beta0))
+		sse<-cbind(sse,sse0)
+	}
+	par(mfrow=c(2,2))
+	plot(x,y,main="Logistic Fit to Contrast Data")
+	xx<-seq(0.000,0.045,length=50)
+	eta<-exp(beta0[1]+beta0[2]*xx)
+	ff<-eta/(1+eta)
+	lines(xx,ff)
+	qqnorm(res)
+	qqline(res)
+	plot(f,res,xlab="Fitted values",ylab="Residuals")
+	abline(h=0,lty=2)
+	plot(x,res,ylab="Residuals")
+	abline(h=0,lty=2)	
+	mse<-sse0/(n-p)
+	x.mat<-cbind(f1,f2)
+	cov.mat<-mse*solve(t(x.mat)%*%x.mat)
+	list(beta=beta,sse=sse,beta0=beta0,cov.mat=cov.mat)
+}
+
+

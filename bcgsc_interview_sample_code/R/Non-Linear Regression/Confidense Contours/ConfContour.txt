@@ -1,0 +1,57 @@
+conf.contour<-function(x,y)
+#This function allows data to be entered later and used in the program
+#use: >x<-c(    )
+#     >y<-c(    )
+#     >dataname<-data.frame(x,y)
+# then to run the program use: 
+#     >conf.contour(dataname$x,dataname$y)
+{
+	n<-length(x)
+	ls.fit<-lm(y~x)
+	b<-ls.fit$coef
+	b0<-b[1] #here b0 is "beta0 hat"
+	b1<-b[2] #here b1 is "beta1 hat"
+	std.err<-summary(ls.fit)$coef[,"Std. Error"]
+	sd.b0<-std.err[1]
+	sd.b1<-std.err[2]
+	beta0<-seq(12.32,14.93,length=1000) #determined by trial and error
+	gamma0<-beta0-b0 #where beta0 are the values chosen in the sequence
+	MSE<-anova(ls.fit)["Residuals","Mean Sq"]
+	const<-2*MSE*qf(0.90,2,n-2) #(1-alpha,p,n-p)
+	sum.x<-sum(x)
+	sum.xx<-sum(x^2)
+	spread<-sqrt(((gamma0*sum.x)^2)-(sum.xx*(n*(gamma0^2)-const)))
+	
+	gamma11<-(-gamma0*sum.x-spread)/sum.xx #solving quadratic
+	gamma12<-(-gamma0*sum.x+spread)/sum.xx #solving quadratic
+	
+	beta11<-gamma11+b1 #converting beta to gamma values
+	beta12<-gamma12+b1 #converting beta to gamma values
+	
+	plot(b0,b1,xlim=c(12.25,15),ylim=c(-0.105,-0.055),
+	     main="90% Confidense Contour",
+	     sub="Individual 95% Confidense Bands",
+	     xlab="beta0",ylab="beta1")
+	lines(beta0,beta11)#plots the chosen 1000 and each corresponding beta11 
+	lines(beta0,beta12)#plots the chosen 1000 and each corresponding beta12     	
+	
+	#computation of the individual 95% confidense intervals (rectangle)
+	#makes use of the t-distribution
+
+	df<-length(y)-2
+
+	beta0.lower<-b0-qt(0.975,df)*sd.b0	
+	beta0.upper<-b0+qt(0.975,df)*sd.b0
+	beta1.lower<-b1-qt(0.975,df)*sd.b1	
+	beta1.upper<-b1+qt(0.975,df)*sd.b1
+	
+	abline(v=beta0.lower,lty=2)
+	abline(v=beta0.upper,lty=2)
+	abline(h=beta1.lower,lty=2)
+	abline(h=beta1.upper,lty=2)
+	
+	list(anova.y=anova(ls.fit),summary.y=summary(ls.fit),
+	     confint.b0=c(beta0.lower,beta0.upper),
+	     confint.b1=c(beta1.lower,beta1.upper))
+}
+

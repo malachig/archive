@@ -1,0 +1,12 @@
+TOPICS COVERED:
+
+- Control Constructs
+- Functions
+- Call by value
+- Call by reference
+- Arrays
+- Sorting and Searching Algorithms
+- Pointers 
+- Structures
+- Linked lists
+- Stacks and Queues.
