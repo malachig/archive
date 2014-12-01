@@ -1,0 +1,7 @@
+movie<-function()
+{
+	cat("The movie you are going to watch is:\n\n")
+	data<-sample(c(1,2,3,4,5),size=1,replace=FALSE,
+        prob=c(.2,.2,.2,.2,.2))
+	list(movie=data)
+}

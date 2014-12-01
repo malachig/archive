@@ -1,0 +1,44 @@
+#ANALYSIS OF THE CONDUCTIVITY DATA
+
+#ANALYSIS OF VARIANCE APPROACH
+
+anova<-function() 
+{ 	
+	cat("\n\nANALYSIS OF VARIANCE APPROACH\n\n")
+	coat.type<-rep(c(1,2,3,4),4) #The Rep function creates repititions
+	y<-c(143,152,134,129,141,149,136,127,150,137,132,132,146,143,127,129)
+ 	aov.y<-aov(y~factor(coat.type)) 	
+	ANOVA<-summary(aov.y)
+ 	effects<-model.tables(aov.y)
+ 	means<-model.tables(aov.y,type="means")
+ 	residuals<-aov.y$residuals
+ 	list(ANOVA=ANOVA,effects=effects,means=means,residuals=residuals)
+}
+
+#ANALYSIS OF THE CONDUCTIVITY DATA  
+
+#REGRESSION APPROACH  
+
+regression<-function() 
+{ 	
+y<-c(143,152,134,129,141,149,136,127,150,137,132,132,146,143,127,129) 	
+x1<-rep(c(0,1,0,0),4) 	
+x2<-rep(c(0,0,1,0),4) 	
+x3<-rep(c(0,0,0,1),4) 	
+dat<-data.frame(x1,x2,x3,y) 	
+lsfit.y<-lm(y~x1+x2+x3,data=dat)
+residuals<-lsfit.y$residuals
+
+aov.reg<-aov(y~x1+x2+x3,data=dat) 	
+
+ANOVA<-summary(aov.reg)
+summary<-summary(lsfit.y)	 	
+list(data=dat,ANOVA=ANOVA,summary=summary,residuals=residuals)  
+}
+
+
+
+
+
+
+ 

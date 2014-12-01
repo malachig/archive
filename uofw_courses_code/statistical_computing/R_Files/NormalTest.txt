@@ -1,0 +1,11 @@
+normal.test<-function()
+{
+	cat("One-sample normal test\n")
+	x<-c(0.86,1.21,2.21,-0.26,1.74,1.83,1.28,0.59,0.30,3.36)
+	n<-length(x)
+	mu.0<-2
+	sigma<-1
+	z0<-(mean(x)-mu.0)/(sigma/sqrt(n))
+	prob<-2*(1-pnorm(abs(z0)))
+	list(z.value=z0,p.value=prob)
+}

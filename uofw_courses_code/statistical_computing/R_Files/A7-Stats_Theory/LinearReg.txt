@@ -1,0 +1,41 @@
+#FITTING A SIMPLE LINEAR REGRESSION MODEL
+
+linear.reg<-function()
+{
+	cat("\n\nA Simple Linear Regression with two Parameters\n\n")
+	x<-c(460,450,440,430,420,410,450,440,430,420,410,400,420,410,400)
+	y<-c(0.3,0.3,0.4,0.4,0.6,0.5,0.5,0.6,0.6,0.6,0.7,0.6,0.6,0.6,0.6)
+	n<-length(y)
+	xbar<-mean(x)
+	lmfit<-lm(y~x)
+	b<-lmfit$coef
+	fitted.y<-b[1]+(b[2]*x)
+	residuals<-(y-fitted.y)
+	
+	df<-(n-2)
+	beta0<-b[1]#Estimate of intercept parameter
+	beta1<-b[2]#Estimate of slope parameter
+	RSS<-sum((y-fitted.y)^2)#Residual Sum of Squares
+	MSS<-RSS/(df)#Mean Sum of Squares
+	S<-sqrt(MSS)
+	Sxx<-sum((x-xbar)^2)
+
+	se.beta0<-S*(sqrt((1/n)+((xbar^2)/Sxx)))
+	t00<-(beta0-0)/se.beta0#Test statistic
+	prob00<-2*(1-pt(abs(t00),df))#Probability based on t-distribution	
+
+	se.beta1<-S*(sqrt(1/Sxx))#Standard error of slope
+	t01<-(beta1-0)/se.beta1#Test statistic
+	prob01<-2*(1-pt(abs(t01),df))#Probability based on t-distribution
+	
+	xx<-seq(400,460,length=50)
+	yy<-b[1]+(b[2]*xx)
+	
+	par(mfrow=c(2,1))
+	plot(x,y,main="Fit of Simple Regression Model")
+	lines(xx,yy)
+	plot(x,residuals,main="Plot of Residuals against Predictor X")
+	abline(h=0,lty=2)
+	list(b,df=df,beta0.t.value=t00,beta0.p.value=prob00,
+		     beta1.t.value=t01,beta1.p.value=prob01)
+}

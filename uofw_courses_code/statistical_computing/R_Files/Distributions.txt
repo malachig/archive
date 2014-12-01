@@ -1,0 +1,76 @@
+#Distribution Problem 1
+
+dist1<-function(simu1)
+{
+	cat("Simulation size:",simu1,"\n\n")
+	x<-c(-1,4,9,20)
+	prob.x<-c(0.70,0.15,0.10,0.05)
+	mu.x<-sum(x*prob.x)
+	sigmasq.x<-sum((x^2)*prob.x)-(mu.x)^2
+	sigma.x<-sqrt(sigmasq.x)
+	data<-sample(c(-1,4,9,20),size=simu1,replace=TRUE,
+                     prob=c(0.70,0.15,0.10,0.05))
+	s.mean<-mean(data)
+	s.std<-sqrt(var(data))
+	list(mu=mu.x,sigma=sigma.x,sample.mean=s.mean,sample.std=s.std)
+}
+
+#Distribution Problem 2
+
+binom<-function(n,p)
+{
+	cat("binomial parameters:","n=",n,"and p=",p,"\n\n")
+	x<-c(0:n)
+	prob.x<-dbinom(x,size=n,prob=p)
+	prob.x<-round(prob.x,digits=4)
+	cum.prob<-pbinom(x,size=n,prob=p)
+	cum.prob<-round(cum.prob,digits=4)
+	binom.dist<-data.frame(x,prob.x,cum.prob)
+	list(binom.dist=binom.dist)
+}
+
+#Distribution Problem 3
+
+normal.1a<-function(mu=c(50,50,50),sigma=c(0.5,1,2))
+{	
+	cat("parameters:","mu=",mu,"sigma=",sigma,"\n\n")
+	x1<-seq(mu[1]-3*sigma[1],mu[1]+3*sigma[1],length=200)
+	x2<-seq(mu[2]-3*sigma[2],mu[2]+3*sigma[2],length=200)
+	x3<-seq(mu[3]-3*sigma[3],mu[3]+3*sigma[3],length=200)
+	dens1<-dnorm(x1,mean=mu[1],sd=sigma[1])
+	dens2<-dnorm(x2,mean=mu[2],sd=sigma[2])
+	dens3<-dnorm(x3,mean=mu[3],sd=sigma[3])
+	plot(x1,dens1,xlim=c(mu[1]-3*sigma[3],mu[3]+3*sigma[3]),
+             type="l",xlab="x",ylab="Density")
+	lines(x2,dens2)
+	lines(x3,dens3)
+}
+
+normal.1b<-function(mu=c(-6,0,8),sigma=c(2,2,2))
+{	
+	cat("parameters:","mu=",mu,"sigma=",sigma,"\n\n")
+	x1<-seq(mu[1]-3*sigma[1],mu[1]+3*sigma[1],length=200)
+	x2<-seq(mu[2]-3*sigma[2],mu[2]+3*sigma[2],length=200)
+	x3<-seq(mu[3]-3*sigma[3],mu[3]+3*sigma[3],length=200)
+	dens1<-dnorm(x1,mean=mu[1],sd=sigma[1])
+	dens2<-dnorm(x2,mean=mu[2],sd=sigma[2])
+	dens3<-dnorm(x3,mean=mu[3],sd=sigma[3])
+	plot(x1,dens1,xlim=c(mu[1]-3*sigma[3],mu[3]+3*sigma[3]),
+             type="l",xlab="x",ylab="Density")
+	lines(x2,dens2)
+	lines(x3,dens3)
+}
+
+#Distribution Problem 4
+
+normal.2<-function()
+{
+	p1<-pnorm(71.3,mean=60,sd=8)
+	p2<-pnorm(51.82,mean=60,sd=8)
+	p3<-1-pnorm(51.82,mean=60,sd=8)
+	p4<-1-pnorm(54.75,mean=60,sd=8)
+	p5<-pnorm(79.38,mean=60,sd=8)-pnorm(61.84,mean=60,sd=8)
+	q1<-qnorm(0.8542,mean=-15,sd=7.5)
+	q2<-qnorm(0.238,mean=-15,sd=7.5)
+	list(p1=p1,p2=p2,p3=p3,p4=p4,p5=p5,q1=q1,q2=q2)
+}

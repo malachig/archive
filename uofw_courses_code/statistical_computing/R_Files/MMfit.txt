@@ -1,0 +1,47 @@
+mmfit<-function(iter)
+#ANALYSIS OF PUROMYCIN DATA
+#FITTING OF MICHAELIS-MENTEN MODEL
+
+{
+	x<-c(0.02,0.02,0.06,0.06,0.11,0.11,0.22,0.22,0.56,0.56,1.1,1.1)
+	y<-c(76,47,97,107,123,139,159,152,191,201,207,200)
+	
+	#Transform the model to a linear one (ignoring the error term)
+	#So as to get starting values
+	y1<-1/y
+	x1<-1/x
+	lmfit<-lm(y1~x1)
+	b<-lmfit$coef
+	k1<-1/b[1]
+	k2<-b[2]/b[1]
+	theta0<-c(k1,k2)
+	
+	
+	#Now theta0 is the starting value
+	#The iteractive procedure is described below
+	
+	theta<-NULL
+	sse<-NULL
+	for(i in 1:iter)
+	{
+		f<-theta0[1]*x/(theta0[2]+x)
+		res<-y-f #Considered the residuals according to the non-linear model used
+		sse0<-sum(res^2)
+		f1<-x/(theta0[2]+x)
+		f2<--theta0[1]*x/((theta0[2]+x)^2)
+		ls.fit<-lsfit(cbind(f1,f2),res,intercept=FALSE)
+		delta<-ls.fit$coef
+		theta0<-theta0+delta #A running total of the coefficients		
+		theta<-cbind(theta,c(theta0)) #Value of coefficients after each iteration
+		sse<-cbind(sse,sse0)
+	}
+
+	plot(x,y,main="Michaelis-Menton Model Fit")
+	xx<-seq(0.02,1.10,length=50)
+	ff<-theta0[1]*xx/(theta0[2]+xx)
+	lines(xx,ff)
+	mse<-sse0/10
+	x.mat<-cbind(f1,f2)
+	cov.mat<-mse*solve(t(x.mat)%*%x.mat) #where "solve" finds the inverse, "t" means transpose, and "%*%" is matrix multiply.
+	list(theta=theta,sse=sse,theta0=theta0,cov.mat=cov.mat)
+}

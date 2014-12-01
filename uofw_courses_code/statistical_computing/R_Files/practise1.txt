@@ -1,0 +1,94 @@
+> bulimic<-c(15.9,16.0,16.5,17.0,17.6,18.1,18.4,18.9,18.9,19.6,21.5,21.6,22.9,23.6,24.1,24.5,25.1,25.2,25.6,28.0,28.7,29.2,30.9
++ bulimic(-c(15.9,16.0,16.5,17.0,17.6,18.1,18.4,18.9,18.9,19.6,21.5,21.6,22.9,23.6,24.1,24.5,25.1,25.2,25.6,28.0,28.7,29.2,30.9
+Error: syntax error
+> bulimic(-c(15.9,16.0,16.5,17.0,17.6,18.1,18.4,18.9,18.9,19.6,21.5,21.6,22.9,23.6,24.1,24.5,25.1,25.2,25.6,28.0,28.7,29.2,30.9
++ bulimic(-c(15.9,16.0,16.5,17.0,17.6,18.1,18.4,18.9,18.9,19.6,21.5,21.6,22.9,23.6,24.1,24.5,25.1,25.2,25.6,28.0,28.7,29.2,30.9)
+Error: syntax error
+> bulimic(-c(15.9,16.0,16.5,17.0,17.6,18.1,18.4,18.9,18.9,19.6,21.5,21.6,22.9,23.6,24.1,24.5,25.1,25.2,25.6,28.0,28.7,29.2,30.9)
++ 
++ bulimic<-c(15.9,16.0,16.5,17.0,17.6,18.1,18.4,18.9,18.9,19.6,21.5,21.6,22.9,23.6,24.1,24.5,25.1,25.2,25.6,28.0,28.7,29.2,30.9)
+Error: syntax error
+> bulimic<-c(15.9,16.0,16.5,17.0,17.6,18.1,18.4,18.9,18.9,19.6,21.5,21.6,22.9,23.6,24.1,24.5,25.1,25.2,25.6,28.0,28.7,29.2,30.9)
+> length(bulimic)
+[1] 23
+> healthy<-c(20.7,22.4,23.1,23.8,24.5,25.3,25.7,30.6,30.6,33.2,33.7,36.6,37.1,37.4,40.8)
+> length(healthy0
++ a
+Error: syntax error
+> length(healthy)
+[1] 15
+> median(bulimic)
+[1] 21.6
+> median(healthy)
+[1] 30.6
+> summary(bulimic)
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  15.90   18.25   21.60   22.08   25.15   30.90 
+> IQR<-c(summary(bulimic)[5]-summary(bulimic)[2])
+> IQR
+3rd Qu. 
+    6.9 
+> IQR<-c(summary(healthy)[5]-summary(healthy)[2])
+> IQR
+3rd Qu. 
+     11 
+> mean(bulimic)
+[1] 22.07826
+> mean(healthy)
+[1] 29.7
+> sqrt(var(bulimic))
+[1] 4.572741
+> sqrt(var(healthy))
+[1] 6.490653
+> boxplot(bulimic)
+> par(mfrow=c(2.2))
+Error in par(args) : parameter "mfrow" has the wrong length
+> par(mfrow=c(2,2))
+> boxplot(bulimic)
+> boxplot(healthy)
+> boxplot(bulimic,healthy)
+> par(mfrow=c(2,2))
+> boxplot(bulimic)
+> boxplot(healthy)
+> boxplot(bulimic,healthy)
+> ?par
+> boxplot(bulimic,healthy)
+> 
+> 
+> x1<-function()
++ x<-c(1,2,3)
+> x1<-function()
++ {
++ x<-c(1,2,3)
++ y<-c(2,3,4)
++ z<-c(10,15,25)
++ x^2+2*y+z
++ }
+> x1
+function()
+{
+x<-c(1,2,3)
+y<-c(2,3,4)
+z<-c(10,15,25)
+x^2+2*y+z
+}
+> x1()
+[1] 15 25 42
+> save.image("D:/practice1.RData")
+> qqnorm(bulimic)
+> qqline(bulimic)
+> qqnorm(healthy)
+> qqline(healthy)
+> hist(bulimic)
+> hist(healthy)
+> par(mfrow=c(2,2)
+
++ > 
+> par(mfrow=c(2,2))
+> qqnorm(bulimic)
+> par(mfrow=c(2,2))
+> qqnorm(bulimic)
+> qqline(bulimic)
+> qqnorm(healthy)
+> qqline(healthy)
+> 

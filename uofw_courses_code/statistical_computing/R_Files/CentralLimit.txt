@@ -1,0 +1,53 @@
+climit<-function()
+{
+	cat("The Central Limit Theorem\n")
+	x0<-runif(200,0,1) #(n,a,b) where a and b are parameters
+	par(mfrow=c(3,2))
+	hist(x0,probability=TRUE,main="Data from a Uniform Distribution")
+	qqnorm(x0)
+	qqline(x0)
+	
+	xbar5<-NULL
+	for (i in 1:200)
+	{
+		x<-runif(5,0,1)
+		xbar<-mean(x)
+		xbar5<-c(xbar5,xbar)
+	}
+	hist(xbar5,probability=TRUE,main="Sample means of size 5")
+	qqnorm(xbar5)
+	qqline(xbar5)
+	
+	xbar10<-NULL
+	for(i in 1:200)
+	{
+		x<-runif(10,0,1)
+		xbar<-mean(x)
+		xbar10<-c(xbar10,xbar)
+	}
+	hist(xbar10,probability=TRUE,main="Sample means of size 10")
+	qqnorm(xbar10)
+	qqline(xbar10)
+	list(mean.x0=mean(x0),sd.x0=sqrt(var(x0)),
+	     mean.xbar5=mean(xbar5),sd.xbar5=sqrt(var(xbar5)),
+	     mean.xbar10=mean(xbar10),sd.xbar10=sqrt(var(xbar10)))
+}
+
+interval.test<-function()
+{
+	cat("Confidence interval\n")
+	conf.int<-NULL
+	for(i in 1:20)
+	{
+		x<-rnorm(9,mean=62,sd=3)
+		n<-length(x)
+		sigma<-3
+		lower.int<-mean(x)-qnorm(0.95)*sigma/sqrt(n)
+		upper.int<-mean(x)+qnorm(0.95)*sigma/sqrt(n)
+		conf.int0<-c(lower.int,upper.int)
+		conf.int<-rbind(conf.int,conf.int0)
+	}
+	list(confidence.intervals=conf.int)
+}
+
+

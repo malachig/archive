@@ -1,0 +1,26 @@
+urea.test<-function()
+{
+	x1<-c(0.45,0.42,0.40,0.49,0.45,0.43,0.50,0.40,0.44,0.48)
+	x2<-c(0.36,0.37,0.38,0.43,0.40,0.42,0.43,0.39,0.35,0.41,0.37,0.45)
+	n1<-length(x1)
+	n2<-length(x2)
+	Sp.sq<-(((n1-1)*var(x1))+((n2-1)*var(x2)))/(n1+n2-2)
+	df<-(n1+n2-2)
+	t0<-(mean(x1)-mean(x2))/(sqrt(Sp.sq*((1/n1)+(1/n2))))
+	prob<-2*(1-pt(abs(t0),df))
+	#p-value does not depend on alpha, p-value is the actual probability
+	#After finding the p-value you compare it to alpha
+	#Alpha is only actually used in the calculation of the CI
+	lower.int<-(mean(x1)-mean(x2))-qt(.95,df)*sqrt(Sp.sq*(1/n1+1/n2))
+	upper.int<-(mean(x1)-mean(x2))+qt(.95,df)*sqrt(Sp.sq*(1/n1+1/n2))
+	list(t.value=t0,df=df,p.value=prob,conf.int=c(lower.int,upper.int))
+}
+# The R function "t.test" can also be used directly to
+# perform the two-sample t-test:
+two.test<-function()
+{
+	x1<-c(0.45,0.42,0.40,0.49,0.45,0.43,0.50,0.40,0.44,0.48)
+	x2<-c(0.36,0.37,0.38,0.43,0.40,0.42,0.43,0.39,0.35,0.41,0.37,0.45)
+	test<-t.test(x1,x2,var.equal=TRUE,conf.level=0.90)
+	test
+}

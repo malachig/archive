@@ -1,0 +1,14 @@
+#FITTING A SIMPLE LINEAR MODEL
+
+simple.linear1<-function()
+{
+	x<-c(460,450,440,430,420,410,450,440,430,420,410,400,420,410,400)
+	y<-c(0.3,0.3,0.4,0.4,0.6,0.5,0.5,0.6,0.6,0.6,0.7,0.6,0.6,0.6,0.6)
+	yhat<-mean(y)
+	residuals<-y-yhat
+	par(mfrow=c(2,1))
+	plot(x,y,main="Fit of Simple Model with no Slope Parameter")
+	abline(h=yhat,lty=1)
+	plot(x,residuals,main="Plot of Residuals against Predictor X")
+	abline(h=0,lty=2)
+}

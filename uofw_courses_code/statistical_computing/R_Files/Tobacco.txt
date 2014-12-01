@@ -1,0 +1,23 @@
+tobacco.test<-function()
+{
+	cat("Right-tail paired t-test \n\n\n")
+	x.12<-c(73,58,67,93,33,18,147)
+	x.24<-c(24,27,49,59,0,11,43)
+	d<-(x.12-x.24)
+	n<-length(d)
+	Sd<-sqrt(var(d))
+	t0<-mean(d)/(Sd/sqrt(n))
+	df<-(n-1)
+	prob<-(1-pt(t0,df))
+	list(t.value=t0,df=df,p.value=prob)
+}
+#The R function "t.test" can also be used directly to
+#perform the paired t-test:
+
+pair.test<-function()
+{
+	x1<-c(73,58,67,93,33,18,147)
+	x2<-c(24,27,49,59,0,11,43)
+	test<-t.test(x1,x2,alternative=c("greater"),paired=TRUE)
+	test
+}
