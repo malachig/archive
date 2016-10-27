@@ -18,7 +18,9 @@ my $grand_total_allocated_tb = 0;
 my $grand_total_used_tb = 0;
 my $grand_total_available_tb = 0;
 
+my $c = 0;
 foreach my $dir (@dirs){
+  $c++;
   my $result1 = `ls $dir`;
   my $result2 = `df -h $dir | grep gscmnt`;
   chomp $result2;
@@ -32,7 +34,7 @@ foreach my $dir (@dirs){
     my $used_tb = convert_size($used);
     my $available_tb = convert_size($available);
 
-    print "\nAllocated = $allocated_tb Tb; Used = $used_tb Tb; Available = $available_tb Tb [$dir]";
+    print "\n$c.) Allocated = $allocated_tb Tb; Used = $used_tb Tb; Available = $available_tb Tb [$dir]";
     $grand_total_allocated_tb += $allocated_tb;
     $grand_total_used_tb += $used_tb;
     $grand_total_available_tb += $available_tb;
