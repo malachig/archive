@@ -3,14 +3,13 @@ use strict;
 use warnings;
 use Data::Dumper;
 
-my @dirs = qw (/gscmnt/gc2142/techd/ 
-               /gscmnt/sata132/techd/ 
-               /gscmnt/sata206/techd/ 
-               /gscmnt/gc2547/mardiswilsonlab/ 
-               /gscmnt/gc2502/mardiswilsonlab/ 
-               /gscmnt/gc2602/mardiswilsonlab/ 
-               /gscmnt/gc2607/mardiswilsonlab/ 
-               /gscmnt/gc2543/mardiswilsonlab/
+my @dirs = qw (/gscmnt/gc2142/griffithlab/ 
+               /gscmnt/sata206/griffithlab/ 
+               /gscmnt/gc2547/griffithlab/ 
+               /gscmnt/gc2502/griffithlab/ 
+               /gscmnt/gc2602/griffithlab/ 
+               /gscmnt/gc2607/griffithlab/ 
+               /gscmnt/gc2543/griffithlab/
                /gscmnt/gc2736/griffithlab_gms/
                );
 
