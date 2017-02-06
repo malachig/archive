@@ -3,6 +3,9 @@ use strict;
 use warnings;
 use Data::Dumper;
 
+#Griffith lab DiskGroup summary:
+#https://imp-lims.gsc.wustl.edu/entity/disk-group/39999
+
 my @dirs = qw (/gscmnt/gc2142/griffithlab/ 
                /gscmnt/sata206/griffithlab/ 
                /gscmnt/gc2547/griffithlab/ 
