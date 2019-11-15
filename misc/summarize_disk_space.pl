@@ -22,6 +22,7 @@ my @dirs = qw (/gscmnt/gc2142/griffithlab/
                /gscmnt/gc2609/gbm_antigen_dunn/
                /gscmnt/gc2762/bisiademuyiwa/
                /gscmnt/gc2571/
+               /gscmnt/gc2611/10x_fields/
                );
 
 my $grand_total_allocated_tb = 0;
