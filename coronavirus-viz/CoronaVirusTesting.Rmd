@@ -1,9 +1,23 @@
+---
+title: "Corona Virus Testing (US)"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Source of data
+
+The following summarizes COVID-19 statistics obtained from the covidtracking.com API: <https://covidtracking.com/api/>.
+
+```{r data_processing, echo=FALSE, message=FALSE}
 library(rjson)
 library(ggplot2)
 library(RCurl)
 library(lubridate)
 
-#define source URLs for data from covidtracking.org API
+#define source URLs for data from the covidtracking.com API
 url_us_daily = "https://covidtracking.com/api/us/daily"
 eurl_us_daily <- URLencode(url_us_daily)
 
@@ -43,16 +57,24 @@ for(i in 1:length(data_us_daily$Date)){
   current_tests = data_us_daily[i,"TotalTests"]
 }
 
+```
+
+## Visualizations
+
+To assess the increasing COVID-19 testing in the US the number of new tests reported each day are summarized below
+
+```{r tests_per_day, echo=FALSE}
+
 #plot the number of new tests performed each day
 p1 = ggplot(data=data_us_daily, aes(x=ymd(Date), y=NewTests, group=1))
 p1 = p1 + geom_line()
 p1 = p1 + geom_point()
 p1 = p1 + theme_bw()
 p1 = p1 + theme(axis.text.x=element_text(angle=45, hjust=1)) + theme(plot.title = element_text(hjust = 0.5))
-p1 = p1 + ggtitle("Number of COVID-19 tests performed per day in US (data from covidtracking.com API)")
+p1 = p1 + ggtitle("COVID-19 tests performed per day in US")
+p1 = p1 + xlab("Date")
 p1 = p1 + ylab("New Tests Performed")
 p1 = p1 + scale_x_date(date_breaks = "1 day", date_labels =  "%b %d") 
-p1
+print(p1)
 
-
-
+```
