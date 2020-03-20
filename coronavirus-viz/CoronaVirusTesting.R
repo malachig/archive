@@ -1,0 +1,58 @@
+library(rjson)
+library(ggplot2)
+library(RCurl)
+library(lubridate)
+
+#define source URLs for data from covidtracking.org API
+url_us_daily = "https://covidtracking.com/api/us/daily"
+eurl_us_daily <- URLencode(url_us_daily)
+
+#load data as JSON
+data_us_daily <- fromJSON(getURL(eurl_us_daily))
+
+#replace nulls with 0
+for(i in 1:length(data_us_daily)){
+  if (is.null(data_us_daily[[i]]$death)){
+    data_us_daily[[i]]$death = 0
+  }
+}
+
+#convert lists to dataframes
+df <- lapply(data_us_daily, function(day) # Loop through each "day"
+{
+  # Convert each group to a data frame.
+  data.frame(matrix(unlist(day), ncol=8, byrow=T))
+})
+
+#now you have a list of data frames, connect them together in one single dataframe
+df <- do.call(rbind, df)
+
+#overwrite the old dataframe with the clean one
+data_us_daily = df
+
+#add column names
+names(data_us_daily) = c("Date","StatesTracked","Positive","Negative","Pos+Neg","Pending","Deaths","TotalTests")
+
+#determine the number of new tests each day
+data_us_daily[,"NewTests"] = 0
+current_tests = 0
+
+for(i in 1:length(data_us_daily$Date)){
+  new_tests = data_us_daily[i,"TotalTests"] - current_tests
+  data_us_daily[i,"NewTests"] = new_tests
+  current_tests = data_us_daily[i,"TotalTests"]
+}
+
+#plot the number of new tests performed each day
+p1 = ggplot(data=data_us_daily, aes(x=ymd(Date), y=NewTests, group=1))
+p1 = p1 + geom_line()
+p1 = p1 + geom_point()
+p1 = p1 + theme_bw()
+p1 = p1 + theme(axis.text.x=element_text(angle=45, hjust=1)) + theme(plot.title = element_text(hjust = 0.5))
+p1 = p1 + ggtitle("Number of COVID-19 tests performed per day in US (data from covidtracking.com)")
+p1 = p1 + ylab("New Tests Performed")
+p1 = p1 + scale_x_date(date_breaks = "1 day", date_labels =  "%b %d") 
+p1
+
+
+
