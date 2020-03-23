@@ -3,8 +3,22 @@ title: "Corona Virus Testing (US)"
 output: html_document
 ---
 
+<style type="text/css">
+
+body{ /* Normal  */
+      font-size: 16px;
+  }
+</style>
+
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Status of data
+
+```{r timestamp, echo=FALSE, message=FALSE, comment=NA}
+writeLines(paste("These graphs were last updated on", format(Sys.time(), "%A %b %d, %Y, %I:%M %p")))
 ```
 
 ## Source of data
@@ -17,6 +31,9 @@ library(rjson)
 library(ggplot2)
 library(RCurl)
 library(lubridate)
+
+#global params
+dpival = 150
 
 #define source URLs for data from covidtracking.org API
 url_us_daily = "https://covidtracking.com/api/us/daily"
@@ -104,9 +121,9 @@ data_us_daily[,"CumDeathRate"] = data_us_daily[,"Deaths"] / data_us_daily[,"Posi
 ### Tests performed
 
 <br>
-1. To assess the increasing COVID-19 testing in the US, the number of **new** tests reported each day are summarized below. 
+**Figure 1**. To assess the increasing COVID-19 testing in the US, the number of **new** tests reported each day are summarized below. 
 
-```{r tests_per_day, echo=FALSE}
+```{r tests_per_day, echo=FALSE, dpi=dpival}
 
 #plot the number of new tests performed each day
 p = ggplot(data=data_us_daily, aes(x=ymd(Date), y=NewTests, group=1))
@@ -117,14 +134,15 @@ p = p + theme(axis.text.x=element_text(angle=45, hjust=1)) + theme(plot.title = 
 p = p + ggtitle("Number of new COVID-19 tests performed per day in US")
 p = p + ylab("New tests performed") + xlab("Date")
 p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%b %d") 
+p = p + scale_y_continuous(labels = scales::comma_format(big.mark = ',', decimal.mark = '.'))
 print(p)
 ```
 
 ******
 <br>
-2. The cumulative number of tests performed to date. 
+**Figure 2**. The cumulative number of tests performed to date. 
 
-```{r cum_tests, echo=FALSE}
+```{r cum_tests, echo=FALSE, dpi=dpival}
 
 #plot the cumulative number of tests performed at the end of each day
 p = ggplot(data=data_us_daily, aes(x=ymd(Date), y=TotalTests, group=1))
@@ -134,16 +152,17 @@ p = p + theme_bw()
 p = p + theme(axis.text.x=element_text(angle=45, hjust=1)) + theme(plot.title = element_text(hjust = 0.5))
 p = p + ggtitle("Total cumulative tests performed to date")
 p = p + ylab("Cumulative tests performed") + xlab("Date")
-p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%b %d") 
+p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%b %d")
+p = p + scale_y_continuous(labels = scales::comma_format(big.mark = ',', decimal.mark = '.'))
 print(p)
 ```
 
 ******
 <br>
 
-3. Change in test capacity from previous day
+**Figure 3**. Change in test capacity from previous day
 
-```{r test_capacity, echo=FALSE}
+```{r test_capacity, echo=FALSE, dpi=dpival}
 
 #plot the change in test capacity from the previous day
 p = ggplot(data=data_us_daily, aes(x=ymd(Date), y=TestCapacityChange, group=1))
@@ -153,7 +172,8 @@ p = p + theme_bw()
 p = p + theme(axis.text.x=element_text(angle=45, hjust=1)) + theme(plot.title = element_text(hjust = 0.5))
 p = p + ggtitle("Change in test capacity from day to day")
 p = p + ylab("Change in tests performed compared to previous day") + xlab("Date")
-p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%b %d") 
+p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%b %d")
+p = p + scale_y_continuous(labels = scales::comma_format(big.mark = ',', decimal.mark = '.'))
 print(p)
 ```
 
@@ -162,9 +182,9 @@ print(p)
 
 ### Positive cases
 
-4. The number of **new** positive cases reported each day are summarized below.
+**Figure 4**. The number of **new** positive cases reported each day are summarized below.
 
-```{r pos_cases, echo=FALSE}
+```{r pos_cases, echo=FALSE, dpi=dpival}
 #plot the number of positive cases each day
 p = ggplot(data=data_us_daily, aes(x=ymd(Date), y=NewPositives, group=1))
 p = p + geom_line()
@@ -173,16 +193,17 @@ p = p + theme_bw()
 p = p + theme(axis.text.x=element_text(angle=45, hjust=1)) + theme(plot.title = element_text(hjust = 0.5))
 p = p + ggtitle("New positive cases observed per day in US")
 p = p + ylab("Daily positive count") + xlab("Date")
-p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%b %d") 
+p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%b %d")
+p = p + scale_y_continuous(labels = scales::comma_format(big.mark = ',', decimal.mark = '.'))
 print(p)
 ```
 
 ******
 <br>
 
-5. The cumulative number total positive cases reported to date.
+**Figure 5**. The cumulative number total positive cases reported to date.
 
-```{r cum_pos_cases, echo=FALSE}
+```{r cum_pos_cases, echo=FALSE, dpi=dpival}
 #plot the cumulative number of positive cases to date
 p = ggplot(data=data_us_daily, aes(x=ymd(Date), y=Positive, group=1))
 p = p + geom_line()
@@ -192,6 +213,7 @@ p = p + theme(axis.text.x=element_text(angle=45, hjust=1)) + theme(plot.title = 
 p = p + ggtitle("Total cumulative positive cases observed to date")
 p = p + ylab("Cumulative positive count") + xlab("Date")
 p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%b %d") 
+p = p + scale_y_continuous(labels = scales::comma_format(big.mark = ',', decimal.mark = '.'))
 print(p)
 ```
 
@@ -200,9 +222,9 @@ print(p)
 
 ### Positive test rate
 
-6. This graph shows the rate of positive tests observed out of all the tests performed on that same day. As the testing capacity increases we might start to see more people getting test who have less obvious symtoms, more people being tested out of caution, or to assure safety for working with the public, etc.  If that is the case we might see the positive test rate start to drop as testing become widely available.  On the other hand, if infection in the community is already widespread we might not see as much of a drop here.
+**Figure 6**. This graph shows the rate of positive tests observed out of all the tests performed on that same day. As the testing capacity increases we might start to see more people getting test who have less obvious symtoms, more people being tested out of caution, or to assure safety for working with the public, etc.  If that is the case we might see the positive test rate start to drop as testing become widely available.  On the other hand, if infection in the community is already widespread we might not see as much of a drop here.
 
-```{r pos_test_rate, echo=FALSE}
+```{r pos_test_rate, echo=FALSE, dpi=dpival}
 #plot the positive test rate each day (new positive / new positive+negative)
 p = ggplot(data=data_us_daily, aes(x=ymd(Date), y=DailyPosTestRate*100, group=1))
 p = p + geom_line()
@@ -218,9 +240,9 @@ print(p)
 ******
 <br>
 
-7. This graph is similar to the previous one but shows the cumulative positive test rate. We should see a similar trend here that as the pandemic passes and testing becomes widely available, the number of negative results will accumulate while the number of positive results slows. Over time, if the outbreak is contained this number should drop.  On the other hand, if the outbreak continues to spread, many positives will continue to accumulate. If the rate of community infection is already high or continues to grow, this rate could actually still increase in the coming weeks. 
+**Figure 7**. This graph is similar to the previous one but shows the cumulative positive test rate. We should see a similar trend here that as the pandemic passes and testing becomes widely available, the number of negative results will accumulate while the number of positive results slows. Over time, if the outbreak is contained this number should drop.  On the other hand, if the outbreak continues to spread, many positives will continue to accumulate. If the rate of community infection is already high or continues to grow, this rate could actually still increase in the coming weeks. 
 
-```{r cum_pos_test_rate, echo=FALSE}
+```{r cum_pos_test_rate, echo=FALSE, dpi=dpival}
 #plot the cumulative positive test rate for each day (positive / positive+negative)
 p = ggplot(data=data_us_daily, aes(x=ymd(Date), y=CumPosTestRate*100, group=1))
 p = p + geom_line()
@@ -238,9 +260,9 @@ print(p)
 
 ### Deaths
 
-8. Number of new deaths observed each day.  Pretty self explanatory. We want this to trend downwards...
+**Figure 8**. Number of new deaths observed each day.  Pretty self explanatory. We want this to trend downwards...
 
-```{r new_deaths, echo=FALSE}
+```{r new_deaths, echo=FALSE, dpi=dpival}
 #plot the new deaths each day 
 p = ggplot(data=data_us_daily, aes(x=ymd(Date), y=NewDeaths, group=1))
 p = p + geom_line()
@@ -250,15 +272,16 @@ p = p + theme(axis.text.x=element_text(angle=45, hjust=1)) + theme(plot.title = 
 p = p + ggtitle("New deaths observed in US")
 p = p + ylab("New deaths") + xlab("Date")
 p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%b %d") 
+p = p + scale_y_continuous(labels = scales::comma_format(big.mark = ',', decimal.mark = '.'))
 print(p)
 ```
 
 ******
 <br>
 
-9. Cumulative deaths observed to date.
+**Figure 9**. Cumulative deaths observed to date.
 
-```{r deaths, echo=FALSE}
+```{r deaths, echo=FALSE, dpi=dpival}
 #plot the deaths each day 
 p = ggplot(data=data_us_daily, aes(x=ymd(Date), y=Deaths, group=1))
 p = p + geom_line()
@@ -268,6 +291,7 @@ p = p + theme(axis.text.x=element_text(angle=45, hjust=1)) + theme(plot.title = 
 p = p + ggtitle("Total cumulative deaths observed in US")
 p = p + ylab("Total cumulative deaths") + xlab("Date")
 p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%b %d") 
+p = p + scale_y_continuous(labels = scales::comma_format(big.mark = ',', decimal.mark = '.'))
 print(p)
 ```
 
@@ -276,9 +300,9 @@ print(p)
 
 ### Death rate
 
-10. The overall cumulative apparent death rate. An overall estimate of the deadliness of the disease. As testing becomes more widespread and larger numbers of people are tested (even those with less severe symptoms) this number will hopefully drop. In the early days of the outbreak, many of those tested were presumably those with the worst symptoms. This contributes to a very high apparent fatality rate.  As testing becomes more widespread, this rate should drop.  However, unless testing becomes very widespread and systematic, it will probably always overestimate the true lethality of the disease because some will get the virus, remain healthy and never get tested.
+**Figure 10**. The overall cumulative apparent death rate. An overall estimate of the deadliness of the disease. As testing becomes more widespread and larger numbers of people are tested (even those with less severe symptoms) this number will hopefully drop. In the early days of the outbreak, many of those tested were presumably those with the worst symptoms. This contributes to a very high apparent fatality rate.  As testing becomes more widespread, this rate should drop.  However, unless testing becomes very widespread and systematic, it will probably always overestimate the true lethality of the disease because some will get the virus, remain healthy and never get tested.
 
-```{r cum_death_rate, echo=FALSE}
+```{r cum_death_rate, echo=FALSE, dpi=dpival}
 #plot the cumulative death rate (cumulative deaths / cumulative positives)
 p = ggplot(data=data_us_daily, aes(x=ymd(Date), y=CumDeathRate*100, group=1))
 p = p + geom_line()
