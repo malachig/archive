@@ -68,6 +68,9 @@ data_us_daily = df
 #add column names
 names(data_us_daily) = c("Date","StatesTracked","Positive","Negative","Pos+Neg","Pending","Hospitalized","Deaths","TotalTests")
 
+#make sure the order has oldest dates first
+data_us_daily = data_us_daily[order(data_us_daily[,"Date"], decreasing=FALSE),]
+
 #determine missing per day stats (e.g. the number of new tests performed each day)
 data_us_daily[,"NewTests"] = 0
 current_tests = 0
