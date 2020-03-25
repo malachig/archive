@@ -56,7 +56,7 @@ for(i in 1:length(data_us_daily)){
 df <- lapply(data_us_daily, function(day) # Loop through each "day"
 {
   # Convert each group to a data frame.
-  data.frame(matrix(unlist(day), ncol=9, byrow=T))
+  data.frame(matrix(unlist(day), ncol=11, byrow=T))
 })
 
 #now you have a list of data frames, connect them together in one single dataframe
@@ -66,7 +66,22 @@ df <- do.call(rbind, df)
 data_us_daily = df
 
 #add column names
-names(data_us_daily) = c("Date","StatesTracked","Positive","Negative","Pos+Neg","Pending","Hospitalized","Deaths","TotalTests")
+names(data_us_daily) = c("Date","StatesTracked","Positive","Negative","Pos+Neg","Pending","Hospitalized","Deaths","TotalTests","DateChecked","TotalTestResults")
+
+#remove factors
+for(i in 1:dim(data_us_daily)[2]){
+  data_us_daily[,i] = as.matrix(data_us_daily[,i])
+}
+data_us_daily[,"Date"] = as.numeric(data_us_daily[,"Date"])
+data_us_daily[,"StatesTracked"] = as.numeric(data_us_daily[,"StatesTracked"])
+data_us_daily[,"Positive"] = as.numeric(data_us_daily[,"Positive"])
+data_us_daily[,"Negative"] = as.numeric(data_us_daily[,"Negative"])
+data_us_daily[,"Pos+Neg"] = as.numeric(data_us_daily[,"Pos+Neg"])
+data_us_daily[,"Pending"] = as.numeric(data_us_daily[,"Pending"])
+data_us_daily[,"Hospitalized"] = as.numeric(data_us_daily[,"Hospitalized"])
+data_us_daily[,"Deaths"] = as.numeric(data_us_daily[,"Deaths"])
+data_us_daily[,"TotalTests"] = as.numeric(data_us_daily[,"TotalTests"])
+data_us_daily[,"TotalTestResults"] = as.numeric(data_us_daily[,"TotalTestResults"])
 
 #make sure the order has oldest dates first
 data_us_daily = data_us_daily[order(data_us_daily[,"Date"], decreasing=FALSE),]
