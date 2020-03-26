@@ -42,13 +42,14 @@ eurl_us_daily <- URLencode(url_us_daily)
 #load data as JSON
 data_us_daily <- fromJSON(getURL(eurl_us_daily))
 
+number_of_columns = 16
+
 #replace nulls with 0
 for(i in 1:length(data_us_daily)){
-  if (is.null(data_us_daily[[i]]$death)){
-    data_us_daily[[i]]$death = 0
-  }
-    if (is.null(data_us_daily[[i]]$hospitalized)){
-    data_us_daily[[i]]$hospitalized = 0
+  for(j in 1:number_of_columns){
+    if (is.null(data_us_daily[[i]][[j]])){
+      data_us_daily[[i]][[j]] = 0
+    }
   }
 }
 
@@ -56,7 +57,7 @@ for(i in 1:length(data_us_daily)){
 df <- lapply(data_us_daily, function(day) # Loop through each "day"
 {
   # Convert each group to a data frame.
-  data.frame(matrix(unlist(day), ncol=11, byrow=T))
+  data.frame(matrix(unlist(day), ncol=number_of_columns, byrow=T))
 })
 
 #now you have a list of data frames, connect them together in one single dataframe
@@ -66,7 +67,7 @@ df <- do.call(rbind, df)
 data_us_daily = df
 
 #add column names
-names(data_us_daily) = c("Date","StatesTracked","Positive","Negative","Pos+Neg","Pending","Hospitalized","Deaths","TotalTests","DateChecked","TotalTestResults")
+names(data_us_daily) = c("Date","StatesTracked","Positive","Negative","Pos+Neg","Pending","Hospitalized","Deaths","TotalTests","DateChecked","TotalTestResults","deathIncrease","hospitalizedIncrease","negativeIncrease","positiveIncrease","totalTestResultsIncrease")
 
 #remove factors
 for(i in 1:dim(data_us_daily)[2]){
@@ -332,3 +333,17 @@ p = p + ylab("Observed death rate % (total deaths / total pos)*100") + xlab("Dat
 p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%b %d") 
 print(p)
 ```
+
+## Executive summary
+
+The following pulls some reference values from the data based on the latest update a summarizes a few key numbers:
+
+```{r executive_summary, echo=FALSE, message=FALSE, comment=NA}
+summary_line = paste()
+
+
+
+writeLines(summary_line)
+```
+
+
