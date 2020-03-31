@@ -42,7 +42,7 @@ eurl_us_daily <- URLencode(url_us_daily)
 #load data as JSON
 data_us_daily <- fromJSON(getURL(eurl_us_daily))
 
-number_of_columns = 16
+number_of_columns = 17
 
 #replace nulls with 0
 for(i in 1:length(data_us_daily)){
@@ -67,7 +67,7 @@ df <- do.call(rbind, df)
 data_us_daily = df
 
 #add column names
-names(data_us_daily) = c("Date","StatesTracked","Positive","Negative","Pos+Neg","Pending","Hospitalized","Deaths","TotalTests","DateChecked","TotalTestResults","deathIncrease","hospitalizedIncrease","negativeIncrease","positiveIncrease","totalTestResultsIncrease")
+names(data_us_daily) = c("Date","StatesTracked","Positive","Negative","Pos+Neg","Pending","Hospitalized","Deaths","TotalTests","Hash","DateChecked","TotalTestResults","deathIncrease","hospitalizedIncrease","negativeIncrease","positiveIncrease","totalTestResultsIncrease")
 
 #remove factors
 for(i in 1:dim(data_us_daily)[2]){
@@ -152,7 +152,7 @@ p = p + theme_bw()
 p = p + theme(axis.text.x=element_text(angle=45, hjust=1)) + theme(plot.title = element_text(hjust = 0.5))
 p = p + ggtitle("Number of new COVID-19 tests performed per day in US")
 p = p + ylab("New tests performed") + xlab("Date")
-p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%b %d") 
+p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%a %b %d") 
 p = p + scale_y_continuous(labels = scales::comma_format(big.mark = ',', decimal.mark = '.'))
 print(p)
 ```
@@ -171,7 +171,7 @@ p = p + theme_bw()
 p = p + theme(axis.text.x=element_text(angle=45, hjust=1)) + theme(plot.title = element_text(hjust = 0.5))
 p = p + ggtitle("Total cumulative tests performed to date")
 p = p + ylab("Cumulative tests performed") + xlab("Date")
-p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%b %d")
+p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%a %b %d")
 p = p + scale_y_continuous(labels = scales::comma_format(big.mark = ',', decimal.mark = '.'))
 print(p)
 ```
@@ -191,7 +191,7 @@ p = p + theme_bw()
 p = p + theme(axis.text.x=element_text(angle=45, hjust=1)) + theme(plot.title = element_text(hjust = 0.5))
 p = p + ggtitle("Change in test capacity from day to day")
 p = p + ylab("Change in tests performed compared to previous day") + xlab("Date")
-p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%b %d")
+p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%a %b %d")
 p = p + scale_y_continuous(labels = scales::comma_format(big.mark = ',', decimal.mark = '.'))
 print(p)
 ```
@@ -212,7 +212,7 @@ p = p + theme_bw()
 p = p + theme(axis.text.x=element_text(angle=45, hjust=1)) + theme(plot.title = element_text(hjust = 0.5))
 p = p + ggtitle("New positive cases observed per day in US")
 p = p + ylab("Daily positive count") + xlab("Date")
-p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%b %d")
+p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%a %b %d")
 p = p + scale_y_continuous(labels = scales::comma_format(big.mark = ',', decimal.mark = '.'))
 print(p)
 ```
@@ -231,7 +231,7 @@ p = p + theme_bw()
 p = p + theme(axis.text.x=element_text(angle=45, hjust=1)) + theme(plot.title = element_text(hjust = 0.5))
 p = p + ggtitle("Total cumulative positive cases observed to date")
 p = p + ylab("Cumulative positive count") + xlab("Date")
-p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%b %d") 
+p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%a %b %d") 
 p = p + scale_y_continuous(labels = scales::comma_format(big.mark = ',', decimal.mark = '.'))
 print(p)
 ```
@@ -252,7 +252,7 @@ p = p + theme_bw()
 p = p + theme(axis.text.x=element_text(angle=45, hjust=1)) + theme(plot.title = element_text(hjust = 0.5))
 p = p + ggtitle("Positive test rate observed per day in US")
 p = p + ylab("Daily positive test rate % (new pos / new pos+neg)*100") + xlab("Date")
-p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%b %d") 
+p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%a %b %d") 
 print(p)
 ```
 
@@ -270,7 +270,7 @@ p = p + theme_bw()
 p = p + theme(axis.text.x=element_text(angle=45, hjust=1)) + theme(plot.title = element_text(hjust = 0.5))
 p = p + ggtitle("Cumulative positive test rate observed in US")
 p = p + ylab("Cumulative positive test rate % (pos / pos+neg)*100") + xlab("Date")
-p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%b %d") 
+p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%a %b %d") 
 print(p)
 ```
 
@@ -290,7 +290,7 @@ p = p + theme_bw()
 p = p + theme(axis.text.x=element_text(angle=45, hjust=1)) + theme(plot.title = element_text(hjust = 0.5))
 p = p + ggtitle("New deaths observed in US")
 p = p + ylab("New deaths") + xlab("Date")
-p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%b %d") 
+p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%a %b %d") 
 p = p + scale_y_continuous(labels = scales::comma_format(big.mark = ',', decimal.mark = '.'))
 print(p)
 ```
@@ -309,7 +309,7 @@ p = p + theme_bw()
 p = p + theme(axis.text.x=element_text(angle=45, hjust=1)) + theme(plot.title = element_text(hjust = 0.5))
 p = p + ggtitle("Total cumulative deaths observed in US")
 p = p + ylab("Total cumulative deaths") + xlab("Date")
-p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%b %d") 
+p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%a %b %d") 
 p = p + scale_y_continuous(labels = scales::comma_format(big.mark = ',', decimal.mark = '.'))
 print(p)
 ```
@@ -330,7 +330,7 @@ p = p + theme_bw()
 p = p + theme(axis.text.x=element_text(angle=45, hjust=1)) + theme(plot.title = element_text(hjust = 0.5))
 p = p + ggtitle("Cumulative death rate observed in US")
 p = p + ylab("Observed death rate % (total deaths / total pos)*100") + xlab("Date")
-p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%b %d") 
+p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%a %b %d") 
 print(p)
 ```
 
@@ -339,11 +339,22 @@ print(p)
 The following pulls some reference values from the data based on the latest update a summarizes a few key numbers:
 
 ```{r executive_summary, echo=FALSE, message=FALSE, comment=NA}
-summary_line = paste()
+last_day = dim(data_us_daily)[1]
 
+cum_death_rate = round(data_us_daily[last_day,"CumDeathRate"]*100, digits=1)
+new_tests = prettyNum(data_us_daily[last_day,"NewTests"], big.mark=",",scientific=FALSE)
+total_tests = prettyNum(data_us_daily[last_day,"TotalTests"], big.mark=",",scientific=FALSE)
+positive_rate = round(data_us_daily[last_day,"DailyPosTestRate"]*100, digits=1)
+new_positives = prettyNum(data_us_daily[last_day,"NewPositives"], big.mark=",",scientific=FALSE)
+total_cases = prettyNum(data_us_daily[last_day,"Positive"], big.mark=",",scientific=FALSE)
+cum_pos_test_rate = round(data_us_daily[last_day,"CumPosTestRate"]*100, digits=1)
+new_deaths = prettyNum(data_us_daily[last_day,"NewDeaths"], big.mark=",",scientific=FALSE)
+deaths = prettyNum(data_us_daily[last_day,"Deaths"], big.mark=",",scientific=FALSE)
 
+summary_line = paste(new_tests, " tests were performed yesterday, of which ", positive_rate, "% were positive (", new_positives," new cases). Total number of tests performed to date stands at ", total_tests, ". Total cases in the US now stands at ", total_cases, " and the cumulative positive test rate stands at ", cum_pos_test_rate, "%. There were ", new_deaths, " new deaths yesterday, the total number of deaths in the US now stands at ", deaths, " and the cumulative death rate now stands at ", cum_death_rate, "%.", sep="")
 
 writeLines(summary_line)
+
 ```
 
 
