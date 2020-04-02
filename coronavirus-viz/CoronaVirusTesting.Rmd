@@ -42,7 +42,8 @@ eurl_us_daily <- URLencode(url_us_daily)
 #load data as JSON
 data_us_daily <- fromJSON(getURL(eurl_us_daily))
 
-number_of_columns = 17
+number_of_columns = length(data_us_daily[[1]])
+col_names = names(data_us_daily[[1]])
 
 #replace nulls with 0
 for(i in 1:length(data_us_daily)){
@@ -67,25 +68,24 @@ df <- do.call(rbind, df)
 data_us_daily = df
 
 #add column names
-names(data_us_daily) = c("Date","StatesTracked","Positive","Negative","Pos+Neg","Pending","Hospitalized","Deaths","TotalTests","Hash","DateChecked","TotalTestResults","deathIncrease","hospitalizedIncrease","negativeIncrease","positiveIncrease","totalTestResultsIncrease")
+names(data_us_daily) = col_names
 
 #remove factors
 for(i in 1:dim(data_us_daily)[2]){
   data_us_daily[,i] = as.matrix(data_us_daily[,i])
 }
-data_us_daily[,"Date"] = as.numeric(data_us_daily[,"Date"])
-data_us_daily[,"StatesTracked"] = as.numeric(data_us_daily[,"StatesTracked"])
-data_us_daily[,"Positive"] = as.numeric(data_us_daily[,"Positive"])
-data_us_daily[,"Negative"] = as.numeric(data_us_daily[,"Negative"])
-data_us_daily[,"Pos+Neg"] = as.numeric(data_us_daily[,"Pos+Neg"])
-data_us_daily[,"Pending"] = as.numeric(data_us_daily[,"Pending"])
-data_us_daily[,"Hospitalized"] = as.numeric(data_us_daily[,"Hospitalized"])
-data_us_daily[,"Deaths"] = as.numeric(data_us_daily[,"Deaths"])
-data_us_daily[,"TotalTests"] = as.numeric(data_us_daily[,"TotalTests"])
-data_us_daily[,"TotalTestResults"] = as.numeric(data_us_daily[,"TotalTestResults"])
+data_us_daily[,"date"] = as.numeric(data_us_daily[,"date"])
+data_us_daily[,"states"] = as.numeric(data_us_daily[,"states"])
+data_us_daily[,"positive"] = as.numeric(data_us_daily[,"positive"])
+data_us_daily[,"negative"] = as.numeric(data_us_daily[,"negative"])
+data_us_daily[,"posNeg"] = as.numeric(data_us_daily[,"posNeg"])
+data_us_daily[,"pending"] = as.numeric(data_us_daily[,"pending"])
+data_us_daily[,"death"] = as.numeric(data_us_daily[,"death"])
+data_us_daily[,"total"] = as.numeric(data_us_daily[,"total"])
+data_us_daily[,"totalTestResults"] = as.numeric(data_us_daily[,"totalTestResults"])
 
 #make sure the order has oldest dates first
-data_us_daily = data_us_daily[order(data_us_daily[,"Date"], decreasing=FALSE),]
+data_us_daily = data_us_daily[order(data_us_daily[,"date"], decreasing=FALSE),]
 
 #determine missing per day stats (e.g. the number of new tests performed each day)
 data_us_daily[,"NewTests"] = 0
@@ -101,28 +101,28 @@ data_us_daily[,"NewPosNeg"] = 0
 current_posneg = 0
 
 #determine new per day counts from cumulative values
-for(i in 1:length(data_us_daily$Date)){
-  new_tests = data_us_daily[i,"TotalTests"] - current_tests
+for(i in 1:length(data_us_daily$date)){
+  new_tests = data_us_daily[i,"total"] - current_tests
   data_us_daily[i,"NewTests"] = new_tests
-  current_tests = data_us_daily[i,"TotalTests"]
+  current_tests = data_us_daily[i,"total"]
   
-  new_deaths = data_us_daily[i,"Deaths"] - current_deaths
+  new_deaths = data_us_daily[i,"death"] - current_deaths
   data_us_daily[i,"NewDeaths"] = new_deaths
-  current_deaths = data_us_daily[i,"Deaths"]
+  current_deaths = data_us_daily[i,"death"]
   
-  new_positives = data_us_daily[i,"Positive"] - current_positives
+  new_positives = data_us_daily[i,"positive"] - current_positives
   data_us_daily[i,"NewPositives"] = new_positives
-  current_positives = data_us_daily[i,"Positive"]
+  current_positives = data_us_daily[i,"positive"]
   
-  new_posneg = data_us_daily[i,"Pos+Neg"] - current_posneg
+  new_posneg = data_us_daily[i,"posNeg"] - current_posneg
   data_us_daily[i,"NewPosNeg"] = new_posneg
-  current_posneg = data_us_daily[i,"Pos+Neg"]
+  current_posneg = data_us_daily[i,"posNeg"]
 }
 
 #determine change in test capacity from previous day
 data_us_daily[,"TestCapacityChange"] = 0
 current_capacity = 0
-for(i in 1:length(data_us_daily$Date)){
+for(i in 1:length(data_us_daily$date)){
   test_capacity_change = data_us_daily[i,"NewTests"] - current_capacity
   data_us_daily[i,"TestCapacityChange"] = test_capacity_change
   current_capacity = data_us_daily[i,"NewTests"]
@@ -130,8 +130,8 @@ for(i in 1:length(data_us_daily$Date)){
 
 #determine daily and cumulative rates
 data_us_daily[,"DailyPosTestRate"] = data_us_daily[,"NewPositives"] / data_us_daily[,"NewPosNeg"]
-data_us_daily[,"CumPosTestRate"] = data_us_daily[,"Positive"] / data_us_daily[,"Pos+Neg"]
-data_us_daily[,"CumDeathRate"] = data_us_daily[,"Deaths"] / data_us_daily[,"Positive"]
+data_us_daily[,"CumPosTestRate"] = data_us_daily[,"positive"] / data_us_daily[,"posNeg"]
+data_us_daily[,"CumDeathRate"] = data_us_daily[,"death"] / data_us_daily[,"positive"]
 
 ```
 
@@ -145,7 +145,7 @@ data_us_daily[,"CumDeathRate"] = data_us_daily[,"Deaths"] / data_us_daily[,"Posi
 ```{r tests_per_day, echo=FALSE, dpi=dpival}
 
 #plot the number of new tests performed each day
-p = ggplot(data=data_us_daily, aes(x=ymd(Date), y=NewTests, group=1))
+p = ggplot(data=data_us_daily, aes(x=ymd(date), y=NewTests, group=1))
 p = p + geom_line()
 p = p + geom_point()
 p = p + theme_bw()
@@ -164,7 +164,7 @@ print(p)
 ```{r cum_tests, echo=FALSE, dpi=dpival}
 
 #plot the cumulative number of tests performed at the end of each day
-p = ggplot(data=data_us_daily, aes(x=ymd(Date), y=TotalTests, group=1))
+p = ggplot(data=data_us_daily, aes(x=ymd(date), y=total, group=1))
 p = p + geom_line()
 p = p + geom_point()
 p = p + theme_bw()
@@ -184,7 +184,7 @@ print(p)
 ```{r test_capacity, echo=FALSE, dpi=dpival}
 
 #plot the change in test capacity from the previous day
-p = ggplot(data=data_us_daily, aes(x=ymd(Date), y=TestCapacityChange, group=1))
+p = ggplot(data=data_us_daily, aes(x=ymd(date), y=TestCapacityChange, group=1))
 p = p + geom_line()
 p = p + geom_point()
 p = p + theme_bw()
@@ -205,7 +205,7 @@ print(p)
 
 ```{r pos_cases, echo=FALSE, dpi=dpival}
 #plot the number of positive cases each day
-p = ggplot(data=data_us_daily, aes(x=ymd(Date), y=NewPositives, group=1))
+p = ggplot(data=data_us_daily, aes(x=ymd(date), y=NewPositives, group=1))
 p = p + geom_line()
 p = p + geom_point()
 p = p + theme_bw()
@@ -224,7 +224,7 @@ print(p)
 
 ```{r cum_pos_cases, echo=FALSE, dpi=dpival}
 #plot the cumulative number of positive cases to date
-p = ggplot(data=data_us_daily, aes(x=ymd(Date), y=Positive, group=1))
+p = ggplot(data=data_us_daily, aes(x=ymd(date), y=positive, group=1))
 p = p + geom_line()
 p = p + geom_point()
 p = p + theme_bw()
@@ -245,7 +245,7 @@ print(p)
 
 ```{r pos_test_rate, echo=FALSE, dpi=dpival}
 #plot the positive test rate each day (new positive / new positive+negative)
-p = ggplot(data=data_us_daily, aes(x=ymd(Date), y=DailyPosTestRate*100, group=1))
+p = ggplot(data=data_us_daily, aes(x=ymd(date), y=DailyPosTestRate*100, group=1))
 p = p + geom_line()
 p = p + geom_point()
 p = p + theme_bw()
@@ -263,7 +263,7 @@ print(p)
 
 ```{r cum_pos_test_rate, echo=FALSE, dpi=dpival}
 #plot the cumulative positive test rate for each day (positive / positive+negative)
-p = ggplot(data=data_us_daily, aes(x=ymd(Date), y=CumPosTestRate*100, group=1))
+p = ggplot(data=data_us_daily, aes(x=ymd(date), y=CumPosTestRate*100, group=1))
 p = p + geom_line()
 p = p + geom_point()
 p = p + theme_bw()
@@ -283,7 +283,7 @@ print(p)
 
 ```{r new_deaths, echo=FALSE, dpi=dpival}
 #plot the new deaths each day 
-p = ggplot(data=data_us_daily, aes(x=ymd(Date), y=NewDeaths, group=1))
+p = ggplot(data=data_us_daily, aes(x=ymd(date), y=NewDeaths, group=1))
 p = p + geom_line()
 p = p + geom_point()
 p = p + theme_bw()
@@ -302,7 +302,7 @@ print(p)
 
 ```{r deaths, echo=FALSE, dpi=dpival}
 #plot the deaths each day 
-p = ggplot(data=data_us_daily, aes(x=ymd(Date), y=Deaths, group=1))
+p = ggplot(data=data_us_daily, aes(x=ymd(date), y=death, group=1))
 p = p + geom_line()
 p = p + geom_point()
 p = p + theme_bw()
@@ -323,7 +323,7 @@ print(p)
 
 ```{r cum_death_rate, echo=FALSE, dpi=dpival}
 #plot the cumulative death rate (cumulative deaths / cumulative positives)
-p = ggplot(data=data_us_daily, aes(x=ymd(Date), y=CumDeathRate*100, group=1))
+p = ggplot(data=data_us_daily, aes(x=ymd(date), y=CumDeathRate*100, group=1))
 p = p + geom_line()
 p = p + geom_point()
 p = p + theme_bw()
@@ -343,13 +343,13 @@ last_day = dim(data_us_daily)[1]
 
 cum_death_rate = round(data_us_daily[last_day,"CumDeathRate"]*100, digits=1)
 new_tests = prettyNum(data_us_daily[last_day,"NewTests"], big.mark=",",scientific=FALSE)
-total_tests = prettyNum(data_us_daily[last_day,"TotalTests"], big.mark=",",scientific=FALSE)
+total_tests = prettyNum(data_us_daily[last_day,"total"], big.mark=",",scientific=FALSE)
 positive_rate = round(data_us_daily[last_day,"DailyPosTestRate"]*100, digits=1)
 new_positives = prettyNum(data_us_daily[last_day,"NewPositives"], big.mark=",",scientific=FALSE)
-total_cases = prettyNum(data_us_daily[last_day,"Positive"], big.mark=",",scientific=FALSE)
+total_cases = prettyNum(data_us_daily[last_day,"positive"], big.mark=",",scientific=FALSE)
 cum_pos_test_rate = round(data_us_daily[last_day,"CumPosTestRate"]*100, digits=1)
 new_deaths = prettyNum(data_us_daily[last_day,"NewDeaths"], big.mark=",",scientific=FALSE)
-deaths = prettyNum(data_us_daily[last_day,"Deaths"], big.mark=",",scientific=FALSE)
+deaths = prettyNum(data_us_daily[last_day,"death"], big.mark=",",scientific=FALSE)
 
 summary_line = paste(new_tests, " tests were performed yesterday, of which ", positive_rate, "% were positive (", new_positives," new cases). Total number of tests performed to date stands at ", total_tests, ". Total cases in the US now stands at ", total_cases, " and the cumulative positive test rate stands at ", cum_pos_test_rate, "%. There were ", new_deaths, " new deaths yesterday, the total number of deaths in the US now stands at ", deaths, " and the cumulative death rate now stands at ", cum_death_rate, "%.", sep="")
 
