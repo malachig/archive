@@ -31,6 +31,7 @@ library(rjson)
 library(ggplot2)
 library(RCurl)
 library(lubridate)
+library(rlist)
 
 #global params
 dpival = 150
@@ -42,12 +43,37 @@ eurl_us_daily <- URLencode(url_us_daily)
 #load data as JSON
 data_us_daily <- fromJSON(getURL(eurl_us_daily))
 
-number_of_columns = length(data_us_daily[[1]])
+#get subset of date range to remove the first N days that are very incomplete (these are the last elements in the list of lists)
+days_to_remove = 49
+data_us_daily = list.subset(data_us_daily, c(1:(length(data_us_daily)-days_to_remove)))
+
+#determine data shape
+max_number_of_columns = 0
 col_names = names(data_us_daily[[1]])
+number_of_rows = length(data_us_daily)
+
+#determine max number of columns
+for(i in 1:number_of_rows){
+  number_of_columns = length(data_us_daily[[i]])
+  if (number_of_columns > max_number_of_columns){
+    max_number_of_columns = number_of_columns
+  }
+}
+
+#if a row doesn't have full columns, pad it out
+#for(i in 1:number_of_rows){
+#  number_of_columns = length(data_us_daily[[i]])
+#  extra_columns_needed = max_number_of_columns - number_of_columns
+#  if (extra_columns_needed > 0){
+#    for(j in 1:extra_columns_needed){
+#      data_us_daily[[i]][number_of_columns+j] = 0
+#    }
+#  }
+#}
 
 #replace nulls with 0
-for(i in 1:length(data_us_daily)){
-  for(j in 1:number_of_columns){
+for(i in 1:number_of_rows){
+  for(j in 1:max_number_of_columns){
     if (is.null(data_us_daily[[i]][[j]])){
       data_us_daily[[i]][[j]] = 0
     }
@@ -58,7 +84,7 @@ for(i in 1:length(data_us_daily)){
 df <- lapply(data_us_daily, function(day) # Loop through each "day"
 {
   # Convert each group to a data frame.
-  data.frame(matrix(unlist(day), ncol=number_of_columns, byrow=T))
+  data.frame(matrix(unlist(day), ncol=max_number_of_columns, byrow=T))
 })
 
 #now you have a list of data frames, connect them together in one single dataframe
