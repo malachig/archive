@@ -450,9 +450,38 @@ cum_pos_test_rate = round(data_us_daily[last_day,"CumPosTestRate"]*100, digits=1
 new_deaths = prettyNum(data_us_daily[last_day,"NewDeaths"], big.mark=",",scientific=FALSE)
 deaths = prettyNum(data_us_daily[last_day,"death"], big.mark=",",scientific=FALSE)
 
-summary_line = paste(new_tests, " tests were performed yesterday, of which ", positive_rate, "% were positive (", new_positives," new cases). Total number of tests performed to date stands at ", total_tests, ". Total cases in the US now stands at ", total_cases, " and the cumulative positive test rate stands at ", cum_pos_test_rate, "%. There were ", new_deaths, " new deaths yesterday, the total number of deaths in the US now stands at ", deaths, " and the cumulative death rate now stands at ", cum_death_rate, "%.", sep="")
+x = round(mean(data_us_daily[(dim(data_us_daily)[1]-7):(dim(data_us_daily)[1]),"NewDeaths"]), digits=0)
+avg_daily_death_last_7days = prettyNum(x, big.mark=",",scientific=FALSE)
+annual_deaths_estimate_last_7days = prettyNum(x*365, big.mark=",",scientific=FALSE)
 
-writeLines(summary_line)
+x = round(mean(data_us_daily[(dim(data_us_daily)[1]-14):(dim(data_us_daily)[1]),"NewDeaths"]), digits=0)
+avg_daily_death_last_14days = prettyNum(x, big.mark=",",scientific=FALSE)
+annual_deaths_estimate_last_14days = prettyNum(x*365, big.mark=",",scientific=FALSE)
+
+x = round(mean(data_us_daily[(dim(data_us_daily)[1]-21):(dim(data_us_daily)[1]),"NewDeaths"]), digits=0)
+avg_daily_death_last_21days = prettyNum(x, big.mark=",",scientific=FALSE)
+annual_deaths_estimate_last_21days = prettyNum(x*365, big.mark=",",scientific=FALSE)
+
+x = round(mean(data_us_daily[(dim(data_us_daily)[1]-28):(dim(data_us_daily)[1]),"NewDeaths"]), digits=0)
+avg_daily_death_last_28days = prettyNum(x, big.mark=",",scientific=FALSE)
+annual_deaths_estimate_last_28days = prettyNum(x*365, big.mark=",",scientific=FALSE)
+
+summary_line1 = paste(new_tests, " tests were performed yesterday, of which ", positive_rate, "% were positive (", new_positives," new cases). Total number of tests performed to date stands at ", total_tests, ". Total cases in the US now stands at ", total_cases, " and the cumulative positive test rate stands at ", cum_pos_test_rate, "%. There were ", new_deaths, " new deaths yesterday, the total number of deaths in the US now stands at ", deaths, " and the cumulative death rate now stands at ", cum_death_rate, "%.", sep="")
+writeLines(summary_line1)
+
+summary_line2 = paste("Over the past week the average daily deaths was ", avg_daily_death_last_7days, ". That rate would result in ", annual_deaths_estimate_last_7days, " deaths annually.", sep="")
+writeLines(summary_line2)
+
+
+summary_line3 = paste("Over the past two weeks the average daily deaths was ", avg_daily_death_last_14days, ". That rate would result in ", annual_deaths_estimate_last_14days, " deaths annually.", sep="")
+writeLines(summary_line3)
+
+summary_line4 = paste("Over the past three weeks the average daily deaths was ", avg_daily_death_last_21days, ". That rate would result in ", annual_deaths_estimate_last_21days, " deaths annually.", sep="")
+writeLines(summary_line4)
+
+summary_line5 = paste("Over the past four weeks the average daily deaths was ", avg_daily_death_last_28days, ". That rate would result in ", annual_deaths_estimate_last_28days, " deaths annually.", sep="")
+writeLines(summary_line5)
+
 
 ```
 
