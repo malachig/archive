@@ -159,6 +159,36 @@ data_us_daily[,"DailyPosTestRate"] = data_us_daily[,"NewPositives"] / data_us_da
 data_us_daily[,"CumPosTestRate"] = data_us_daily[,"positive"] / data_us_daily[,"posNeg"]
 data_us_daily[,"CumDeathRate"] = data_us_daily[,"death"] / data_us_daily[,"positive"]
 
+#create a dataframe of daily death rates
+min_date = min(data_us_daily$date)
+max_date = max(data_us_daily$date)
+
+
+#death stats from 2017 CDC
+heart_df = data.frame( x = c(min_date, max_date), y = 647457, cause = "Heart disease")
+cancer_df = data.frame( x = c(min_date, max_date), y = 599108, cause = "Cancer")
+accidents_df = data.frame( x = c(min_date, max_date), y = 169936, cause = "Accidents")
+respiratory_df = data.frame( x = c(min_date, max_date), y = 160201, cause = "Respiratory disease")
+stroke_df = data.frame( x = c(min_date, max_date), y = 146383, cause = "Stroke")
+alzheimers_df = data.frame( x = c(min_date, max_date), y = 121404, cause = "Alzheimer's disease")
+diabetes_df = data.frame( x = c(min_date, max_date), y = 83564, cause = "Diabetes")
+flu_df = data.frame( x = c(min_date, max_date), y = 55672, cause = "Influenza and pneumonia")
+kidney_df = data.frame( x = c(min_date, max_date), y = 50633, cause = "Kidney diseases")
+suicide_df = data.frame( x = c(min_date, max_date), y = 47173, cause = "Suicide")
+liver_df = data.frame( x = c(min_date, max_date), y = (30223+3290+1047+725+6286), cause = "Liver diseases")
+septicemia_df = data.frame( x = c(min_date, max_date), y = (30198+6568+295+879+2869), cause = "Septicemia")
+hypertension_df = data.frame( x = c(min_date, max_date), y = (24465+6273+190+1472+2799), cause = "Hypertension")
+assault_df = data.frame( x = c(min_date, max_date), y = (5747+9908+266+347+3186), cause = "Assault")
+
+other_causes_of_death = rbind(heart_df, cancer_df, accidents_df, respiratory_df, stroke_df, alzheimers_df, diabetes_df, flu_df, kidney_df, suicide_df, liver_df, septicemia_df, hypertension_df, assault_df)
+
+#adjust for change in population since 2017, based on US population estimate from: https://www.worldometers.info/world-population/us-population/
+population_increase_adjustment = 331002651/325084756
+other_causes_of_death$y = other_causes_of_death$y*population_increase_adjustment
+
+max_annual_deaths = max(data_us_daily$NewDeaths, (other_causes_of_death$y))
+max_daily_deaths = max(data_us_daily$NewDeaths, (other_causes_of_death$y)/365)
+
 ```
 
 ## Visualizations
@@ -195,7 +225,7 @@ p = p + geom_line()
 p = p + geom_point()
 p = p + theme_bw()
 p = p + theme(axis.text.x=element_text(angle=45, hjust=1)) + theme(plot.title = element_text(hjust = 0.5))
-p = p + ggtitle("Total cumulative tests performed to date")
+p = p + ggtitle("Total cumulative COVID-19 tests performed to date")
 p = p + ylab("Cumulative tests performed") + xlab("Date")
 p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%a %b %d")
 p = p + scale_y_continuous(labels = scales::comma_format(big.mark = ',', decimal.mark = '.'))
@@ -215,7 +245,7 @@ p = p + geom_line()
 p = p + geom_point()
 p = p + theme_bw()
 p = p + theme(axis.text.x=element_text(angle=45, hjust=1)) + theme(plot.title = element_text(hjust = 0.5))
-p = p + ggtitle("Change in test capacity from day to day")
+p = p + ggtitle("Change in COVID-19 test capacity from day to day")
 p = p + ylab("Change in tests performed compared to previous day") + xlab("Date")
 p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%a %b %d")
 p = p + scale_y_continuous(labels = scales::comma_format(big.mark = ',', decimal.mark = '.'))
@@ -236,7 +266,7 @@ p = p + geom_line()
 p = p + geom_point()
 p = p + theme_bw()
 p = p + theme(axis.text.x=element_text(angle=45, hjust=1)) + theme(plot.title = element_text(hjust = 0.5))
-p = p + ggtitle("New positive cases observed per day in US")
+p = p + ggtitle("New positive COVID-19 cases observed per day in US")
 p = p + ylab("Daily positive count") + xlab("Date")
 p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%a %b %d")
 p = p + scale_y_continuous(labels = scales::comma_format(big.mark = ',', decimal.mark = '.'))
@@ -255,7 +285,7 @@ p = p + geom_line()
 p = p + geom_point()
 p = p + theme_bw()
 p = p + theme(axis.text.x=element_text(angle=45, hjust=1)) + theme(plot.title = element_text(hjust = 0.5))
-p = p + ggtitle("Total cumulative positive cases observed to date")
+p = p + ggtitle("Total cumulative COVID-19 positive cases observed to date")
 p = p + ylab("Cumulative positive count") + xlab("Date")
 p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%a %b %d") 
 p = p + scale_y_continuous(labels = scales::comma_format(big.mark = ',', decimal.mark = '.'))
@@ -276,7 +306,7 @@ p = p + geom_line()
 p = p + geom_point()
 p = p + theme_bw()
 p = p + theme(axis.text.x=element_text(angle=45, hjust=1)) + theme(plot.title = element_text(hjust = 0.5))
-p = p + ggtitle("Positive test rate observed per day in US")
+p = p + ggtitle("Positive COVID-19 test rate observed per day in US")
 p = p + ylab("Daily positive test rate % (new pos / new pos+neg)*100") + xlab("Date")
 p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%a %b %d") 
 print(p)
@@ -294,7 +324,7 @@ p = p + geom_line()
 p = p + geom_point()
 p = p + theme_bw()
 p = p + theme(axis.text.x=element_text(angle=45, hjust=1)) + theme(plot.title = element_text(hjust = 0.5))
-p = p + ggtitle("Cumulative positive test rate observed in US")
+p = p + ggtitle("Cumulative COVID-19 positive test rate observed in US")
 p = p + ylab("Cumulative positive test rate % (pos / pos+neg)*100") + xlab("Date")
 p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%a %b %d") 
 print(p)
@@ -314,7 +344,7 @@ p = p + geom_line()
 p = p + geom_point()
 p = p + theme_bw()
 p = p + theme(axis.text.x=element_text(angle=45, hjust=1)) + theme(plot.title = element_text(hjust = 0.5))
-p = p + ggtitle("New deaths observed in US")
+p = p + ggtitle("New COVID-19 deaths observed in US")
 p = p + ylab("New deaths") + xlab("Date")
 p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%a %b %d") 
 p = p + scale_y_continuous(labels = scales::comma_format(big.mark = ',', decimal.mark = '.'))
@@ -324,7 +354,28 @@ print(p)
 ******
 <br>
 
-**Figure 9**. Cumulative deaths observed to date.
+**Figure 9**. Number of new deaths observed each day compared to estimated number of deaths per day from other common causes. Other causes of death are based on the CDC leading causes of death report for 2017 (annual death number / 365 to determine the average daily number for each cause). Also note that for some of the lower causes of death the CDC report does not provide a total count and I compiled it from the ethnicity comparison (table D). This will underestimate deaths from liver disease, septicemia, hypertension, and assault. The estimated deaths from other causes have been adjusted to account for ~2% population increase since 2017.
+
+```{r new_deaths_ref, echo=FALSE, dpi=dpival}
+#plot the new deaths each day with reference points from other causes of death 
+p = ggplot(data=data_us_daily, aes(x=ymd(date), y=NewDeaths, group=1))
+p = p + geom_line()
+p = p + geom_point()
+p = p + theme_bw()
+p = p + theme(axis.text.x=element_text(angle=45, hjust=1)) + theme(plot.title = element_text(hjust = 0.5))
+p = p + ggtitle("New COVID-19 deaths observed in US compared to other causes")
+p = p + ylab("New deaths") + xlab("Date")
+p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%a %b %d") 
+p = p + scale_y_continuous(labels = scales::comma_format(big.mark = ',', decimal.mark = '.'), limits=c(0,max_daily_deaths))
+p = p + geom_hline(data=other_causes_of_death, aes(group=cause, yintercept=y/365, color=cause))
+p = p + labs(color = "Cause of Death")
+print(p)
+```
+
+******
+<br>
+
+**Figure 10**. Cumulative deaths observed to date.
 
 ```{r deaths, echo=FALSE, dpi=dpival}
 #plot the deaths each day 
@@ -333,7 +384,7 @@ p = p + geom_line()
 p = p + geom_point()
 p = p + theme_bw()
 p = p + theme(axis.text.x=element_text(angle=45, hjust=1)) + theme(plot.title = element_text(hjust = 0.5))
-p = p + ggtitle("Total cumulative deaths observed in US")
+p = p + ggtitle("Total cumulative COVID-19 deaths observed in US")
 p = p + ylab("Total cumulative deaths") + xlab("Date")
 p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%a %b %d") 
 p = p + scale_y_continuous(labels = scales::comma_format(big.mark = ',', decimal.mark = '.'))
@@ -343,9 +394,31 @@ print(p)
 ******
 <br>
 
+**Figure 11**. Cumulative deaths observed to date compared to other causes of death (annual numbers). This has similar caveats to the plot above comparing daily deaths from covid to other common causes.
+
+```{r deaths_ref, echo=FALSE, dpi=dpival}
+#plot the deaths each day 
+p = ggplot(data=data_us_daily, aes(x=ymd(date), y=death, group=1))
+p = p + geom_line()
+p = p + geom_point()
+p = p + theme_bw()
+p = p + theme(axis.text.x=element_text(angle=45, hjust=1)) + theme(plot.title = element_text(hjust = 0.5))
+p = p + ggtitle("Total cumulative COVID-19 deaths compared to other causes")
+p = p + ylab("Total cumulative deaths") + xlab("Date")
+p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%a %b %d") 
+p = p + scale_y_continuous(labels = scales::comma_format(big.mark = ',', decimal.mark = '.'), limits=c(0,max_annual_deaths))
+p = p + geom_hline(data=other_causes_of_death, aes(group=cause, yintercept=y, color=cause))
+p = p + labs(color = "Cause of Death")
+
+print(p)
+```
+
+******
+<br>
+
 ### Death rate
 
-**Figure 10**. The overall cumulative apparent death rate. An overall estimate of the deadliness of the disease. As testing becomes more widespread and larger numbers of people are tested (even those with less severe symptoms) this number will hopefully drop. In the early days of the outbreak, many of those tested were presumably those with the worst symptoms. This contributes to a very high apparent fatality rate.  As testing becomes more widespread, this rate should drop.  However, unless testing becomes very widespread and systematic, it will probably always overestimate the true lethality of the disease because some will get the virus, remain healthy and never get tested.
+**Figure 12**. The overall cumulative apparent death rate. An overall estimate of the deadliness of the disease. As testing becomes more widespread and larger numbers of people are tested (even those with less severe symptoms) this number will hopefully drop. In the early days of the outbreak, many of those tested were presumably those with the worst symptoms. This contributes to a very high apparent fatality rate.  As testing becomes more widespread, this rate should drop.  However, unless testing becomes very widespread and systematic, it will probably always overestimate the true lethality of the disease because some will get the virus, remain healthy and never get tested.
 
 ```{r cum_death_rate, echo=FALSE, dpi=dpival}
 #plot the cumulative death rate (cumulative deaths / cumulative positives)
@@ -354,7 +427,7 @@ p = p + geom_line()
 p = p + geom_point()
 p = p + theme_bw()
 p = p + theme(axis.text.x=element_text(angle=45, hjust=1)) + theme(plot.title = element_text(hjust = 0.5))
-p = p + ggtitle("Cumulative death rate observed in US")
+p = p + ggtitle("Cumulative COVID-19 death rate observed in US")
 p = p + ylab("Observed death rate % (total deaths / total pos)*100") + xlab("Date")
 p = p + scale_x_date(date_breaks = "1 day", date_labels =  "%a %b %d") 
 print(p)
