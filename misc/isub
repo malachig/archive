@@ -1,0 +1,74 @@
+#!/bin/bash
+
+function usage
+{
+    echo ""
+    echo "usage: isub -q <queue> -m <memory> -a <docker image> -h"
+    echo ""
+    echo "  -q | --queue     LSF Queue - default oncology-interactive"
+    echo "  -g | --group     Compute group - default compute-oncology (other options: compute-griffith, compute-mgriffit, compute-obigriffith, etc.)"
+    echo "  -m | --mem       Memory to reserve (in Gb). Default 2"
+    echo "  -n | --nthreads  Number of processors to reserve"
+    echo "  -i | --image     Use this docker image"
+    echo "                   Default: docker(chrisamiller/docker-genomic-analysis)"
+    echo "                   expects a comparably formatted LSF docker string"
+    echo "  -h | --help      show help/options"
+    echo ""
+    exit 1
+}
+
+while [[ "$1" != "" ]]; do
+    case $1 in
+         -q | --queue )         shift
+                                queue=$1
+                                ;;
+        -g | --group )          shift
+                                group=$1
+                                ;; 
+        -m | --mem )            shift
+                                mem=$1
+                                ;;
+        -n | --nthreads )       shift
+                                nthreads=$1
+                                ;;
+        -i | --image )          shift
+                                image=$1
+				;;
+        -h | --help )           usage
+                                exit
+                                ;;
+        * )                     usage
+                                exit 1
+    esac
+    shift
+done
+
+if [[ $queue == "" ]];then
+    queue="oncology-interactive"
+fi
+if [[ $mem == "" ]];then
+    mem=2;
+fi
+if [[ $ntheads == "" ]];then
+    nthreads=1;
+fi
+if [[ $image = "" ]];then
+    image="docker(chrisamiller/docker-genomic-analysis)";
+fi
+if [[ $group = "" ]];then
+    group="compute-oncology";
+fi
+
+#add "docker($image)" if necessary
+regex='^docker\('
+if [[ ! $image =~ $regex ]];then
+    image="docker(${image})";
+fi
+
+selectString="select[mem>$(( mem * 1000 ))] rusage[mem=$(( mem * 1000 ))]";
+
+echo "bsub command being run is:"
+echo "bsub -Is -M $(( $mem * 1000000 )) -G $group -n $nthreads -R '$selectString' -q $queue -a '$image' /bin/bash"
+bash -l -c "bsub -Is -M $(( $mem * 1000000 )) -G $group -n $nthreads -R '$selectString' -q $queue -a '$image' /bin/bash"
+ 
+
