@@ -141,13 +141,7 @@ cat $sample.output | python -m json.tool | grep location | sed 's@.*\"location\"
 
 for line in $(cat $sample.final_results)
 do
-    if [ $clean == "NO" ]; then
-        echo "Copying results file to results dir:" $line
-        cp -r $line $results
-    else
-        echo "Moving results file to results dir:" $line
-	mv $line $results
-    fi
+    cp -r $line $results
 done
 
 #############################################################################################
