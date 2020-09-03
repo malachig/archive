@@ -38,7 +38,7 @@ dpival = 150
 date_text_size = 6
 
 #define source URLs for data from covidtracking.org API
-url_us_daily = "https://covidtracking.com/api/us/daily"
+url_us_daily = "https://api.covidtracking.com/v1/us/daily.json"
 eurl_us_daily <- URLencode(url_us_daily)
 
 #load data as JSON
