@@ -105,10 +105,12 @@ data_us_daily[,"date"] = as.numeric(data_us_daily[,"date"])
 data_us_daily[,"states"] = as.numeric(data_us_daily[,"states"])
 data_us_daily[,"positive"] = as.numeric(data_us_daily[,"positive"])
 data_us_daily[,"negative"] = as.numeric(data_us_daily[,"negative"])
-data_us_daily[,"posNeg"] = as.numeric(data_us_daily[,"posNeg"])
 data_us_daily[,"pending"] = as.numeric(data_us_daily[,"pending"])
 data_us_daily[,"death"] = as.numeric(data_us_daily[,"death"])
-data_us_daily[,"total"] = as.numeric(data_us_daily[,"total"])
+#data_us_daily[,"total"] = as.numeric(data_us_daily[,"total"])
+data_us_daily[,"total"] = data_us_daily[,"positive"] + data_us_daily[,"negative"] + data_us_daily[,"pending"]
+#data_us_daily[,"posNeg"] = as.numeric(data_us_daily[,"posNeg"])
+data_us_daily[,"posNeg"] = data_us_daily[,"positive"] + data_us_daily[,"negative"]
 data_us_daily[,"totalTestResults"] = as.numeric(data_us_daily[,"totalTestResults"])
 
 #make sure the order has oldest dates first
