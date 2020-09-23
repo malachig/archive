@@ -36,6 +36,7 @@ library(rlist)
 #global params
 dpival = 150
 date_text_size = 6
+date_breaks = "3 day"
 
 #define source URLs for data from covidtracking.org API
 url_us_daily = "https://api.covidtracking.com/v1/us/daily.json"
@@ -215,7 +216,7 @@ p = p + theme_bw()
 p = p + theme(axis.text.x=element_text(angle=45, hjust=1, size=date_text_size)) + theme(plot.title = element_text(hjust = 0.5))
 p = p + ggtitle("Number of new COVID-19 tests performed per day in US")
 p = p + ylab("New tests performed") + xlab("Date")
-p = p + scale_x_date(date_breaks = "2 day", date_labels =  "%a %b %d") 
+p = p + scale_x_date(date_breaks = date_breaks, date_labels =  "%a %b %d") 
 p = p + scale_y_continuous(labels = scales::comma_format(big.mark = ',', decimal.mark = '.'))
 print(p)
 ```
@@ -234,7 +235,7 @@ p = p + theme_bw()
 p = p + theme(axis.text.x=element_text(angle=45, hjust=1, size=date_text_size)) + theme(plot.title = element_text(hjust = 0.5))
 p = p + ggtitle("Total cumulative COVID-19 tests performed to date")
 p = p + ylab("Cumulative tests performed") + xlab("Date")
-p = p + scale_x_date(date_breaks = "2 day", date_labels =  "%a %b %d")
+p = p + scale_x_date(date_breaks = date_breaks, date_labels =  "%a %b %d")
 p = p + scale_y_continuous(labels = scales::comma_format(big.mark = ',', decimal.mark = '.'))
 print(p)
 ```
@@ -254,7 +255,7 @@ p = p + theme_bw()
 p = p + theme(axis.text.x=element_text(angle=45, hjust=1, size=date_text_size)) + theme(plot.title = element_text(hjust = 0.5))
 p = p + ggtitle("Change in COVID-19 test capacity from day to day")
 p = p + ylab("Change in tests performed compared to previous day") + xlab("Date")
-p = p + scale_x_date(date_breaks = "2 day", date_labels =  "%a %b %d")
+p = p + scale_x_date(date_breaks = date_breaks, date_labels =  "%a %b %d")
 p = p + scale_y_continuous(labels = scales::comma_format(big.mark = ',', decimal.mark = '.'))
 print(p)
 ```
@@ -275,7 +276,7 @@ p = p + theme_bw()
 p = p + theme(axis.text.x=element_text(angle=45, hjust=1, size=date_text_size)) + theme(plot.title = element_text(hjust = 0.5))
 p = p + ggtitle("New positive COVID-19 cases observed per day in US")
 p = p + ylab("Daily positive count") + xlab("Date")
-p = p + scale_x_date(date_breaks = "2 day", date_labels =  "%a %b %d")
+p = p + scale_x_date(date_breaks = date_breaks, date_labels =  "%a %b %d")
 p = p + scale_y_continuous(labels = scales::comma_format(big.mark = ',', decimal.mark = '.'))
 print(p)
 ```
@@ -294,7 +295,7 @@ p = p + theme_bw()
 p = p + theme(axis.text.x=element_text(angle=45, hjust=1, size=date_text_size)) + theme(plot.title = element_text(hjust = 0.5))
 p = p + ggtitle("Total cumulative COVID-19 positive cases observed to date")
 p = p + ylab("Cumulative positive count") + xlab("Date")
-p = p + scale_x_date(date_breaks = "2 day", date_labels =  "%a %b %d") 
+p = p + scale_x_date(date_breaks = date_breaks, date_labels =  "%a %b %d") 
 p = p + scale_y_continuous(labels = scales::comma_format(big.mark = ',', decimal.mark = '.'))
 print(p)
 ```
@@ -315,7 +316,7 @@ p = p + theme_bw()
 p = p + theme(axis.text.x=element_text(angle=45, hjust=1, size=date_text_size)) + theme(plot.title = element_text(hjust = 0.5))
 p = p + ggtitle("Positive COVID-19 test rate observed per day in US")
 p = p + ylab("Daily positive test rate % (new pos / new pos+neg)*100") + xlab("Date")
-p = p + scale_x_date(date_breaks = "2 day", date_labels =  "%a %b %d") 
+p = p + scale_x_date(date_breaks = date_breaks, date_labels =  "%a %b %d") 
 print(p)
 ```
 
@@ -333,7 +334,7 @@ p = p + theme_bw()
 p = p + theme(axis.text.x=element_text(angle=45, hjust=1, size=date_text_size)) + theme(plot.title = element_text(hjust = 0.5))
 p = p + ggtitle("Cumulative COVID-19 positive test rate observed in US")
 p = p + ylab("Cumulative positive test rate % (pos / pos+neg)*100") + xlab("Date")
-p = p + scale_x_date(date_breaks = "2 day", date_labels =  "%a %b %d") 
+p = p + scale_x_date(date_breaks = date_breaks, date_labels =  "%a %b %d") 
 print(p)
 ```
 
@@ -353,7 +354,7 @@ p = p + theme_bw()
 p = p + theme(axis.text.x=element_text(angle=45, hjust=1, size=date_text_size)) + theme(plot.title = element_text(hjust = 0.5))
 p = p + ggtitle("New COVID-19 deaths observed in US")
 p = p + ylab("New deaths") + xlab("Date")
-p = p + scale_x_date(date_breaks = "2 day", date_labels =  "%a %b %d") 
+p = p + scale_x_date(date_breaks = date_breaks, date_labels =  "%a %b %d") 
 p = p + scale_y_continuous(labels = scales::comma_format(big.mark = ',', decimal.mark = '.'))
 print(p)
 ```
@@ -372,7 +373,7 @@ p = p + theme_bw()
 p = p + theme(axis.text.x=element_text(angle=45, hjust=1, size=date_text_size)) + theme(plot.title = element_text(hjust = 0.5))
 p = p + ggtitle("New COVID-19 deaths observed in US compared to other causes")
 p = p + ylab("New deaths") + xlab("Date")
-p = p + scale_x_date(date_breaks = "2 day", date_labels =  "%a %b %d") 
+p = p + scale_x_date(date_breaks = date_breaks, date_labels =  "%a %b %d") 
 p = p + scale_y_continuous(labels = scales::comma_format(big.mark = ',', decimal.mark = '.'), limits=c(0,max_daily_deaths))
 p = p + geom_hline(data=other_causes_of_death, aes(group=cause, yintercept=y/365, color=cause))
 p = p + labs(color = "Cause of Death")
@@ -393,7 +394,7 @@ p = p + theme_bw()
 p = p + theme(axis.text.x=element_text(angle=45, hjust=1, size=date_text_size)) + theme(plot.title = element_text(hjust = 0.5))
 p = p + ggtitle("Total cumulative COVID-19 deaths observed in US")
 p = p + ylab("Total cumulative deaths") + xlab("Date")
-p = p + scale_x_date(date_breaks = "2 day", date_labels =  "%a %b %d") 
+p = p + scale_x_date(date_breaks = date_breaks, date_labels =  "%a %b %d") 
 p = p + scale_y_continuous(labels = scales::comma_format(big.mark = ',', decimal.mark = '.'))
 print(p)
 ```
@@ -412,7 +413,7 @@ p = p + theme_bw()
 p = p + theme(axis.text.x=element_text(angle=45, hjust=1, size=date_text_size)) + theme(plot.title = element_text(hjust = 0.5))
 p = p + ggtitle("Total cumulative COVID-19 deaths compared to other causes")
 p = p + ylab("Total cumulative deaths") + xlab("Date")
-p = p + scale_x_date(date_breaks = "2 day", date_labels =  "%a %b %d") 
+p = p + scale_x_date(date_breaks = date_breaks, date_labels =  "%a %b %d") 
 p = p + scale_y_continuous(labels = scales::comma_format(big.mark = ',', decimal.mark = '.'), limits=c(0,max_annual_deaths))
 p = p + geom_hline(data=other_causes_of_death, aes(group=cause, yintercept=y, color=cause))
 p = p + labs(color = "Cause of Death")
@@ -435,7 +436,7 @@ p = p + theme_bw()
 p = p + theme(axis.text.x=element_text(angle=45, hjust=1, size=date_text_size)) + theme(plot.title = element_text(hjust = 0.5))
 p = p + ggtitle("Cumulative COVID-19 death rate observed in US")
 p = p + ylab("Observed death rate % (total deaths / total pos)*100") + xlab("Date")
-p = p + scale_x_date(date_breaks = "2 day", date_labels =  "%a %b %d") 
+p = p + scale_x_date(date_breaks = date_breaks, date_labels =  "%a %b %d") 
 print(p)
 ```
 
@@ -459,38 +460,41 @@ deaths = prettyNum(data_us_daily[last_day,"death"], big.mark=",",scientific=FALS
 x = round(mean(data_us_daily[(dim(data_us_daily)[1]-7):(dim(data_us_daily)[1]),"NewDeaths"]), digits=0)
 avg_daily_death_last_7days = prettyNum(x, big.mark=",",scientific=FALSE)
 annual_deaths_estimate_last_7days = prettyNum(x*365, big.mark=",",scientific=FALSE)
+death_ranking_7days = length(which(unique(other_causes_of_death$y) - x*365 > 0)) + 1
 
 x = round(mean(data_us_daily[(dim(data_us_daily)[1]-14):(dim(data_us_daily)[1]),"NewDeaths"]), digits=0)
 avg_daily_death_last_14days = prettyNum(x, big.mark=",",scientific=FALSE)
 annual_deaths_estimate_last_14days = prettyNum(x*365, big.mark=",",scientific=FALSE)
+death_ranking_14days = length(which(unique(other_causes_of_death$y) - x*365 > 0)) + 1
 
 x = round(mean(data_us_daily[(dim(data_us_daily)[1]-21):(dim(data_us_daily)[1]),"NewDeaths"]), digits=0)
 avg_daily_death_last_21days = prettyNum(x, big.mark=",",scientific=FALSE)
 annual_deaths_estimate_last_21days = prettyNum(x*365, big.mark=",",scientific=FALSE)
+death_ranking_21days = length(which(unique(other_causes_of_death$y) - x*365 > 0)) + 1
 
 x = round(mean(data_us_daily[(dim(data_us_daily)[1]-28):(dim(data_us_daily)[1]),"NewDeaths"]), digits=0)
 avg_daily_death_last_28days = prettyNum(x, big.mark=",",scientific=FALSE)
 annual_deaths_estimate_last_28days = prettyNum(x*365, big.mark=",",scientific=FALSE)
+death_ranking_28days = length(which(unique(other_causes_of_death$y) - x*365 > 0)) + 1
 
 death_ranking = length(which(unique(other_causes_of_death$y) - max(data_us_daily$death) > 0)) + 1
 
 summary_line1 = paste(new_tests, " tests were performed yesterday, of which ", positive_rate, "% were positive (", new_positives," new cases). Total number of tests performed to date stands at ", total_tests, ". Total cases in the US now stands at ", total_cases, " and the cumulative positive test rate stands at ", cum_pos_test_rate, "%. There were ", new_deaths, " new deaths yesterday, the total number of deaths in the US now stands at ", deaths, " and the cumulative death rate now stands at ", cum_death_rate, "%.", sep="")
 writeLines(summary_line1)
 
-
-summary_line2 = paste("Currently COVID19 is estimated to be the number ", death_ranking, " cause of death when comparing current deaths to expected annual deaths from other causes."  , sep="")
+summary_line2 = paste("Currently cumulatively for the whole year COVID19 is estimated to be the number ", death_ranking, " cause of death when comparing current deaths to expected annual deaths from other causes."  , sep="")
 writeLines(summary_line2)
 
-summary_line3 = paste("Over the past week the average daily deaths was ", avg_daily_death_last_7days, ". That rate would result in ", annual_deaths_estimate_last_7days, " deaths annually.", sep="")
+summary_line3 = paste("Over the past week the average daily deaths was ", avg_daily_death_last_7days, ". That rate would result in ", annual_deaths_estimate_last_7days, " deaths annually.", " At that rate it would be the number ", death_ranking_7days, " cause of death compared to expected annual deaths from other causes.", sep="")
 writeLines(summary_line3)
 
-summary_line4 = paste("Over the past two weeks the average daily deaths was ", avg_daily_death_last_14days, ". That rate would result in ", annual_deaths_estimate_last_14days, " deaths annually.", sep="")
+summary_line4 = paste("Over the past two weeks the average daily deaths was ", avg_daily_death_last_14days, ". That rate would result in ", annual_deaths_estimate_last_14days, " deaths annually.", " At that rate it would be the number ", death_ranking_14days, " cause of death compared to expected annual deaths from other causes.", sep="")
 writeLines(summary_line4)
 
-summary_line5 = paste("Over the past three weeks the average daily deaths was ", avg_daily_death_last_21days, ". That rate would result in ", annual_deaths_estimate_last_21days, " deaths annually.", sep="")
+summary_line5 = paste("Over the past three weeks the average daily deaths was ", avg_daily_death_last_21days, ". That rate would result in ", annual_deaths_estimate_last_21days, " deaths annually.", " At that rate it would be the number ", death_ranking_21days, " cause of death compared to expected annual deaths from other causes.", sep="")
 writeLines(summary_line5)
 
-summary_line6 = paste("Over the past four weeks the average daily deaths was ", avg_daily_death_last_28days, ". That rate would result in ", annual_deaths_estimate_last_28days, " deaths annually.", sep="")
+summary_line6 = paste("Over the past four weeks the average daily deaths was ", avg_daily_death_last_28days, ". That rate would result in ", annual_deaths_estimate_last_28days, " deaths annually.", " At that rate it would be the number ", death_ranking_28days, " cause of death compared to expected annual deaths from other causes.", sep="")
 writeLines(summary_line6)
 
 
