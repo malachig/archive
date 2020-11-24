@@ -7,7 +7,6 @@ use Data::Dumper;
 #https://imp-lims.gsc.wustl.edu/entity/disk-group/39999
 
 my @dirs = qw (/gscmnt/gc2142/griffithlab/ 
-               /gscmnt/sata206/griffithlab/ 
                /gscmnt/gc2547/griffithlab/ 
                /gscmnt/gc2502/griffithlab/ 
                /gscmnt/gc2602/griffithlab/ 
@@ -19,11 +18,14 @@ my @dirs = qw (/gscmnt/gc2142/griffithlab/
                /gscmnt/gc2753/fehniger/
                /gscmnt/gc2624/fehniger/
                /gscmnt/gc2552/uppaluri/
-               /gscmnt/gc2609/gbm_antigen_dunn/
-               /gscmnt/gc2762/bisiademuyiwa/
+               /gscmnt/gc2609/gbm_antigen_dunn/model_data/
                /gscmnt/gc2571/
-               /gscmnt/gc2611/10x_fields/
+               /gscmnt/gc2551/rubin/
                );
+
+#Old dirs moved to compute1
+#/gscmnt/gc2762/bisiademuyiwa/instrument_data/
+#/gscmnt/gc2611/10x_fields/
 
 my $grand_total_allocated_tb = 0;
 my $grand_total_used_tb = 0;
