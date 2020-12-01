@@ -167,6 +167,9 @@ data_us_daily[,"CumDeathRate"] = data_us_daily[,"death"] / data_us_daily[,"posit
 min_date = min(data_us_daily$date)
 max_date = max(data_us_daily$date)
 
+#determine the high water mark for number of daily cases and number of daily deaths
+max_new_positives = max(data_us_daily[,"NewPositives"])
+max_new_deaths = max(data_us_daily[,"NewDeaths"])
 
 #death stats from 2017 CDC
 heart_df = data.frame( x = c(min_date, max_date), y = 647457, cause = "Heart disease")
@@ -265,7 +268,7 @@ print(p)
 
 ### Positive cases
 
-**Figure 4**. The number of **new** positive cases reported each day are summarized below.
+**Figure 4**. The number of **new** positive cases reported each day are summarized below. Dotted line indicates the high water mark.
 
 ```{r pos_cases, echo=FALSE, dpi=dpival}
 #plot the number of positive cases each day
@@ -278,6 +281,7 @@ p = p + ggtitle("New positive COVID-19 cases observed per day in US")
 p = p + ylab("Daily positive count") + xlab("Date")
 p = p + scale_x_date(date_breaks = date_breaks, date_labels =  "%a %b %d")
 p = p + scale_y_continuous(labels = scales::comma_format(big.mark = ',', decimal.mark = '.'))
+p = p + geom_hline(yintercept=max_new_positives, color="red", lty=2, lwd=0.2)
 print(p)
 ```
 
@@ -343,7 +347,7 @@ print(p)
 
 ### Deaths
 
-**Figure 8**. Number of new deaths observed each day.  Pretty self explanatory. We want this to trend downwards...
+**Figure 8**. Number of new deaths observed each day. Dotted line indicates the high water mark. Pretty self explanatory. We want this to trend downwards... 
 
 ```{r new_deaths, echo=FALSE, dpi=dpival}
 #plot the new deaths each day 
@@ -356,6 +360,7 @@ p = p + ggtitle("New COVID-19 deaths observed in US")
 p = p + ylab("New deaths") + xlab("Date")
 p = p + scale_x_date(date_breaks = date_breaks, date_labels =  "%a %b %d") 
 p = p + scale_y_continuous(labels = scales::comma_format(big.mark = ',', decimal.mark = '.'))
+p = p + geom_hline(yintercept=max_new_deaths, color="red", lty=2, lwd=0.2)
 print(p)
 ```
 
