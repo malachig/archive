@@ -246,6 +246,19 @@ data_us_daily[,"immune_percent"] = ((x + y + z2)/non_kids_population)*100
 data_us_daily[remaining_nas,"non_kid_vaccination_percent"] = NA
 data_us_daily[remaining_nas2,"immune_percent"] = NA
 
+#predict when herd immunity might happen
+last_x_days = 14
+dates = data_us_daily[(nrow(data_us_daily)-last_x_days):nrow(data_us_daily),"date"]
+immune_percents = data_us_daily[(nrow(data_us_daily)-last_x_days):nrow(data_us_daily),"immune_percent"]
+startdate <- as.Date("01/01/2020","%d/%m/%Y")
+days = difftime(ymd(dates), startdate, units="days")
+herd_immunity = data.frame(as.numeric(days), immune_percents)
+names(herd_immunity) = c("days","percent_immune")
+herd_immunity.lm = lm(days ~ percent_immune, data=herd_immunity)
+coeffs = coefficients(herd_immunity.lm)
+days_until_75_herd_immunity = round((coeffs[1] + coeffs[2]*75) - max(herd_immunity$days), digits=0) 
+days_until_95_herd_immunity = round((coeffs[1] + coeffs[2]*95) - max(herd_immunity$days), digits=0)
+
 ```
 
 ## Visualizations
@@ -542,8 +555,8 @@ p = p + ggtitle("Categories of protection contributing to possible herd immunity
 p = p + ylab("Percent of non-child population") + xlab("Date")
 p = p + scale_x_date(date_breaks = date_breaks, date_labels =  "%a %b %d") 
 p = p + geom_vline(xintercept=ymd(vac_start_date), color=vac_color, lty=2, lwd=0.2)
-p = p + geom_hline(yintercept=75, color="green", alpha=0.9, lty=3) 
-p = p + geom_hline(yintercept=95, color="green", alpha=0.9, lty=3) 
+p = p + geom_hline(yintercept=75, color="green", alpha=0.5, lty=3, lwd=2) 
+p = p + geom_hline(yintercept=95, color="green", alpha=0.5, lty=3, lwd=2) 
 p = p + scale_color_manual(name = "Immunity type", values = cols)
 print(p)
 
@@ -552,7 +565,7 @@ print(p)
 
 ## Executive summary
 
-The following pulls some reference values from the data based on the latest update a summarizes a few key numbers:
+The following pulls some reference values from the data based on the latest update and summarizes a few key numbers:
 
 ```{r executive_summary, echo=FALSE, message=FALSE, comment=NA}
 last_day = dim(data_us_daily)[1]
@@ -589,7 +602,11 @@ death_ranking_28days = length(which(unique(other_causes_of_death$y) - x*365 > 0)
 
 death_ranking = length(which(unique(other_causes_of_death$y) - max(data_us_daily$death) > 0)) + 1
 
-summary_line1 = paste(new_tests, " tests were performed yesterday, of which ", positive_rate, "% were positive (", new_positives," new cases). Total number of tests performed to date stands at ", total_tests, ". Total cases in the US now stands at ", total_cases, " and the cumulative positive test rate stands at ", cum_pos_test_rate, "%. There were ", new_deaths, " new deaths yesterday, the total number of deaths in the US now stands at ", deaths, " and the cumulative death rate now stands at ", cum_death_rate, "%.", sep="")
+total_vaccinated = prettyNum(max(data_us_daily[,"total_vaccinations"], na.rm = TRUE), big.mark=",", scientific=FALSE)
+non_kid_vaccination_percent = round(max(data_us_daily[,"non_kid_vaccination_percent"], na.rm = TRUE), digits=1)
+non_kid_immune_percent = round(max(data_us_daily[,"immune_percent"], na.rm = TRUE), digits=1)
+
+summary_line1 = paste(new_tests, " tests were performed yesterday, of which ", positive_rate, "% were positive (", new_positives," new cases). Total number of tests performed to date stands at ", total_tests, ". Total cases in the US now stands at ", total_cases, " and the cumulative positive test rate stands at ", cum_pos_test_rate, "%. There were ", new_deaths, " new deaths yesterday, the total number of deaths in the US now stands at ", deaths, " and the cumulative death rate now stands at ", cum_death_rate, "% (based on confirmed cases only). ", "We have now vaccinated ", total_vaccinated, " adults, which represents ", non_kid_vaccination_percent, "% of the non-child population. Immunity from vaccination, infection (or both) is now estimated to cover ", non_kid_immune_percent, "% of the non-child population. Based on the last ", last_x_days, " days we can project that 75% herd immunity could occur in ", days_until_75_herd_immunity, " days, and that 95% herd immunity could occur in ", days_until_95_herd_immunity, " days (using a simple linear model, all sources of immunity, and considering all other other assumptions listed above).", sep="")
 writeLines(summary_line1)
 
 summary_line2 = paste("Currently cumulatively for the whole year COVID19 is estimated to be the number ", death_ranking, " cause of death when comparing current deaths to expected annual deaths from other causes."  , sep="")
