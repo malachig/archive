@@ -36,26 +36,7 @@ unless ($dir2 =~ /\/$/){
   $dir2 .= "/";
 }
 
-#my $test1 = "/Volumes/Volume_1/DLINK_NFS1/TV/30 Rock/Season 1";
-#$test1 =~ s/ /\\ /g;
-#print "\n\ntest1: $test1\n\n";
-#if (-d $test1){
-#  print "\n\nDir Found\n\n";
-#}else{
-#  print "\n\nDir Not found\n\n";
-#}
-#opendir(DIR, $test1);
-#my @result = readdir(DIR);
-#my @result = `ls $test1`;
-#print YELLOW, "\n\nls result: @result\n\n", RESET;
-#exit();
-
-#Escape spaces in input paths
-#$dir1 =~ s/ /\\\\ /g;
-#$dir2 =~ s/ /\\\\ /g;
-
 print BLUE, "\n\nLooking for files in Dir1 ('old dir') and then seeing if all these files exist in Dir2 ('new_dir')", RESET;
-
 
 #ls the dir1 and capture the outcome
 print BLUE, "\n\nFirst gathering files from dir1: $dir1", RESET;
@@ -64,7 +45,6 @@ $dir1_temp =~ s/\\//g;
 opendir(DIR, "$dir1_temp") || die "\n\nCould not open dir for reading: $dir1_temp";
 my @ls = readdir(DIR);
 chomp(@ls);
-
 
 #How many files found?
 my $file_count = scalar (@ls);

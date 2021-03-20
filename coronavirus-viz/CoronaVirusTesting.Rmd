@@ -167,6 +167,10 @@ data_us_daily[,"DailyPosTestRate"] = data_us_daily[,"NewPositives"] / data_us_da
 data_us_daily[,"CumPosTestRate"] = data_us_daily[,"positive"] / data_us_daily[,"posNeg"]
 data_us_daily[,"CumDeathRate"] = data_us_daily[,"death"] / data_us_daily[,"positive"]
 
+#fix remove weird values
+data_us_daily[which(data_us_daily[,"DailyPosTestRate"] < 0),"DailyPosTestRate"] = NA
+data_us_daily[which(data_us_daily[,"NewTests"] < 0),"NewTests"] = NA
+
 #create a dataframe of daily death rates
 min_date = min(data_us_daily$date)
 max_date = max(data_us_daily$date)
@@ -207,11 +211,15 @@ other_causes_of_death$cause = factor(other_causes_of_death$cause, levels=ordered
 #now import vaccination data from a different source (Our World in Data)
 vaccination_data = read.csv(file="https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/vaccinations/country_data/United%20States.csv", header=T, sep=",", as.is=c(1,3,4))
 
+#fill in missing data point
+vaccination_data[which(vaccination_data$date=="2021-01-13"), "people_vaccinated"] = 9327138
+
 #integrate these data with the dataframe from the covidtracking API
 data_us_daily[,"total_vaccinations"] = NA
 i = which(ymd(data_us_daily$date) %in% ymd(vaccination_data$date))
 j = which(ymd(vaccination_data$date) %in% ymd(data_us_daily$date))
-data_us_daily[i,"total_vaccinations"] = vaccination_data[j,"total_vaccinations"]
+#data_us_daily[i,"total_vaccinations"] = vaccination_data[j,"total_vaccinations"]
+data_us_daily[i, "total_vaccinations"] = vaccination_data[j,"people_vaccinated"]
 
 #herd immunity estimates
 #what is the true infection rate in US?:
@@ -268,7 +276,7 @@ days_until_95_herd_immunity = round((coeffs[1] + coeffs[2]*95) - max(herd_immuni
 <br>
 **Figure 1**. To assess the increasing COVID-19 testing in the US, the number of **new** tests reported each day are summarized below. 
 
-```{r tests_per_day, echo=FALSE, dpi=dpival}
+```{r tests_per_day, echo=FALSE, dpi=dpival, warning=FALSE}
 
 #plot the number of new tests performed each day
 p = ggplot(data=data_us_daily, aes(x=ymd(date), y=NewTests, group=1))
@@ -606,7 +614,7 @@ total_vaccinated = prettyNum(max(data_us_daily[,"total_vaccinations"], na.rm = T
 non_kid_vaccination_percent = round(max(data_us_daily[,"non_kid_vaccination_percent"], na.rm = TRUE), digits=1)
 non_kid_immune_percent = round(max(data_us_daily[,"immune_percent"], na.rm = TRUE), digits=1)
 
-summary_line1 = paste(new_tests, " tests were performed yesterday, of which ", positive_rate, "% were positive (", new_positives," new cases). Total number of tests performed to date stands at ", total_tests, ". Total cases in the US now stands at ", total_cases, " and the cumulative positive test rate stands at ", cum_pos_test_rate, "%. There were ", new_deaths, " new deaths yesterday, the total number of deaths in the US now stands at ", deaths, " and the cumulative death rate now stands at ", cum_death_rate, "% (based on confirmed cases only). ", "We have now vaccinated ", total_vaccinated, " adults, which represents ", non_kid_vaccination_percent, "% of the non-child population. Immunity from vaccination, infection (or both) is now estimated to cover ", non_kid_immune_percent, "% of the non-child population. Based on the last ", last_x_days, " days we can project that 75% herd immunity could occur in ", days_until_75_herd_immunity, " days, and that 95% herd immunity could occur in ", days_until_95_herd_immunity, " days (using a simple linear model, all sources of immunity, and considering all other other assumptions listed above).", sep="")
+summary_line1 = paste(new_tests, " tests were performed yesterday, of which ", positive_rate, "% were positive (", new_positives," new cases). Total number of tests performed to date stands at ", total_tests, ". Total cases in the US now stands at ", total_cases, " and the cumulative positive test rate stands at ", cum_pos_test_rate, "%. There were ", new_deaths, " new deaths yesterday, the total number of deaths in the US now stands at ", deaths, " and the cumulative death rate now stands at ", cum_death_rate, "% (based on confirmed cases only). ", "We have now vaccinated ", total_vaccinated, " adults (at least one dose), which represents ", non_kid_vaccination_percent, "% of the non-child population. Immunity from vaccination, infection (or both) is now estimated to cover ", non_kid_immune_percent, "% of the non-child population. Based on the last ", last_x_days, " days we can project that 75% herd immunity could occur in ", days_until_75_herd_immunity, " days, and that 95% herd immunity could occur in ", days_until_95_herd_immunity, " days (using a simple linear model, all sources of immunity, and considering all other other assumptions listed above).", sep="")
 writeLines(summary_line1)
 
 summary_line2 = paste("Currently cumulatively for the whole year COVID19 is estimated to be the number ", death_ranking, " cause of death when comparing current deaths to expected annual deaths from other causes."  , sep="")

@@ -182,9 +182,6 @@ foreach my $artist_dir (sort @artists){
   }
 }
 
-
-
-
 print "\n\n";
 
 exit;

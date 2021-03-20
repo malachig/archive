@@ -6,17 +6,6 @@ use Getopt::Long;
 use Term::ANSIColor qw(:constants);
 use File::Basename;
 
-#my $alexa_seq_config_file = '';
-#my $project_config_file = '';
-#my $commands_file = '';
-#my $cluster_commands = '';
-#my $clean = '';
-#my $demo = '';
-
-#GetOptions ('alexa_seq_config_file=s'=>\$alexa_seq_config_file, 'project_config_file=s'=>\$project_config_file, 'commands_file=s'=>\$commands_file, 'clean=s'=>\$clean, 'cluster_commands=s'=>\$cluster_commands, 'demo=s'=>\$demo);
-
-#print "\n\nHello world\n\n";
-
 #ls the current dir and capture the outcome
 my @ls = `ls`;
 chomp(@ls);
