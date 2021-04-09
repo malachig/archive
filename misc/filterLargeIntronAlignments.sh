@@ -15,11 +15,11 @@ echo $regions
 echo $finaldir
 
 #create BAM covering only the regions of interest
-cat $regions | xargs samtools view -b $indir/$filename > $scratchdir/$filename.subset
+cat $regions | xargs samtools view -b $indir/$filename > $scratchdir/$filename.subset.bam
 
 #sort the BAM file
-samtools sort $scratchdir/$filename.subset -o $scratchdir/$filename.subset.sort.bam
-mv $scratchdir/$filename.subset.sort.bam $scratchdir/$filename.subset
+samtools sort -O bam -o $scratchdir/$filename.subset.sort.bam $scratchdir/$filename.subset.bam 
+mv $scratchdir/$filename.subset.sort.bam $scratchdir/$filename.subset.bam
 
 #create BAM with intron alignments >50000 removed
 samtools view -h $scratchdir/$filename.subset | perl -ne 'chomp; @l=split("\t",$_); if($l[5] =~ /(\d+)N/){if($1<50000){print "$_\n"}}else{print "$_\n"}' 2>/dev/null | samtools view -bS - > $scratchdir/$filename
