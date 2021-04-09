@@ -1,16 +1,18 @@
 #!/bin/bash
 #isub -i 'docker(zlskidmore/samtools:1.10)'
-#filterLargeIntronAlignments.sh /storage1/fs1/mgriffit/Active/scrna_mcb6c/Mouse_Bladder_MCB6C_Arora/scRNA/Rep3/v5/regtools/ Rep3_Control_tumor.bam /scratch1/fs1/mgriffit/filtered_scrna_bams/bams
+#filterLargeIntronAlignments.sh /storage1/fs1/mgriffit/Active/scrna_mcb6c/Mouse_Bladder_MCB6C_Arora/scRNA/Rep3/v5/regtools/ Rep3_Control_tumor.bam /scratch1/fs1/mgriffit/filtered_scrna_bams/bams /storage1/fs1/mgriffit/Active/temp
 
 indir=$1
 filename=$2
 scratchdir=$3
 regions=$4
+finaldir=$5
 
 echo $indir
 echo $filename
 echo $scratchdir
 echo $regions
+echo $finaldir
 
 #create BAM covering only the regions of interest
 cat $regions | xargs samtools view -b $indir/$filename > $scratchdir/$filename.subset
@@ -30,6 +32,13 @@ mv $scratchdir/$filename.tmp $scratchdir/$filename
 #index the new BAM
 samtools index $scratchdir/$filename
 
+#copy files to final dir
+cp $scratchdir/$filename $finaldir/$filename
+cp $scratchdir/$filename.bai $finaldir/$filename.bai
+
 #clean up temp files
 rm -f $scratchdir/$filename.header
 rm -f $scratchdir/$filename.subset
+rm -f $scratchdir/$filename
+rm -f $scratchdir/$filename.bai
+
