@@ -18,8 +18,8 @@ echo $finaldir
 cat $regions | xargs samtools view -b $indir/$filename > $scratchdir/$filename.subset
 
 #sort the BAM file
-samtools sort $scratchdir/$filename.subset -o $scratchdir/$filename.subset.sort
-mv $scratchdir/$filename.subset.sort $scratchdir/$filename.subset
+samtools sort $scratchdir/$filename.subset -o $scratchdir/$filename.subset.sort.bam
+mv $scratchdir/$filename.subset.sort.bam $scratchdir/$filename.subset
 
 #create BAM with intron alignments >50000 removed
 samtools view -h $scratchdir/$filename.subset | perl -ne 'chomp; @l=split("\t",$_); if($l[5] =~ /(\d+)N/){if($1<50000){print "$_\n"}}else{print "$_\n"}' 2>/dev/null | samtools view -bS - > $scratchdir/$filename
