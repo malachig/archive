@@ -22,7 +22,7 @@ samtools sort -O bam -o $scratchdir/$filename.subset.sort.bam $scratchdir/$filen
 mv $scratchdir/$filename.subset.sort.bam $scratchdir/$filename.subset.bam
 
 #create BAM with intron alignments >50000 removed
-samtools view -h $scratchdir/$filename.subset | perl -ne 'chomp; @l=split("\t",$_); if($l[5] =~ /(\d+)N/){if($1<50000){print "$_\n"}}else{print "$_\n"}' 2>/dev/null | samtools view -bS - > $scratchdir/$filename
+samtools view -h $scratchdir/$filename.subset.bam | perl -ne 'chomp; @l=split("\t",$_); if($l[5] =~ /(\d+)N/){if($1<50000){print "$_\n"}}else{print "$_\n"}' 2>/dev/null | samtools view -bS - > $scratchdir/$filename
 
 #add header back to BAM
 samtools view -H $indir/$filename > $scratchdir/$filename.header
@@ -38,7 +38,7 @@ cp $scratchdir/$filename.bai $finaldir/$filename.bai
 
 #clean up temp files
 rm -f $scratchdir/$filename.header
-rm -f $scratchdir/$filename.subset
+rm -f $scratchdir/$filename.subset.bam
 rm -f $scratchdir/$filename
 rm -f $scratchdir/$filename.bai
 
