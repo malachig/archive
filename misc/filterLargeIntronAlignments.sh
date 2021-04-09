@@ -4,22 +4,32 @@
 
 indir=$1
 filename=$2
-outdir=$3
+scratchdir=$3
+regions=$4
 
 echo $indir
 echo $filename
-echo $outdir
+echo $scratchdir
+echo $regions
+
+#create BAM covering only the regions of interest
+cat $regions | xargs samtools view -b $indir/$filename > $scratchdir/$filename.subset
+
+#sort the BAM file
+samtools sort $scratchdir/$filename.subset -o $scratchdir/$filename.subset.sort
+mv $scratchdir/$filename.subset.sort $scratchdir/$filename.subset
 
 #create BAM with intron alignments >50000 removed
-samtools view -h $indir/$filename | perl -ne 'chomp; @l=split("\t",$_); if($l[5] =~ /(\d+)N/){if($1<50000){print "$_\n"}}else{print "$_\n"}' 2>/dev/null | samtools view -bS - > $outdir/$filename
+samtools view -h $scratchdir/$filename.subset | perl -ne 'chomp; @l=split("\t",$_); if($l[5] =~ /(\d+)N/){if($1<50000){print "$_\n"}}else{print "$_\n"}' 2>/dev/null | samtools view -bS - > $scratchdir/$filename
 
 #add header back to BAM
-samtools view -H $indir/$filename > $outdir/$filename.header
-samtools reheader $outdir/$filename.header $outdir/$filename
+samtools view -H $indir/$filename > $scratchdir/$filename.header
+samtools reheader $scratchdir/$filename.header $scratchdir/$filename > $scratchdir/$filename.tmp
+mv $scratchdir/$filename.tmp $scratchdir/$filename
 
 #index the new BAM
-samtools index $outdir/$filename
+samtools index $scratchdir/$filename
 
 #clean up temp files
-rm -f $outdir/$filename.header
-
+rm -f $scratchdir/$filename.header
+rm -f $scratchdir/$filename.subset
