@@ -8,16 +8,14 @@ use Data::Dumper;
 
 my @dirs = qw (/gscmnt/gc2142/griffithlab/ 
                /gscmnt/gc2547/griffithlab/ 
-               /gscmnt/gc2502/griffithlab/ 
                /gscmnt/gc2602/griffithlab/ 
-               /gscmnt/gc2606/griffith/
                /gscmnt/gc2596/griffith/
+               /gscmnt/gc2606/griffith/
                /gscmnt/gc2736/griffithlab_gms/
                /gscmnt/gc2753/fehniger/
-               /gscmnt/gc2624/fehniger/
                /gscmnt/gc2552/uppaluri/
                /gscmnt/gc2609/gbm_antigen_dunn/model_data/
-               /gscmnt/gc2571/
+               /gscmnt/gc2571/melanoma_neoantigen/
                /gscmnt/gc2551/rubin/
                );
 
