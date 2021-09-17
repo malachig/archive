@@ -1,6 +1,7 @@
 #!/bin/bash
 #isub -i 'docker(zlskidmore/samtools:1.10)'
-#filterLargeIntronAlignments.sh /storage1/fs1/mgriffit/Active/scrna_mcb6c/Mouse_Bladder_MCB6C_Arora/scRNA/Rep3/v5/regtools/ Rep3_Control_tumor.bam /scratch1/fs1/mgriffit/filtered_scrna_bams/bams /storage1/fs1/mgriffit/Active/temp
+#~/git/archive/misc/filterLargeIntronAlignments.sh /storage1/fs1/mgriffit/Active/scrna_mcb6c/Mouse_Bladder_MCB6C_Arora/scRNA/Rep1/v5/M_HC-JKB216-ICB_MCB6C_Rep_1-lib1/outs/ possorted_genome_bam.bam /scratch1/fs1/mgriffit/tmp/process/ /scratch1/fs1/mgriffit/tmp/regions.txt /scratch1/fs1/mgriffit/tmp/out/
+#regions format perline: chr16:33952785-33969003
 
 indir=$1
 filename=$2
