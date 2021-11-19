@@ -77,14 +77,15 @@ print "Design Description:\n$design_description\n\n";
 #3. If the alignment is in CRAM format, convert to BAM, otherwise copy it to the outdir.
 #   Either way name it using the sample name
 my $new_path;
+my $new_filename;
 if($alignfile =~ /.*\/(\S+)\.bam$/){
-  my $filename = $1;
-  $new_path = $outdir . $sample . ".bam";
+  $new_filename = $sample . ".bam";
+  $new_path = $outdir . $new_filename;
   print "\ncp $alignfile $new_path\n\n";
   copy($alignfile, $new_path);
 
 }elsif($alignfile =~ /.*\/(\S+)\.cram$/){
-  my $filename = $1;
+  $new_filename = $sample . ".bam";
   $new_path = $outdir . $sample . ".bam";
   #Convert cram to BAM
   my $convert_command = "samtools view -b -T $reference_fasta -o $new_path $alignfile";
@@ -106,7 +107,7 @@ open(my $fh, '<:encoding(UTF-8)', $md5_outfile) or die "Could not open file '$md
 my $md5 = '';
 while (my $row = <$fh>) {
   chomp $row;
-  if ($_ =~ /^(\S+)/){
+  if ($row =~ /^(\S+)/){
     $md5 = $1;
   }else{
     print STDERR "\n\nCould not extract md5 result from file: $md5_outfile";
@@ -114,10 +115,16 @@ while (my $row = <$fh>) {
   }
   print "$row\n";
 }
+close $fh;
 
 #5. Output a record line with each element needed for the dbGaP submission form and store in an output file:
 #Sample, Data Description, Design Description, filename, filepath, MD5_checksum
-my $record_file = $sample . "dbgap_record.txt";
+my $record_file = $outdir . $sample . "dbgap_record.txt";
+my $record_line = "$sample\t$description\t$design_description\t$new_filename\t$new_path\t$md5";
+print "\n$record_line\n\n";
+open(FH, '>', $record_file) or die $!;
+print FH "$record_line\n";
+close(FH);
 
 print "\nBAM FILE PROCESSING FOR $sample COMPLETED\n\n";
 
