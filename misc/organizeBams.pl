@@ -76,50 +76,58 @@ print "Design Description:\n$design_description\n\n";
 
 #3. If the alignment is in CRAM format, convert to BAM, otherwise copy it to the outdir.
 #   Either way name it using the sample name
-my $new_path;
-my $new_filename;
-if($alignfile =~ /.*\/(\S+)\.bam$/){
-  $new_filename = $sample . ".bam";
-  $new_path = $outdir . $new_filename;
-  print "\ncp $alignfile $new_path\n\n";
-  copy($alignfile, $new_path);
+my $new_filename = $sample . ".bam";
+my $new_path = $outdir . $new_filename;
 
-}elsif($alignfile =~ /.*\/(\S+)\.cram$/){
-  $new_filename = $sample . ".bam";
-  $new_path = $outdir . $sample . ".bam";
-  #Convert cram to BAM
-  my $convert_command = "samtools view -b -T $reference_fasta -o $new_path $alignfile";
-  print "\n$convert_command\n\n"; 
-  system($convert_command);
-
+#If the new file is already in the new location use it:
+if (-e $new_path){
+  print "\nUsing existing bam file already in the target location:\n$new_path\n\n";
 }else{
-  print STDERR "\n\nFile extension not recognized for file:\n$alignfile\n\n";
-  exit();
+  if($alignfile =~ /.*\/(\S+)\.bam$/){
+    print "\ncp $alignfile $new_path\n\n";
+    copy($alignfile, $new_path);
+
+  }elsif($alignfile =~ /.*\/(\S+)\.cram$/){
+    #Convert cram to BAM
+    my $convert_command = "samtools view -b -T $reference_fasta -o $new_path $alignfile";
+    print "\n$convert_command\n\n"; 
+    system($convert_command);
+
+  }else{
+    print STDERR "\n\nFile extension not recognized for file:\n$alignfile\n\n";
+    exit();
+  }
 }
 
 #4. Calculate MD5sum for the BAM file and parse the result
-my $md5_outfile = $outdir . $sample . ".md5sum";
-my $md5_command = "md5sum $new_path > $md5_outfile";
-print "\n$md5_command\n\n";
-system($md5_command);
 
-open(my $fh, '<:encoding(UTF-8)', $md5_outfile) or die "Could not open file '$md5_outfile' $!";
+#If the md5 is already calculated use that file
+my $md5_outfile = $outdir . $sample . ".md5sum";
 my $md5 = '';
-while (my $row = <$fh>) {
-  chomp $row;
-  if ($row =~ /^(\S+)/){
-    $md5 = $1;
-  }else{
-    print STDERR "\n\nCould not extract md5 result from file: $md5_outfile";
-    exit();
+if (-e $md5_outfile){
+  print "\nUsing existing bam file already in the target location:\n$md5_outfile\n\n";
+}else{
+  my $md5_command = "md5sum $new_path > $md5_outfile";
+  print "\n$md5_command\n\n";
+  system($md5_command);
+
+  open(my $fh, '<:encoding(UTF-8)', $md5_outfile) or die "Could not open file '$md5_outfile' $!";
+  while (my $row = <$fh>) {
+    chomp $row;
+    if ($row =~ /^(\S+)/){
+      $md5 = $1;
+    }else{
+      print STDERR "\n\nCould not extract md5 result from file: $md5_outfile";
+      exit();
+    }
+    print "$row\n";
   }
-  print "$row\n";
+  close $fh;
 }
-close $fh;
 
 #5. Output a record line with each element needed for the dbGaP submission form and store in an output file:
 #Sample, Data Description, Design Description, filename, filepath, MD5_checksum
-my $record_file = $outdir . $sample . "dbgap_record.txt";
+my $record_file = $outdir . $sample . ".dbgap_record.txt";
 my $record_line = "$sample\t$description\t$design_description\t$new_filename\t$new_path\t$md5";
 print "\n$record_line\n\n";
 open(FH, '>', $record_file) or die $!;
