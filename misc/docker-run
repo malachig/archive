@@ -1,0 +1,43 @@
+#!/bin/bash
+
+memory_gb=16
+cores=1
+compute_group='compute-oncology'
+group='/bryanfisk'
+log="/home/bryanfisk/docker_logs/`date +'%d-%m-%y-%H%M'`.log"
+
+while getopts n:?m:?c:?d:G:?g:?o:? opt; do
+	case $opt in
+		n)
+			cores=$OPTARG
+			;;
+		m)
+			memory_gb=$OPTARG
+			;;
+		c)
+			comm=$OPTARG
+			;;
+		d)
+			docker=$OPTARG
+			;;
+		G)
+			compute_group=$OPTARG
+			;;
+		g)
+			group=$OPTARG
+			;;
+		o)
+			log=$OPTARG
+			;;
+	esac
+done
+
+memory_amount_kb=`echo $memory_gb*1000000 | bc`
+memory_amount_mb=`echo $memory_gb*1000 | bc`
+
+if [ -z "$comm" ]; then
+	bsub -G $compute_group -n $cores -g $group -Is -M $memory_amount_kb -q general-interactive -R "select[mem>$memory_amount_mb] rusage[mem=$memory_amount_mb]" -a "docker1($docker)" /bin/bash
+else
+	bsub -G $compute_group -n $cores -g $group -M $memory_amount_kb -oo $log -q general -R "select[mem>$memory_amount_mb] rusage[mem=$memory_amount_mb]" -a "docker1($docker)" $comm
+	echo "logging to $log"
+fi
