@@ -3,10 +3,11 @@
 memory_gb=16
 cores=1
 compute_group='compute-oncology'
-group='/bryanfisk'
-log="/home/bryanfisk/docker_logs/`date +'%d-%m-%y-%H%M'`.log"
+group='/$USER'
+log="/home/$USER/docker_logs/`date +'%d-%m-%y-%H%M'`.log"
+queue='general' 
 
-while getopts n:?m:?c:?d:G:?g:?o:? opt; do
+while getopts n:?m:?c:?d:G:?g:?o:?q:? opt; do
 	case $opt in
 		n)
 			cores=$OPTARG
@@ -26,6 +27,9 @@ while getopts n:?m:?c:?d:G:?g:?o:? opt; do
 		g)
 			group=$OPTARG
 			;;
+		q)
+			queue=$OPTARG
+			;;
 		o)
 			log=$OPTARG
 			;;
@@ -38,6 +42,6 @@ memory_amount_mb=`echo $memory_gb*1000 | bc`
 if [ -z "$comm" ]; then
 	bsub -G $compute_group -n $cores -g $group -Is -M $memory_amount_kb -q general-interactive -R "select[mem>$memory_amount_mb] rusage[mem=$memory_amount_mb]" -a "docker1($docker)" /bin/bash
 else
-	bsub -G $compute_group -n $cores -g $group -M $memory_amount_kb -oo $log -q general -R "select[mem>$memory_amount_mb] rusage[mem=$memory_amount_mb]" -a "docker1($docker)" $comm
+	bsub -G $compute_group -n $cores -g $group -M $memory_amount_kb -oo $log -q $queue -R "select[mem>$memory_amount_mb] rusage[mem=$memory_amount_mb]" -a "docker1($docker)" $comm
 	echo "logging to $log"
 fi
