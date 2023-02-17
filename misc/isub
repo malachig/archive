@@ -8,10 +8,11 @@ function usage
     echo "  -q | --queue     LSF Queue - default oncology-interactive"
     echo "  -g | --group     Compute group - default compute-oncology (other options: compute-griffith, compute-mgriffit, compute-obigriffith, etc.)"
     echo "  -m | --mem       Memory to reserve (in Gb). Default 2"
-    echo "  -n | --nthreads  Number of processors to reserve"
+    echo "  -n | --nthreads  Number of processors to reserve. Default 1"
     echo "  -i | --image     Use this docker image"
     echo "                   Default: docker(chrisamiller/docker-genomic-analysis)"
     echo "                   expects a comparably formatted LSF docker string"
+    echo "  -p | --preserve  Value to set LSF_DOCKER_PRESERVE_ENVIRONMENT (default is true)"
     echo "  -h | --help      show help/options"
     echo ""
     exit 1
@@ -19,7 +20,7 @@ function usage
 
 while [[ "$1" != "" ]]; do
     case $1 in
-         -q | --queue )         shift
+        -q | --queue )         shift
                                 queue=$1
                                 ;;
         -g | --group )          shift
@@ -34,6 +35,9 @@ while [[ "$1" != "" ]]; do
         -i | --image )          shift
                                 image=$1
 				;;
+        -p | --preserve )       shift
+                                preserve=$1
+				;;
         -h | --help )           usage
                                 exit
                                 ;;
@@ -44,20 +48,30 @@ while [[ "$1" != "" ]]; do
 done
 
 if [[ $queue == "" ]];then
+    echo "Using default queue: oncology-interactive"
     queue="oncology-interactive"
 fi
 if [[ $mem == "" ]];then
+    echo "Using default memory of 2G"
     mem=2;
 fi
-if [[ $ntheads == "" ]];then
+if [[ $nthreads == "" ]];then
+    echo "Using default number of threads of 1"
     nthreads=1;
 fi
 if [[ $image = "" ]];then
+    echo "Using default image: chrisamiller/docker-genomic-analysis" 
     image="docker(chrisamiller/docker-genomic-analysis)";
 fi
 if [[ $group = "" ]];then
+    echo "Using default compute group: compute-oncology"
     group="compute-oncology";
 fi
+if [[ $preserve = "" ]];then
+    echo "Using default environment preservation: LSF_DOCKER_PRESERVE_ENVIRONMENT=true"
+    preserve="true";
+fi
+
 
 #add "docker($image)" if necessary
 regex='^docker\('
@@ -68,7 +82,7 @@ fi
 selectString="select[mem>$(( mem * 1000 ))] rusage[mem=$(( mem * 1000 ))]";
 
 echo "bsub command being run is:"
-echo "bsub -Is -M $(( $mem * 1000000 )) -G $group -n $nthreads -R '$selectString' -q $queue -a '$image' /bin/bash"
-bash -l -c "bsub -Is -M $(( $mem * 1000000 )) -G $group -n $nthreads -R '$selectString' -q $queue -a '$image' /bin/bash"
+echo "LSF_DOCKER_PRESERVE_ENVIRONMENT=$preserve bsub -Is -M $(( $mem * 1000000 )) -G $group -n $nthreads -R '$selectString' -q $queue -a '$image' /bin/bash"
+bash -l -c "LSF_DOCKER_PRESERVE_ENVIRONMENT=$preserve bsub -Is -M $(( $mem * 1000000 )) -G $group -n $nthreads -R '$selectString' -q $queue -a '$image' /bin/bash"
  
 

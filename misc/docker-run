@@ -40,8 +40,10 @@ memory_amount_kb=`echo $memory_gb*1000000 | bc`
 memory_amount_mb=`echo $memory_gb*1000 | bc`
 
 if [ -z "$comm" ]; then
+        echo bsub -G $compute_group -n $cores -g $group -Is -M $memory_amount_kb -q general-interactive -R "select[mem>$memory_amount_mb] rusage[mem=$memory_amount_mb]" -a "docker1($docker)" /bin/bash
 	bsub -G $compute_group -n $cores -g $group -Is -M $memory_amount_kb -q general-interactive -R "select[mem>$memory_amount_mb] rusage[mem=$memory_amount_mb]" -a "docker1($docker)" /bin/bash
 else
+	echo bsub -G $compute_group -n $cores -g $group -M $memory_amount_kb -oo $log -q $queue -R "select[mem>$memory_amount_mb] rusage[mem=$memory_amount_mb]" -a "docker1($docker)" $comm
 	bsub -G $compute_group -n $cores -g $group -M $memory_amount_kb -oo $log -q $queue -R "select[mem>$memory_amount_mb] rusage[mem=$memory_amount_mb]" -a "docker1($docker)" $comm
 	echo "logging to $log"
 fi
