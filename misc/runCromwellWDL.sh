@@ -174,8 +174,11 @@ curl -SL http://localhost:8000/api/workflows/v1/$CROMWELL_ID/outputs >| $sample.
 # loop through the output and put everything in the right place
 cat $sample.output | python3 -m json.tool | grep location | sed 's@.*\"location\": \"\(.*\)\".*@\1@' >| $sample.final_results
 
+echo "Copying results files defined in the WDL to user specified location: " $results
+
 for line in $(cat $sample.final_results)
 do
+    echo cp -r $line $results
     cp -r $line $results
 done
 
