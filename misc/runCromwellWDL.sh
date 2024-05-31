@@ -186,15 +186,23 @@ done
 ################ with everything now done clean up after yourself ###########################
 #############################################################################################
 
-rm -f $sample.final_results
-rm -f $sample.output
-rm -f $sample.status
-rm -f $sample.label
-
 if [ $clean == "NO" ]; then
-    echo "Leaving full cromwell-executions run dir in place"
+    echo "Leaving full cromwell-executions dir and temp files in place"
 else
     echo "Removing cromwell-executions dir"
+    echo rm -rf cromwell-executions/$CWL_BASE/$CROMWELL_ID
     rm -rf cromwell-executions/$CWL_BASE/$CROMWELL_ID
+
+    echo rm -f $sample.final_results
+    rm -f $sample.final_results
+
+    echo rm -f $sample.output
+    rm -f $sample.output
+
+    echo rm -f $sample.status
+    rm -f $sample.status
+
+    echo rm -f $sample.label
+    rm -f $sample.label
 fi
 
