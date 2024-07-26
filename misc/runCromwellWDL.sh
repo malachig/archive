@@ -139,9 +139,9 @@ echo "Java memory request for Submit command: " $CROMWELL_SUBMIT_MEM_STRING
 #cd to temp dir when cromwell will be run
 # Attempt to change to the target directory
 if cd "$temp"; then
-    echo "Successfully changed to directory: $TARGET_DIR"
+    echo "Successfully changed to directory: $temp"
 else
-    echo "Failed to change directory to: $TARGET_DIR"
+    echo "Failed to change directory to: $temp"
     exit 1
 fi
 
@@ -181,8 +181,9 @@ done
 ################ grab the final outputs and put them in the correct place ##################
 ############################################################################################
 
-# with the cromwell job complete get the id so we can query the outputs
+# with the cromwell job complete get the name and id so we can query and clean up the outputs
 CROMWELL_ID="$(cat $sample.status | python3 -m json.tool | grep "\"id\":" | sed 's@.*\"id\": \"\(.*\)\".*@\1@')"
+CROMWELL_NAME="$(cat $sample.status | python3 -m json.tool | grep "\"name\":" | sed 's@.*\"name\": \"\(.*\)\".*@\1@')"
 
 # when done continue and grab the outputs
 echo curl -SL http://localhost:8000/api/workflows/v1/$CROMWELL_ID/outputs >| $sample.output
@@ -208,19 +209,22 @@ if [ $clean == "NO" ]; then
     echo "Leaving full cromwell-executions dir and temp files in place"
 else
     echo "Removing cromwell-executions dir"
-    echo rm -rf cromwell-executions/$CWL_BASE/$CROMWELL_ID
-    rm -rf cromwell-executions/$CWL_BASE/$CROMWELL_ID
+    echo rm -rf $temp/cromwell-executions/$CWL_NAME/$CROMWELL_ID
+    rm -rf $temp/cromwell-executions/$CWL_NAME/$CROMWELL_ID
 
-    echo rm -f $sample.final_results
-    rm -f $sample.final_results
+    echo rm -f $temp/$sample.final_results
+    rm -f $temp/$sample.final_results
 
-    echo rm -f $sample.output
-    rm -f $sample.output
+    echo rm -f $temp/$sample.output
+    rm -f $temp/$sample.output
 
-    echo rm -f $sample.status
-    rm -f $sample.status
+    echo rm -f $temp/$sample.status
+    rm -f $temp/$sample.status
 
-    echo rm -f $sample.label
-    rm -f $sample.label
+    echo rm -f $temp/$sample.label
+    rm -f $temp/$sample.label
+
+    echo rm -rf $temp/cromwell-workflow-logs
+    rm -rf $temp/cromwell-workflow-logs
 fi
 
