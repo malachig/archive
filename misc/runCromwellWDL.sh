@@ -209,8 +209,8 @@ if [ $clean == "NO" ]; then
     echo "Leaving full cromwell-executions dir and temp files in place"
 else
     echo "Removing cromwell-executions dir"
-    echo rm -rf $temp/cromwell-executions/$CWL_NAME/$CROMWELL_ID
-    rm -rf $temp/cromwell-executions/$CWL_NAME/$CROMWELL_ID
+    echo rm -rf $temp/cromwell-executions/$CROMWELL_NAME/$CROMWELL_ID
+    rm -rf $temp/cromwell-executions/$CROMWELL_NAME/$CROMWELL_ID
 
     echo rm -f $temp/$sample.final_results
     rm -f $temp/$sample.final_results
@@ -223,8 +223,5 @@ else
 
     echo rm -f $temp/$sample.label
     rm -f $temp/$sample.label
-
-    echo rm -rf $temp/cromwell-workflow-logs
-    rm -rf $temp/cromwell-workflow-logs
 fi
 
