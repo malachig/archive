@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # EXAMPLE COMMAND:
-#bsub -q oncology -G compute-oncology -g /mgriffit/wdl -M 22000000 -R 'select[mem>22000] rusage[mem=22000]' -oo /storage1/fs1/mgriffit/Active/griffithlab/pipeline_test/malachi/compute1-test/out/logs/attempt-1.stdout -eo /storage1/fs1/mgriffit/Active/griffithlab/pipeline_test/malachi/compute1-test/out/logs/attempt-1.stderr -a 'docker(ghcr.io/genome/genome_perl_environment:compute1-58)' /bin/bash /storage1/fs1/mgriffit/Active/griffithlab/pipeline_test/malachi/compute1-test/runCromwellWDL.sh --cromwell_config /storage1/fs1/mgriffit/Active/griffithlab/pipeline_test/malachi/compute1-test/cromwell.config.wdl --sample TWJF-5120-11 --wdl /storage1/fs1/mgriffit/Active/griffithlab/pipeline_test/malachi/compute1-test/analysis-wdls/definitions/immuno.wdl --imports /storage1/fs1/mgriffit/Active/griffithlab/pipeline_test/malachi/compute1-test/workflows.zip --yaml /storage1/fs1/mgriffit/Active/griffithlab/pipeline_test/malachi/compute1-test/5120-11_immuno_local-WDL.yaml --results /storage1/fs1/mgriffit/Active/griffithlab/pipeline_test/malachi/compute1-test/out --cromwell_jar /storage1/fs1/mgriffit/Active/griffithlab/common/cromwell-jars/cromwell-71.jar --cromwell_server_mem 10g --cromwell_submit_mem 10g
+#bsub -q general -G compute-obigriffith -M 22000000 -R 'select[mem>22000] rusage[mem=22000]' -oo /storage1/fs1/obigriffith/Active/canine/canine_embryonal_rhabdomyosarcoma/exome_somatic/Annie/CER_Annie_exome.stdout -eo /storage1/fs1/obigriffith/Active/canine/canine_embryonal_rhabdomyosarcoma/exome_somatic/Annie/CER_Annie_exome.stderr -a 'docker(ghcr.io/genome/genome_perl_environment:compute1-58)' /bin/bash /storage1/fs1/obigriffith/Active/Common/git/archive/misc/runCromwellWDL.sh --cromwell_config /storage1/fs1/obigriffith/Active/canine/canine_embryonal_rhabdomyosarcoma/exome_somatic/cromwell.config.wdl --sample Annie --wdl /storage1/fs1/obigriffith/Active/canine/canine_embryonal_rhabdomyosarcoma/exome_somatic/analysis-wdls/definitions/somatic_exome_nonhuman.wdl --imports /storage1/fs1/obigriffith/Active/canine/canine_embryonal_rhabdomyosarcoma/exome_somatic/analysis-wdls/workflows.zip --yaml /storage1/fs1/obigriffith/Active/canine/canine_embryonal_rhabdomyosarcoma/exome_somatic/Annie/somatic_exome.yml --results /storage1/fs1/obigriffith/Active/canine/canine_embryonal_rhabdomyosarcoma/exome_somatic/Annie/final_somatic_results --temp /scratch1/fs1/obigriffith/obi-tmp/somatic_exome_nonhuman/Annie --cromwell_jar /storage1/fs1/mgriffit/Active/griffithlab/common/cromwell-jars/cromwell-71.jar --cromwell_server_mem 10g --cromwell_submit_mem 10g
 
 #NOTE. When specifying memory for the two Java commands below (which run in parallel) make sure they add up to LESS than what is requested for the parent LSF job.  
 function usage
@@ -14,7 +14,8 @@ function usage
     echo "  -w | --wdl                   Path to WDL pipeline file"
     echo "  -i | --imports               Path to ZIP archive of all WDL files"
     echo "  -y | --yaml                  Path to input YAML file"
-    echo "  -r | --results               Path to final results dir where names outputs of the pipeline will be placed"
+    echo "  -r | --results               Path to final results dir where named outputs of the pipeline will be placed"
+    echo "  -t | --temp                  Path to temp dir where intermediate pipeline files will be stored (e.g., scratch dir)"
     echo "  -j | --cromwell_jar          Path to cromwell jar file (default: /storage1/fs1/mgriffit/Active/common/cromwell-jars/cromwell-51.jar)"
     echo "  -a | --cromwell_server_mem   Memory (GB) used for the Java process for Cromwell Server command"
     echo "  -b | --cromwell_submit_mem   Memory (GB) used for the Java process for Cromwell Submit command"
@@ -45,6 +46,9 @@ while [[ "$1" != "" ]]; do
                                          ;; 
         -y | --yaml )                    shift
                                          yaml=$1
+                                         ;;
+        -t | --temp )                    shift
+                                         temp=$1
                                          ;;
         -r | --results )                 shift
                                          results=$1
@@ -94,6 +98,10 @@ if [[ $results == "" ]];then
     echo "--results must be specified"
     exit;
 fi
+if [[ $temp == "" ]];then
+    echo "--temp must be specified"
+    exit;
+fi
 if [[ $cromwell_jar = "" ]];then
     echo "using cromwell jar: /storage1/fs1/mgriffit/Active/griffithlab/common/cromwell-jars/cromwell-71.jar"
     cromwell_jar=/storage1/fs1/mgriffit/Active/griffithlab/common/cromwell-jars/cromwell-71.jar;
@@ -127,6 +135,15 @@ echo "Java memory request for Submit command: " $CROMWELL_SUBMIT_MEM_STRING
 ###########################################################################################
 ###################start up the cromwell server/start job #################################
 ###########################################################################################
+
+#cd to temp dir when cromwell will be run
+# Attempt to change to the target directory
+if cd "$temp"; then
+    echo "Successfully changed to directory: $TARGET_DIR"
+else
+    echo "Failed to change directory to: $TARGET_DIR"
+    exit 1
+fi
 
 # start cromwell server and give it time to setup
 echo /usr/bin/java $CROMWELL_SERVER_MEM_STRING -Dconfig.file=$cromwell_config -jar $cromwell_jar server &
@@ -172,7 +189,8 @@ echo curl -SL http://localhost:8000/api/workflows/v1/$CROMWELL_ID/outputs >| $sa
 curl -SL http://localhost:8000/api/workflows/v1/$CROMWELL_ID/outputs >| $sample.output
 
 # loop through the output and put everything in the right place
-cat $sample.output | python3 -m json.tool | grep location | sed 's@.*\"location\": \"\(.*\)\".*@\1@' >| $sample.final_results
+#cat $sample.output | python3 -m json.tool | grep $temp | sed 's@.*\"location\": \"\(.*\)\".*@\1@' >| $sample.final_results
+cat $sample.output | python3 -m json.tool | grep $temp | sed -n 's/^[^"]*"\([^"]*\)".*"\([^"]*\)".*/\2/p' >| $sample.final_results
 
 echo "Copying results files defined in the WDL to user specified location: " $results
 
