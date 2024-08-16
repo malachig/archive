@@ -136,7 +136,14 @@ echo "Java memory request for Submit command: " $CROMWELL_SUBMIT_MEM_STRING
 ###################start up the cromwell server/start job #################################
 ###########################################################################################
 
-#cd to temp dir when cromwell will be run
+#create temp dir where cromwell will be run
+if mkdir -p "$temp"; then
+    echo "Successfully created: $temp"
+else
+    echo "Failed to create: $temp"
+    exit 1
+fi
+
 # Attempt to change to the target directory
 if cd "$temp"; then
     echo "Successfully changed to directory: $temp"
